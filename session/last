@@ -1,0 +1,97 @@
+let SessionLoad = 1
+if &cp | set nocp | endif
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~\vimfiles
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +459 config.vim
+argglobal
+silent! argdel *
+edit config.vim
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal fdm=marker
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=3
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+449
+normal! zo
+456
+normal! zc
+464
+normal! zc
+510
+normal! zc
+600
+normal! zc
+607
+normal! zc
+620
+normal! zc
+626
+normal! zc
+630
+normal! zc
+634
+normal! zc
+641
+normal! zc
+648
+normal! zc
+652
+normal! zc
+656
+normal! zc
+661
+normal! zc
+665
+normal! zc
+670
+normal! zc
+677
+normal! zc
+693
+normal! zc
+706
+normal! zc
+710
+normal! zc
+716
+normal! zc
+722
+normal! zc
+726
+normal! zc
+let s:l = 732 - ((286 * winheight(0) + 21) / 43)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+732
+normal! 018|
+lcd ~\vimfiles
+tabnext 1
+if exists('s:wipebuf')
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20 shortmess=atI
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :

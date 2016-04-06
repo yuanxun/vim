@@ -1,5 +1,6 @@
-" ZeitWerk gvimrc
-" TODO gf --> in split
+" ------------------------------------------------------------------------------
+" --- Zeitwerk vimrc
+" ------------------------------------------------------------------------------
 "  STARTUP {{{
 " ##############################################################################
 " variable to check if is windows version of vim
@@ -234,7 +235,6 @@ set autoindent smartindent              " Auto indention
 " ##############################################################################
 " Sourced Scripts {{{
 " ------------------------------------------------------------------------------
-" ------------------------------------------------------------------------------
 " --- Sorts folded text without hickups
 " ------------------------------------------------------------------------------
 source $rc/SortUnfolded.vim
@@ -363,13 +363,6 @@ endif
 " }}}
 " Autocommands {{{
 " ------------------------------------------------------------------------------
-" ------------------------------------------------------------------------------
-" --- Omnicompletion
-" ------------------------------------------------------------------------------
-au FileType css setlocal omnifunc=csscomplete#CompleteCSS
-au FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-au FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-" ------------------------------------------------------------------------------
 " --- Filetype specific autocommands
 " ------------------------------------------------------------------------------
 augroup FileSpecific
@@ -384,7 +377,9 @@ augroup Startify
     au User Startified file Startify
     au User Startified setlocal nowrap
 augroup END
-" TODO
+" ------------------------------------------------------------------------------
+" --- Resize splits when resizing window
+" ------------------------------------------------------------------------------
 autocmd VimResized * :wincmd =
 " }}}
 " Syntax Highlighting fixes {{{
@@ -443,8 +438,8 @@ augroup CSS3Fix
     au!
     if g:colors_name == 'base16-tomorrow' || g:colors_name == 'base16-monokai'
         " No idea where this comes from
-        au FileType scss syn match cssBoxProp contained '\<padding\>'
-        au FileType css syn match cssBoxProp contained '\<padding\>'
+        " au FileType scss syn match cssBoxProp contained '\<padding\>'
+        " au FileType css syn match cssBoxProp contained '\<padding\>'
         au FileType scss syn match cssBoxProp contained '\<line-height\>'
         au FileType css syn match cssBoxProp contained '\<line-height\>'
         au FileType scss syn match cssBoxProp contained /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
@@ -632,12 +627,11 @@ nmap <silent><leader>pu :UltiSnipsEdit<cr>
 if !exists("g:UltiSnipsJumpForwardTrigger")
   let g:UltiSnipsJumpForwardTrigger = "<tab>"
 endif
-
 if !exists("g:UltiSnipsJumpBackwardTrigger")
   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 endif
-au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
-au InsertEnter * exec "inoremap <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
+au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
+au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 " }}}
 " CtrlP {{{
 " ------------------------------------------------------------------------------

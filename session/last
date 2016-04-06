@@ -8,11 +8,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 .gitignore
+badd +0 \Users\Timm\.bash_profile
+badd +0 ~\vimfiles\vimrc
 argglobal
 silent! argdel *
-argadd .gitignore
-edit Startify
+edit \Users\Timm\.bash_profile
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -27,20 +27,19 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 12 - ((11 * winheight(0) + 11) / 22)
+let s:l = 7 - ((6 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 05|
-tabedit .gitignore
+7
+normal! 0
+tabedit ~\vimfiles\vimrc
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 argglobal
-1argu
 setlocal fdm=marker
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -49,12 +48,16 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 3 - ((2 * winheight(0) + 11) / 22)
+234
+normal! zo
+748
+normal! zo
+let s:l = 749 - ((515 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-3
-normal! 08|
+749
+normal! 0
 tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf

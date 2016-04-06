@@ -8,80 +8,109 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +459 config.vim
+badd +0 ~\vimfiles\gvimrc
 argglobal
 silent! argdel *
-edit config.vim
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 argglobal
-setlocal fdm=marker
+enew
+setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
 setlocal fdi=#
-setlocal fdl=3
+setlocal fdl=1
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-449
-normal! zo
-456
-normal! zc
-464
-normal! zc
-510
-normal! zc
-600
-normal! zc
-607
-normal! zc
-620
-normal! zc
-626
-normal! zc
-630
-normal! zc
-634
-normal! zc
-641
-normal! zc
-648
-normal! zc
-652
-normal! zc
-656
-normal! zc
-661
-normal! zc
-665
-normal! zc
-670
-normal! zc
-677
-normal! zc
-693
-normal! zc
-706
-normal! zc
-710
-normal! zc
-716
-normal! zc
-722
-normal! zc
-726
-normal! zc
-let s:l = 732 - ((286 * winheight(0) + 21) / 43)
+tabedit ~\vimfiles\gvimrc
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=1
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+3,17fold
+20,24fold
+25,125fold
+126,130fold
+18,132fold
+133,222fold
+225,231fold
+234,251fold
+252,261fold
+262,267fold
+268,289fold
+290,302fold
+303,312fold
+313,326fold
+327,352fold
+232,353fold
+354,379fold
+380,458fold
+223,460fold
+468,475fold
+476,521fold
+522,609fold
+612,618fold
+619,631fold
+632,637fold
+638,641fold
+642,645fold
+646,652fold
+653,659fold
+660,663fold
+664,667fold
+668,672fold
+673,676fold
+677,681fold
+682,688fold
+689,706fold
+707,719fold
+720,723fold
+724,729fold
+730,735fold
+736,739fold
+740,743fold
+610,744fold
+461,746fold
+749,752fold
+753,762fold
+763,779fold
+780,795fold
+796,809fold
+810,813fold
+814,817fold
+818,822fold
+823,984fold
+985,996fold
+997,1000fold
+1001,1055fold
+1056,1059fold
+1060,1065fold
+1066,1070fold
+1071,1076fold
+747,1078fold
+1079,1086fold
+let s:l = 121 - ((105 * winheight(0) + 20) / 40)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-732
-normal! 018|
-lcd ~\vimfiles
-tabnext 1
+121
+normal! 0
+tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

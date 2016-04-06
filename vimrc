@@ -59,7 +59,7 @@ Plug 'maksimr/vim-jsbeautify',             " js-beautify integration
             \ {
             \ 'for' : ['javascript', 'css', 'html', 'php', 'scss']
             \ }
-
+"
 " ------------------------------------------------------------------------------
 " --- Syntax
 " ------------------------------------------------------------------------------
@@ -139,6 +139,14 @@ else
     set guifont==Fira\ Mono\ Medium\ 10
     let s:patchedFont = 0               " is the font powerline patched?
 endif
+if has("gui_running")                   " gui specific options
+    set guioptions-=m
+    set guioptions-=t
+    set guioptions-=T
+    set guioptions-=r
+    set guioptions-=L
+    set guitablabel=%M\ %t              " tab title
+endif
 set encoding=utf-8                      " vim encoding
 scriptencoding utf-8                    " script encoding
 set termencoding=utf-8                  " terminal encoding
@@ -180,13 +188,13 @@ endtry
 
 set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
-colorscheme base16-monokai              " set colorscheme
+colorscheme desert                      " colorscheme fallback
+try
+    colorscheme base16-monokai              " set colorscheme
+catch
+endtry
 let base16colorspace = 256              " terminal fix
-set showtabline=1                       " show tabline with > 1 tabs
-if has("gui_running")                   " gui specific options
-    set guioptions-=mtrLT               " disable menu, toolbar and scrollbars
-    set guitablabel=%M\ %t              " tab title
-endif
+set showtabline=2                       " show tabline with > 1 tabs
 
 set number relativenumber               " enable number gutter
 :au WinEnter * :setlocal relativenumber
@@ -317,27 +325,29 @@ endfun
 " }}}
 " Treat tab as Snip-Completion mapping (github.com/netsmertia) {{{
 " ------------------------------------------------------------------------------
-function! UltiSnips_Complete()
-    call UltiSnips#ExpandSnippet()
-    if g:ulti_expand_res == 0
-        if pumvisible()
-            return "\<C-n>"
-        else
-            call UltiSnips#JumpForwards()
-            if g:ulti_jump_forwards_res == 0
-               return "\<TAB>"
+if !empty(glob("plugged/UltiSnips"))
+    function! UltiSnips_Complete()
+        call UltiSnips#ExpandSnippet()
+        if g:ulti_expand_res == 0
+            if pumvisible()
+                return "\<C-n>"
+            else
+                call UltiSnips#JumpForwards()
+                if g:ulti_jump_forwards_res == 0
+                   return "\<TAB>"
+                endif
             endif
         endif
-    endif
-    return ""
-endfunction
-function! g:UltiSnips_Reverse()
-  call UltiSnips#JumpBackwards()
-  if g:ulti_jump_backwards_res == 0
-    return "\<C-P>"
-  endif
-  return ""
-endfunction
+        return ""
+    endfunction
+    function! g:UltiSnips_Reverse()
+      call UltiSnips#JumpBackwards()
+      if g:ulti_jump_backwards_res == 0
+        return "\<C-P>"
+      endif
+      return ""
+    endfunction
+endif
 " }}}
 " }}}
 " Autocommands {{{
@@ -363,6 +373,7 @@ augroup Startify
     au User Startified file Startify
     au User Startified setlocal nowrap
 augroup END
+" TODO
 autocmd VimResized * :wincmd =
 " }}}
 " Syntax Highlighting fixes {{{
@@ -588,7 +599,7 @@ noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
 " toggle numbers and relative numbers
 nmap <silent><leader>n  :call ZWToggleRNU()<cr>
 " edit and source vimrc
-nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew gvimrc<CR>
+nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
 nnoremap <silent><leader>vs :source $MYVIMRC<CR>
 " disable highlight when <leader><cr> is pressed
 noremap  <silent> <leader><cr> :let @/ = ""<cr>
@@ -674,21 +685,23 @@ nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gd :Gvdiff<CR>
 " }}}
-" Neoplete {{{
+" Neocomplete {{{
 " ------------------------------------------------------------------------------
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+if !empty(glob("plugged/neocomplete"))
+    " Recommended key-mappings.
+    " <CR>: close popup and save indent.
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+      return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+      " For no inserting <CR> key.
+      "return pumvisible() ? "\<C-y>" : "\<CR>"
+    endfunction
+    " <TAB>: completion.
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+endif
 " }}}
 " Vim-JsBeautify {{{
 " ------------------------------------------------------------------------------

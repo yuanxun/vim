@@ -70,17 +70,17 @@ Plug 'scrooloose/syntastic',               " syntax integration (requires extern
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
-Plug 'ervandew/supertab'                   " insert completion TODO
-Plug 'Shougo/neocomplete.vim'              " completion engine TODO
-" Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
-"             \ {
-"             \ 'for' : ['hmtl','css','scss','javascript']
-"             \ }
-" Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
-"             \ {
-"             \ 'for' : ['vim','scss','sass','css','javascript']
-"             \ }
-" au! User YouCompleteMe if !has('vim_starting') | call youcompleteme#Enable() | endif
+" Plug 'ervandew/supertab'                   " insert completion
+" Plug 'Shougo/neocomplete.vim'              " completion engine
+Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
+            \ {
+            \ 'for' : ['hmtl','css','scss','javascript']
+            \ }
+Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
+            \ {
+            \ 'for' : ['scss','sass','css','javascript']
+            \ }
+au! User YouCompleteMe if !has('vim_starting') | call youcompleteme#Enable() | endif
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
@@ -107,9 +107,13 @@ Plug 'mattn/emmet-vim',                    " emmet integration TODO
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
 Plug 'thinca/vim-visualstar'               " improves * and #
+Plug 'Konfekt/FastFold'                    " improves Folds TODO
 Plug 'tpope/vim-speeddating'               " improves number in-/decementation (C-X/C-A)
 Plug 'tpope/vim-repeat'                    " makes lots of commands repeatable with .
-Plug 'mhinz/vim-sayonara'                  " essentially :qw
+Plug 'mhinz/vim-sayonara',                 " essentially :qw
+            \ {
+            \ 'on' : 'Sayonara'
+            \ }
 Plug 'amix/open_file_under_cursor.vim'     " read its name ...
 Plug 'terryma/vim-expand-region'           " expands visual selection TODO
 Plug 'edsono/vim-matchit'                  " improves % behaviour
@@ -133,11 +137,19 @@ filetype plugin indent on
 " ##############################################################################
 " get patched fonts for powerline at github.com/powerline/fonts
 if s:is_windows
-    set guifont=Fira_Mono:h10:cANSI
-    let s:patchedFont = 0               " is the font powerline patched?
+    set guifont=Consolas:h10:cANSI " Font fallback
+    try
+        set guifont=Fira_Mono:h10:cANSI
+        let s:patchedFont = 0               " is the font powerline patched?
+    catch
+    endtry
 else
-    set guifont==Fira\ Mono\ Medium\ 10
-    let s:patchedFont = 0               " is the font powerline patched?
+    set guifont=Monospace\ 10 " Font fallback
+    try
+        set guifont==Fira\ Mono\ Medium\ 10
+        let s:patchedFont = 0               " is the font powerline patched?
+    catch
+    endtry
 endif
 if has("gui_running")                   " gui specific options
     set guioptions-=m
@@ -179,18 +191,17 @@ set noerrorbells novisualbell t_vb=     " disable audible and visual notice
 set ttimeout                            " set tm=500
 set timeoutlen=1000                     " timeout length
 set ttimeoutlen=1000                    " mapping timeout
-set foldmethod=manual                   " set vim foldmethod
-set foldlevel=1                         " depth of autoopening folds
+set foldmethod=marker " use markers for folding
+set foldlevel=0                         " depth of autoopening folds
 try
     set switchbuf=useopen,usetab,newtab " rules for new buffers
 catch
 endtry
-
 set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 colorscheme desert                      " colorscheme fallback
 try
-    colorscheme base16-monokai              " set colorscheme
+    colorscheme base16-monokai          " set colorscheme
 catch
 endtry
 let base16colorspace = 256              " terminal fix

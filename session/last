@@ -8,114 +8,59 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 ~\vimfiles\gvimrc
+badd +0 .gitignore
 argglobal
 silent! argdel *
+argadd .gitignore
+edit Startify
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
 argglobal
-enew
-setlocal fdm=manual
+setlocal fdm=marker
 setlocal fde=0
 setlocal fmr={{{,}}}
 setlocal fdi=#
-setlocal fdl=1
+setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-tabedit ~\vimfiles\gvimrc
-set splitbelow splitright
-set nosplitbelow
-set nosplitright
-wincmd t
-set winheight=1 winwidth=1
-argglobal
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=1
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-3,17fold
-20,24fold
-25,125fold
-126,130fold
-18,132fold
-133,222fold
-225,231fold
-234,251fold
-252,261fold
-262,267fold
-268,289fold
-290,302fold
-303,312fold
-313,326fold
-327,352fold
-232,353fold
-354,379fold
-380,458fold
-223,460fold
-468,475fold
-476,521fold
-522,609fold
-612,618fold
-619,631fold
-632,637fold
-638,641fold
-642,645fold
-646,652fold
-653,659fold
-660,663fold
-664,667fold
-668,672fold
-673,676fold
-677,681fold
-682,688fold
-689,706fold
-707,719fold
-720,723fold
-724,729fold
-730,735fold
-736,739fold
-740,743fold
-610,744fold
-461,746fold
-749,752fold
-753,762fold
-763,779fold
-780,795fold
-796,809fold
-810,813fold
-814,817fold
-818,822fold
-823,984fold
-985,996fold
-997,1000fold
-1001,1055fold
-1056,1059fold
-1060,1065fold
-1066,1070fold
-1071,1076fold
-747,1078fold
-1079,1086fold
-let s:l = 121 - ((105 * winheight(0) + 20) / 40)
+let s:l = 12 - ((11 * winheight(0) + 11) / 22)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-121
-normal! 0
+12
+normal! 05|
+tabedit .gitignore
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+1argu
+setlocal fdm=marker
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 3 - ((2 * winheight(0) + 11) / 22)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+3
+normal! 08|
 tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
-set winheight=1 winwidth=20 shortmess=atI
+set winheight=1 winwidth=20 shortmess=atIc
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

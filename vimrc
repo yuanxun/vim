@@ -34,11 +34,14 @@ call plug#begin($rtp.'plugged')
 " Plugin list {{{
 " ------------------------------------------------------------------------------
 " PLUGINS MARKED WITH TODO ARE NEW TO ME AND NOT YET FULLY EXPLORED
-"
+" ------------------------------------------------------------------------------
+" --- Inhouse!
+" ------------------------------------------------------------------------------
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
 Plug 'chriskempson/base16-vim'             " base16 vim port
+Plug 'docapotamus/jellybeans.vim' " jellybeans
 " ------------------------------------------------------------------------------
 " --- Interface / File management
 " ------------------------------------------------------------------------------
@@ -204,7 +207,8 @@ set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 colorscheme desert                      " colorscheme fallback
 try
-    colorscheme base16-monokai          " set colorscheme
+    colorscheme jellybeans
+    " colorscheme base16-monokai          " set colorscheme
 catch
 endtry
 let base16colorspace = 256              " terminal fix
@@ -250,27 +254,27 @@ source $rc/abbreviations.vim
 " BuildYCM {{{
 " ------------------------------------------------------------------------------
 function! BuildYCM(info)
-  if a:info.status == 'installed' || a:info.force
-    !./python install.py --tern-completer
-  endif
+    if a:info.status == 'installed' || a:info.force
+        !./python install.py --tern-completer
+    endif
 endfunction
 " }}}
 " Position-away window resizing {{{
 " ------------------------------------------------------------------------------
 
 function! IntelligentVerticalResize(direction) abort
-  let l:window_resize_count = 5
-  let l:current_window_is_last_window = (winnr() == winnr('$'))
+    let l:window_resize_count = 5
+    let l:current_window_is_last_window = (winnr() == winnr('$'))
 
-  if (a:direction ==# 'left')
-    let [l:modifier_1, l:modifier_2] = ['+', '-']
-  else
-    let [l:modifier_1, l:modifier_2] = ['-', '+']
-  endif
+    if (a:direction ==# 'left')
+        let [l:modifier_1, l:modifier_2] = ['+', '-']
+    else
+        let [l:modifier_1, l:modifier_2] = ['-', '+']
+    endif
 
-  let l:modifier = l:current_window_is_last_window ? l:modifier_1 : l:modifier_2
-  let l:command = 'vertical resize ' . l:modifier . l:window_resize_count . '<CR>'
-  execute l:command
+    let l:modifier = l:current_window_is_last_window ? l:modifier_1 : l:modifier_2
+    let l:command = 'vertical resize ' . l:modifier . l:window_resize_count . '<CR>'
+    execute l:command
 endfunction
 " }}}
 " Center lines on screen {{{
@@ -348,37 +352,12 @@ function! ZWToggleRNU()
     endif
 endfun
 " }}}
-" Treat tab as Snip-Completion mapping (github.com/netsmertia) {{{
-" ------------------------------------------------------------------------------
-if !empty(glob("plugged/UltiSnips"))
-    function! UltiSnips_Complete()
-        call UltiSnips#ExpandSnippet()
-        if g:ulti_expand_res == 0
-            if pumvisible()
-                return "\<C-n>"
-            else
-                call UltiSnips#JumpForwards()
-                if g:ulti_jump_forwards_res == 0
-                   return "\<TAB>"
-                endif
-            endif
-        endif
-        return ""
-    endfunction
-    function! g:UltiSnips_Reverse()
-      call UltiSnips#JumpBackwards()
-      if g:ulti_jump_backwards_res == 0
-        return "\<C-P>"
-      endif
-      return ""
-    endfunction
-endif
-" }}}
 " }}}
 " Syntax Highlighting fixes {{{
 " ------------------------------------------------------------------------------
-"  TODO subsections
 let s:colorAA = "#181818"
+" base16 {{{
+" ------------------------------------------------------------------------------
 if g:colors_name == 'base16-monokai'
     let s:color00 = "#272822"
     let s:color01 = "#383830"
@@ -426,19 +405,25 @@ if g:colors_name == 'base16-tomorrow' || g:colors_name == 'base16-monokai'
     exe 'highlight Number guifg = '.s:color0B
     exe 'highlight cssUnitDecorators guifg = '.s:color0E
 endif
-
+" }}}
+" Jellybeans {{{
+" ------------------------------------------------------------------------------
+let g:jellybeans_overrides = {
+            \ 'background' : { 'guibg' : '101010' },
+            \}
+" }}}
+" CSS3 Fixes {{{
+" ------------------------------------------------------------------------------
 augroup CSS3Fix
     au!
-    if g:colors_name == 'base16-tomorrow' || g:colors_name == 'base16-monokai'
-        " No idea where this comes from
-        " au FileType scss syn match cssBoxProp contained '\<padding\>'
-        " au FileType css syn match cssBoxProp contained '\<padding\>'
-        au FileType scss syn match cssBoxProp contained '\<line-height\>'
-        au FileType css syn match cssBoxProp contained '\<line-height\>'
-        au FileType scss syn match cssBoxProp contained /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
-        au FileType css syn match cssBoxProp contained /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
-    endif
-    " fix vendorprefixes
+    " No idea where this comes from
+    au FileType scss syn match cssBoxProp contained '\<padding\>'
+    au FileType css syn match cssBoxProp contained '\<padding\>'
+    au FileType scss syn match cssBoxProp contained '\<line-height\>'
+    au FileType css syn match cssBoxProp contained '\<line-height\>'
+    " Vendorprefixes are intentionally not part of the css3 runtime files ... 
+    au FileType scss syn match cssBoxProp contained /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
+    au FileType css syn match cssBoxProp contained /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
     " au FileType css match VendorPrefix /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
     " au FileType scss match VendorPrefix /-\(moz\|webkit\|o\|ms\)-[a-zA-Z-]\+/
     " font-smoothing Property missing
@@ -451,7 +436,10 @@ augroup CSS3Fix
     au FileType css setlocal iskeyword+=-
     au FileType scss setlocal iskeyword+=-
 augroup END
-" remove the styling for the splitseperator
+" }}}
+" ------------------------------------------------------------------------------
+" --- Remove vertical split column
+" ------------------------------------------------------------------------------
 hi VertSplit guibg = NONE
 " }}}
 " ##############################################################################
@@ -680,6 +668,11 @@ autocmd! User Goyoleave nested call <SID>goyo_leave()
 
 nnoremap <silent>           <leader>pz :Goyo<CR>
 "  }}}
+" GV {{{
+" ------------------------------------------------------------------------------
+nmap <leader>gv :GV<cr>
+nmap <leader>gG :GV!<cr>
+" }}}
 " Js-Beautify {{{
 " ------------------------------------------------------------------------------
 autocmd  FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
@@ -703,6 +696,7 @@ let g:lexima_enable_endwise_rules = 1
 " ------------------------------------------------------------------------------
 if s:patchedFont == 1
     let g:lightline = {
+                \ 'colorscheme' : 'jellybeans',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
                 \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
@@ -728,30 +722,31 @@ if s:patchedFont == 1
                 \ 'subseparator': { 'left': '', 'right': '' }
                 \ }
 else
-let g:lightline = {
-            \ 'active': {
-            \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
-            \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
-            \ },
-            \ 'component_function': {
-            \   'fugitive': 'LightLineFugitive',
-            \   'readonly': 'LightLineReadonly',
-            \   'modified': 'LightLineModified',
-            \   'filename': 'LightLineFilename',
-            \   'fileformat': 'LightLineFileformat',
-            \   'filetype': 'LightLineFiletype',
-            \   'fileencoding': 'LightLineFileencoding',
-            \   'mode': 'LightLineMode',
-            \   'ctrlpmark': 'CtrlPMark',
-            \ },
-            \ 'component_expand': {
-            \   'syntastic': 'SyntasticStatuslineFlag',
-            \ },
-            \ 'component_type': {
-            \   'syntastic': 'error',
-            \ },
-            \ 'subseparator': { 'left': '>', 'right': '<' }
-            \ }
+    let g:lightline = {
+                \ 'colorscheme' : 'jellybeans',
+                \ 'active': {
+                \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
+                \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \ },
+                \ 'component_function': {
+                \   'fugitive': 'LightLineFugitive',
+                \   'readonly': 'LightLineReadonly',
+                \   'modified': 'LightLineModified',
+                \   'filename': 'LightLineFilename',
+                \   'fileformat': 'LightLineFileformat',
+                \   'filetype': 'LightLineFiletype',
+                \   'fileencoding': 'LightLineFileencoding',
+                \   'mode': 'LightLineMode',
+                \   'ctrlpmark': 'CtrlPMark',
+                \ },
+                \ 'component_expand': {
+                \   'syntastic': 'SyntasticStatuslineFlag',
+                \ },
+                \ 'component_type': {
+                \   'syntastic': 'error',
+                \ },
+                \ 'subseparator': { 'left': '>', 'right': '<' }
+                \ }
 endif
 function! LightLineModified()
     if &filetype == "help"
@@ -801,63 +796,63 @@ else
 endif
 
 function! LightLineFilename()
-  let fname = expand('%:t')
-  return fname == 'ControlP' ? g:lightline.ctrlp_item :
-        \ fname =~ 'NERD_tree' ? '' :
-        \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
-        \ ('' != fname ? fname : '[No Name]') .
-        \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+    let fname = expand('%:t')
+    return fname == 'ControlP' ? g:lightline.ctrlp_item :
+                \ fname =~ 'NERD_tree' ? '' :
+                \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
+                \ ('' != fname ? fname : '[No Name]') .
+                \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
 endfunction
 function! LightLineFileformat()
-  return winwidth(0) > 70 ? &fileformat : ''
+    return winwidth(0) > 70 ? &fileformat : ''
 endfunction
 
 function! LightLineFiletype()
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
 endfunction
 
 function! LightLineFileencoding()
-  return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
 endfunction
 function! LightLineMode()
-  let fname = expand('%:t')
-  return fname == 'ControlP' ? 'CtrlP' :
-        \ fname =~ 'NERD_tree' ? 'NERDTree' :
-        \ winwidth(0) > 60 ? lightline#mode() : ''
+    let fname = expand('%:t')
+    return fname == 'ControlP' ? 'CtrlP' :
+                \ fname =~ 'NERD_tree' ? 'NERDTree' :
+                \ winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
 function! CtrlPMark()
-  if expand('%:t') =~ 'ControlP'
-    call lightline#link('iR'[g:lightline.ctrlp_regex])
-    return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
-          \ , g:lightline.ctrlp_next], 0)
-  else
-    return ''
-  endif
+    if expand('%:t') =~ 'ControlP'
+        call lightline#link('iR'[g:lightline.ctrlp_regex])
+        return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
+                    \ , g:lightline.ctrlp_next], 0)
+    else
+        return ''
+    endif
 endfunction
 
 let g:ctrlp_status_func = {
-  \ 'main': 'CtrlPStatusFunc_1',
-  \ 'prog': 'CtrlPStatusFunc_2',
-  \ }
+            \ 'main': 'CtrlPStatusFunc_1',
+            \ 'prog': 'CtrlPStatusFunc_2',
+            \ }
 
 function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-  let g:lightline.ctrlp_regex = a:regex
-  let g:lightline.ctrlp_prev = a:prev
-  let g:lightline.ctrlp_item = a:item
-  let g:lightline.ctrlp_next = a:next
-  return lightline#statusline(0)
+    let g:lightline.ctrlp_regex = a:regex
+    let g:lightline.ctrlp_prev = a:prev
+    let g:lightline.ctrlp_item = a:item
+    let g:lightline.ctrlp_next = a:next
+    return lightline#statusline(0)
 endfunction
 
 function! CtrlPStatusFunc_2(str)
-  return lightline#statusline(0)
+    return lightline#statusline(0)
 endfunction
 augroup AutoSyntastic
-  autocmd!
-  autocmd BufWritePost *.scss,*.css call s:syntastic()
+    autocmd!
+    autocmd BufWritePost *.scss,*.css call s:syntastic()
 augroup END
 function! s:syntastic()
-  SyntasticCheck
-  call lightline#update()
+    SyntasticCheck
+    call lightline#update()
 endfunction
 " end Lightline
 "}}}
@@ -905,9 +900,9 @@ if !empty(glob("plugged/neocomplete"))
     " <CR>: close popup and save indent.
     inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
     function! s:my_cr_function()
-      return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-      " For no inserting <CR> key.
-      "return pumvisible() ? "\<C-y>" : "\<CR>"
+        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+        " For no inserting <CR> key.
+        "return pumvisible() ? "\<C-y>" : "\<CR>"
     endfunction
     " <TAB>: completion.
     inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -967,14 +962,14 @@ let g:startify_list_order = [
             \ 'sessions',
             \ ]
 let g:startify_custom_header = s:filter_header([
-                \ '                                                                               ',
-                \ '    ______      _  _ __          __          _     __      __ _____  __  __    ',
-                \ '   |___  /     (_)| |\ \        / /         | |    \ \    / /|_   _||  \/  |   ',
-                \ '      / /  ___  _ | |_\ \  /\  / /___  _ __ | | __  \ \  / /   | |  | \  / |   ',
-                \ '     / /  / _ \| || __|\ \/  \/ // _ \|  __|| |/ /   \ \/ /    | |  | |\/| |   ',
-                \ '    / /__|  __/| || |_  \  /\  /|  __/| |   |   <     \  /    _| |_ | |  | |   ',
-                \ '   /_____|\___||_| \__|  \/  \/  \___||_|   |_|\_\     \/    |_____||_|  |_|   ',
-                \ ])
+            \ '                                                                               ',
+            \ '    ______      _  _ __          __          _     __      __ _____  __  __    ',
+            \ '   |___  /     (_)| |\ \        / /         | |    \ \    / /|_   _||  \/  |   ',
+            \ '      / /  ___  _ | |_\ \  /\  / /___  _ __ | | __  \ \  / /   | |  | \  / |   ',
+            \ '     / /  / _ \| || __|\ \/  \/ // _ \|  __|| |/ /   \ \/ /    | |  | |\/| |   ',
+            \ '    / /__|  __/| || |_  \  /\  /|  __/| |   |   <     \  /    _| |_ | |  | |   ',
+            \ '   /_____|\___||_| \__|  \/  \/  \___||_|   |_|\_\     \/    |_____||_|  |_|   ',
+            \ ])
 let g:startify_custom_footer = s:filter_header([
             \ '         __   __  _        _                            _ ',
             \ '        / _| / _|(_)      (_)                          | |',
@@ -1037,6 +1032,30 @@ vmap iö <Plug>(textobj-fold-i)
 " }}}
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
+" if !empty(glob('plugged/UltiSnips'))
+"     function! UltiSnips_Complete()
+"         call UltiSnips#ExpandSnippet()
+"         if g:ulti_expand_res == 0
+"             if pumvisible()
+"                 return '\<C-n>'
+"             else
+"                 call UltiSnips#JumpForwards()
+"                 if g:ulti_jump_forwards_res == 0
+"                     return '\<TAB>'
+"                 endif
+"             endif
+"         endif
+"         return ''
+"     endfunction
+"     function! g:UltiSnips_Reverse()
+"         call UltiSnips#JumpBackwards()
+"         if g:ulti_jump_backwards_res == 0
+"             return '\<C-P>'
+"         endif
+"         return ''
+"     endfunction
+" endif
+
 let g:UltiSnipsEditSplit = 'context'
 let g:UltiSnipsExpandTrigger = '<tab>'
 let g:UltiSnipsJumpForwardTrigger = '<tab>'

@@ -1057,9 +1057,9 @@ vmap iö <Plug>(textobj-fold-i)
 " endif
 
 let g:UltiSnipsEditSplit = 'context'
-let g:UltiSnipsExpandTrigger = '<tab>'
-let g:UltiSnipsJumpForwardTrigger = '<tab>'
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" let g:UltiSnipsExpandTrigger = '<tab>'
+" let g:UltiSnipsJumpForwardTrigger = '<tab>'
+" let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsSnippetsDir=$rtp.'snippets'
 
 nmap <silent><leader>ps :UltiSnipsEdit<cr>

@@ -9,7 +9,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +111 \Users\Timm\webdev\erinski\src\scss\main.scss
-badd +0 ~\vimfiles\vimrc
+badd +1 vimrc
 argglobal
 silent! argdel *
 edit \Users\Timm\webdev\erinski\src\scss\main.scss
@@ -27,13 +27,13 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 111 - ((20 * winheight(0) + 21) / 42)
+let s:l = 111 - ((21 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
 111
 normal! 06|
-tabedit ~\vimfiles\vimrc
+tabedit vimrc
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -48,15 +48,34 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-623
-normal! zo
-let s:l = 700 - ((698 * winheight(0) + 20) / 41)
+let s:l = 1063 - ((1058 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-700
-normal! 01|
-tabnext 2
+1063
+normal! 0
+tabedit vimrc
+set splitbelow splitright
+set nosplitbelow
+set nosplitright
+wincmd t
+set winheight=1 winwidth=1
+argglobal
+setlocal fdm=marker
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+1
+normal! 0
+tabnext 3
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

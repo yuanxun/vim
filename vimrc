@@ -1,12 +1,24 @@
 " ------------------------------------------------------------------------------
 " --- Zeitwerk vimrc
 " ------------------------------------------------------------------------------
+"  TODO change quickscope behaviour
+"  TODO fix the ultisnips situation
+"  TODO fix autocomplete
+"
 "  STARTUP {{{
 " ##############################################################################
+" check for compatible mode and stomp it
+if &compatible
+    set nocompatible
+endif
+" reset autocommands
+if has ('vim_starting')
+    au!
+endif
 " variable to check if is windows version of vim
 let s:is_windows = has('win32') || has('win64')
 if s:is_windows
-    set shell=C:\Windows\system32\cmd.exe
+    set shell=cmd.exe
     let $rtp = fnamemodify(resolve($HOME).'\vimfiles', ':p:gs?/?\\?')
     let $rc = resolve($rtp).'rc\'
 else " linux or mac
@@ -25,6 +37,7 @@ call plug#begin($rtp.'plugged')
 " Plugin list {{{
 " ------------------------------------------------------------------------------
 " PLUGINS MARKED WITH TODO ARE NEW TO ME AND NOT YET FULLY EXPLORED
+"
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
@@ -77,15 +90,14 @@ Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
             \ {
             \ 'for' : ['hmtl','css','scss','javascript']
             \ }
-Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
-            \ {
-            \ 'for' : ['scss','sass','css','javascript']
-            \ }
-au! User YouCompleteMe if !has('vim_starting') | call youcompleteme#Enable() | endif
+" Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
+"             \ {
+"             \ 'for' : ['scss','sass','css','javascript']
+"             \ }
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
-Plug 'airblade/vim-gitgutter'              " adds diff status column
+" Plug 'airblade/vim-gitgutter'              " adds diff status column
 Plug 'tpope/vim-fugitive'                  " git wrapper TODO
 Plug 'junegunn/gv.vim'                     " git commit browser TODO
 " ------------------------------------------------------------------------------
@@ -94,7 +106,7 @@ Plug 'junegunn/gv.vim'                     " git commit browser TODO
 Plug 'sirver/ultisnips'                    " snippet integration
             \ | Plug 'honza/vim-snippets'  " snippets
 Plug 'tpope/vim-commentary'                " fileType specific comment creation mappings
-Plug 'vim-scripts/yankring.vim'            " easier yank / put register management
+" Plug 'vim-scripts/yankring.vim'            " easier yank / put register management
 Plug 'junegunn/vim-easy-align'             " text align
 Plug 'lilydjwg/colorizer'                  " hex, rgb and named color highlighting
 " ------------------------------------------------------------------------------
@@ -118,14 +130,17 @@ Plug 'mhinz/vim-sayonara',                 " essentially :qw
 Plug 'amix/open_file_under_cursor.vim'     " read its name ...
 Plug 'terryma/vim-expand-region'           " expands visual selection TODO
 Plug 'edsono/vim-matchit'                  " improves % behaviour
-" Plug 'unblevable/quick-scope'              " visual help with left and right motions TODO
+Plug 'unblevable/quick-scope'              " visual help with left and right motions
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
 Plug 'tpope/vim-surround'                  " surround text-objects
 Plug 'wellle/targets.vim'                  " more objects
-Plug 'kana/vim-textobj-user'               " new custom textobjects TODO
-Plug 'glts/vim-textobj-comment'            " adds comments as textobject TODO
+Plug 'kana/vim-textobj-user'               " new custom textobjects 
+Plug 'glts/vim-textobj-comment'            " adds comments as textobject 
+Plug 'kana/vim-textobj-fold'               " adds folds as textobjects 
+Plug 'kana/vim-textobj-indent'             " adds indents as textobjects 
+
 " }}}
 " Post-plugin {{{
 " ------------------------------------------------------------------------------
@@ -375,12 +390,9 @@ augroup END
 augroup Startify
     au!
     au User Startified file Startify
+    au User Startified setlocal buftype=
     au User Startified setlocal nowrap
 augroup END
-" ------------------------------------------------------------------------------
-" --- Resize splits when resizing window
-" ------------------------------------------------------------------------------
-autocmd VimResized * :wincmd =
 " }}}
 " Syntax Highlighting fixes {{{
 " ------------------------------------------------------------------------------
@@ -480,6 +492,9 @@ nmap <M-Up>    <Nop>
 " }}}
 " Default remap {{{
 " ------------------------------------------------------------------------------
+"  default <C-c> breaks stuff
+inoremap <C-c> <esc>
+vnoremap <C-c> <esc>
 " Keep the cursor in place while joining lines
 nnoremap J mzJ`z
 " Don't yank to default register when changing something
@@ -519,8 +534,8 @@ vnoremap <C-b> <C-b>zz
 " delete with Ctrl-D in insertmode
 inoremap <C-D>       <backspace>
 " lower- and uppercase under cursor in normalmode
-nnoremap gu  vgu
-nnoremap gU  vgU
+" nnoremap gu  vgu
+" nnoremap gU  vgU
 nnoremap gwu viwgu
 nnoremap gwU viwgU
 " }}}
@@ -624,14 +639,14 @@ nnoremap <leader>gr :GitGutterRevertHunk<CR>
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
 nmap <silent><leader>pu :UltiSnipsEdit<cr>
-if !exists("g:UltiSnipsJumpForwardTrigger")
-  let g:UltiSnipsJumpForwardTrigger = "<tab>"
-endif
-if !exists("g:UltiSnipsJumpBackwardTrigger")
-  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-endif
-au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
-au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
+" if !exists("g:UltiSnipsJumpForwardTrigger")
+"   let g:UltiSnipsJumpForwardTrigger = "<tab>"
+" endif
+" if !exists("g:UltiSnipsJumpBackwardTrigger")
+"   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" endif
+" au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
+" au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 " }}}
 " CtrlP {{{
 " ------------------------------------------------------------------------------
@@ -653,6 +668,7 @@ noremap  <leader>nn         :NERDTreeToggle<cr>
 noremap  <leader>nh         :NERDTreeToggle ~/<cr>
 noremap  <silent>           <leader>nf :NERDTreeFind<cr>cd
 nnoremap <leader>nb         :Bookmark<space>
+let NERDTreeMapOpenVSplit='v'
 " }}}
 " Vim-Surround {{{
 " ------------------------------------------------------------------------------
@@ -737,6 +753,11 @@ noremap  <silent><leader>tm     :Tabmerge<CR>
 noremap  <silent><leader>t<C-h> :Tabmerge left<CR>
 noremap  <silent><leader>t<C-l> :Tabmerge right<CR>
 " }}}
+" Text-Obj-Fold{{{
+" ------------------------------------------------------------------------------
+vmap aö <Plug>(textobj-fold-a)
+vmap iö <Plug>(textobj-fold-i)
+" }}}
 " QuickScope {{{
 " ------------------------------------------------------------------------------
 nnoremap <leader>pq :QuickScopeToggle<CR>
@@ -756,7 +777,6 @@ let g:colorizer_startup = 0
 "  }}}
 " CtrlP"{{{
 " ------------------------------------------------------------------------------
-" ignore .git folders to speed up searches
 let g:ctrlp_reuse_window = 'startify'
 let g:ctrlp_max_depth = 15
 let g:ctrlp_max_height = 20
@@ -783,8 +803,6 @@ autocmd! User Goyoleave nested call <SID>goyo_leave()
 "  }}}
 " NERDTree {{{
 " ------------------------------------------------------------------------------
-" fix NERDTree opening a split in startify
-autocmd User Startified setlocal buftype=
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeAutoCenter = 1
 let g:NERDTreeShowLineNumbers = 1
@@ -793,7 +811,7 @@ let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
 let g:NERDTreeMinimalUI = 0
 let g:NERDTreeWinPos = "left"
 let g:NERDTreeShowHidden = 1
-let g:NERDTreeSortHiddenFirst = 1
+" let g:NERDTreeSortHiddenFirst = 1
 let g:NERDTreeAutoDeleteBuffer = 1
 let g:NERDTreeWinSize = 35
 "}}}
@@ -1010,11 +1028,12 @@ let g:startify_change_to_dir = 1
 let g:startify_relative_path = 1
 let g:startify_use_env = 1
 let g:startify_enable_special = 0
-let g:startify_custom_indices = ['1', '2', '3', '4', '5', '6', '7', 'r', 'g', 'd', 'l']
+let g:startify_custom_indices = ['1', '2', '3', '4', '5', '6', '7', 'r', 'g', 't', 'd', 'l']
 if s:is_windows
     let g:startify_bookmarks = [
                 \ $rtp,
-                \ '~/Google Drive/'
+                \ '~/Google Drive/',
+                \ '~/temp'
                 \ ]
 endif
 let g:startify_update_oldfiles = 1
@@ -1057,6 +1076,10 @@ let g:startify_custom_footer = s:filter_header([
             \ '                                                 |___/    ',
             \ ])
 "  }}}
+" Text-Obj-Fold {{{
+" ------------------------------------------------------------------------------
+let g:textobj_fold_no_default_key_mappings = 1
+" }}}
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
 let g:UltiSnipsEditSplit = 'context'
@@ -1070,7 +1093,7 @@ let g:gitgutter_sign_column_always = 0
 " QuickScope {{{
 " ------------------------------------------------------------------------------
 " Trigger a highlight in the appropriate direction when pressing these keys:
-" let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
+let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
 "  }}}
 " Wimproved.vim {{{
 " ------------------------------------------------------------------------------

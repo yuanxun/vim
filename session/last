@@ -8,11 +8,12 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 \Users\Timm\.bash_profile
-badd +0 ~\vimfiles\vimrc
+badd +0 vimrc
+badd +110 \Users\Timm\webdev\erinski\src\scss\main.scss
+badd +0 \Users\Timm\webdev\erinski\gulpfile.js
 argglobal
 silent! argdel *
-edit \Users\Timm\.bash_profile
+edit \Users\Timm\webdev\erinski\gulpfile.js
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -27,13 +28,13 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 7 - ((6 * winheight(0) + 21) / 42)
+let s:l = 41 - ((18 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-7
-normal! 0
-tabedit ~\vimfiles\vimrc
+41
+normal! 06|
+tabedit vimrc
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -48,22 +49,22 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-234
+30
 normal! zo
-748
+37
 normal! zo
-let s:l = 749 - ((515 * winheight(0) + 21) / 42)
+let s:l = 142 - ((19 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-749
+142
 normal! 0
-tabnext 2
+tabnext 1
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif
 unlet! s:wipebuf
-set winheight=1 winwidth=20 shortmess=atIc
+set winheight=1 winwidth=20 shortmess=atI
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if file_readable(s:sx)
   exe "source " . fnameescape(s:sx)

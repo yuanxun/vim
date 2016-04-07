@@ -84,16 +84,17 @@ Plug 'scrooloose/syntastic',               " syntax integration (requires extern
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
-" Plug 'ervandew/supertab'                   " insert completion
+Plug 'ervandew/supertab'                   " insert completion TODO
 " Plug 'Shougo/neocomplete.vim'              " completion engine
 Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
             \ {
             \ 'for' : ['hmtl','css','scss','javascript']
             \ }
-" Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
-"             \ {
-"             \ 'for' : ['scss','sass','css','javascript']
-"             \ }
+Plug 'Valloric/YouCompleteMe', " completion engine, requires compilation
+            \ {
+            \ 'do' : 'cd '.expand($rtp).'/plugged/YouCompleteMe/ && python install.py',
+            \ 'for' : ['html','css','scss','javascript']
+            \ } 
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
@@ -106,7 +107,6 @@ Plug 'junegunn/gv.vim'                     " git commit browser TODO
 Plug 'sirver/ultisnips'                    " snippet integration
             \ | Plug 'honza/vim-snippets'  " snippets
 Plug 'tpope/vim-commentary'                " fileType specific comment creation mappings
-" Plug 'vim-scripts/yankring.vim'            " easier yank / put register management
 Plug 'junegunn/vim-easy-align'             " text align
 Plug 'lilydjwg/colorizer'                  " hex, rgb and named color highlighting
 " ------------------------------------------------------------------------------
@@ -123,6 +123,7 @@ Plug 'thinca/vim-visualstar'               " improves * and #
 Plug 'Konfekt/FastFold'                    " improves Folds TODO
 Plug 'tpope/vim-speeddating'               " improves number in-/decementation (C-X/C-A)
 Plug 'tpope/vim-repeat'                    " makes lots of commands repeatable with .
+Plug 'tpope/vim-abolish'                    " improves abbrev functionality
 Plug 'mhinz/vim-sayonara',                 " essentially :qw
             \ {
             \ 'on' : 'Sayonara'
@@ -131,6 +132,8 @@ Plug 'amix/open_file_under_cursor.vim'     " read its name ...
 Plug 'terryma/vim-expand-region'           " expands visual selection TODO
 Plug 'edsono/vim-matchit'                  " improves % behaviour
 Plug 'unblevable/quick-scope'              " visual help with left and right motions
+Plug 'mbbill/undotree'              " visualizes vims undotree TODO
+" Plug 'vim-scripts/yankring.vim'            " easier yank / put register management
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
@@ -248,11 +251,15 @@ set autoindent smartindent              " Auto indention
 " END SETTINGS }}}
 " VIM-SCRIPTS {{{
 " ##############################################################################
-" Sourced Scripts {{{
+" Sourced Files {{{
 " ------------------------------------------------------------------------------
 " --- Sorts folded text without hickups
 " ------------------------------------------------------------------------------
-source $rc/SortUnfolded.vim
+source $rc/sortUnfolded.vim
+" ------------------------------------------------------------------------------
+" --- Collection of abbreviations
+" ------------------------------------------------------------------------------
+source $rc/abbreviations.vim
 " }}}
 " Custom Functions {{{
 " ------------------------------------------------------------------------------
@@ -375,24 +382,6 @@ if !empty(glob("plugged/UltiSnips"))
     endfunction
 endif
 " }}}
-" }}}
-" Autocommands {{{
-" ------------------------------------------------------------------------------
-" --- Filetype specific autocommands
-" ------------------------------------------------------------------------------
-augroup FileSpecific
-    au!
-    au BufEnter *.html|*.htm setlocal nowrap
-augroup END
-" ------------------------------------------------------------------------------
-" --- Startify options
-" ------------------------------------------------------------------------------
-augroup Startify
-    au!
-    au User Startified file Startify
-    au User Startified setlocal buftype=
-    au User Startified setlocal nowrap
-augroup END
 " }}}
 " Syntax Highlighting fixes {{{
 " ------------------------------------------------------------------------------
@@ -627,65 +616,33 @@ noremap  <silent> <leader><cr> :let @/ = ""<cr>
 " save current session & close all buffers
 nnoremap <silent><leader>Q :SSave last<CR>y<CR>:wqa<CR>
 " }}}
-" Plugin {{{
+" ##############################################################################
+" END MAPPINGS }}}
+" PLUGIN SETTINGS & MAPPINGS{{{
+" ##############################################################################
+" Colorizer {{{
 " ------------------------------------------------------------------------------
-" Gitgutter {{{
-" ------------------------------------------------------------------------------
-nnoremap <leader>gN :GitGutterPrevHunk<CR>
-nnoremap <leader>gn :GitGutterNextHunk<CR>
-nnoremap <leader>gs :GitGutterStageHunk<CR>
-nnoremap <leader>gr :GitGutterRevertHunk<CR>
-" }}}
-" UltiSnips {{{
-" ------------------------------------------------------------------------------
-nmap <silent><leader>pu :UltiSnipsEdit<cr>
-" if !exists("g:UltiSnipsJumpForwardTrigger")
-"   let g:UltiSnipsJumpForwardTrigger = "<tab>"
-" endif
-" if !exists("g:UltiSnipsJumpBackwardTrigger")
-"   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-" endif
-" au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
-" au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
-" }}}
-" CtrlP {{{
-" ------------------------------------------------------------------------------
-map <leader>f :CtrlP<cr>
-map <leader>b :CtrlPBuffer<cr>
-map <leader>m :CtrlPMRU<cr>
-" }}}
-" Vim-Commentary {{{
+let g:colorizer_startup = 0
+nmap <leader>pc <Plug>Colorizer
+"  }}}
+" Commentary {{{
 " ------------------------------------------------------------------------------
 nmap gC <Plug>CommentaryLine
 " }}}
-" Goyo {{{
+" CtrlP"{{{
 " ------------------------------------------------------------------------------
-nnoremap <silent>           <leader>pz :Goyo<CR>
-" }}}
-" NERDTree {{{
-" ------------------------------------------------------------------------------
-noremap  <leader>nn         :NERDTreeToggle<cr>
-noremap  <leader>nh         :NERDTreeToggle ~/<cr>
-noremap  <silent>           <leader>nf :NERDTreeFind<cr>cd
-nnoremap <leader>nb         :Bookmark<space>
-let NERDTreeMapOpenVSplit='v'
-" }}}
-" Vim-Surround {{{
-" ------------------------------------------------------------------------------
-nmap ms  ys
-nmap mS  ysiW
-nmap mss yss
-nmap mSS ySS
-" }}}
-" Yankring {{{
-" ------------------------------------------------------------------------------
-nnoremap <silent>           <leader>u :YRShow<CR>
-" }}}
-" Colorizer {{{
-" ------------------------------------------------------------------------------
-nmap <leader>pc <Plug>Colorizer
-" }}}
-" EasyAlign {{{
+let g:ctrlp_reuse_window = 'startify'
+let g:ctrlp_max_depth = 15
+let g:ctrlp_max_height = 20
+let g:ctrlp_match_window = 'bottom,order:ttb'
+let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+
+map <leader>f :CtrlP<cr>
+map <leader>b :CtrlPBuffer<cr>
+map <leader>m :CtrlPMRU<cr>
+"}}}
+" Easyalign {{{
 " ------------------------------------------------------------------------------
 xmap gl <Plug>(EasyAlign)
 nmap gl <Plug>(EasyAlign)
@@ -693,38 +650,61 @@ nmap gl <Plug>(EasyAlign)
 " Emmet {{{
 " ------------------------------------------------------------------------------
 let g:user_emmet_leader_key='<C-m>'
+
 " }}}
-" ExpandRegion {{{
+" Emmet {{{
+" ------------------------------------------------------------------------------
+let g:user_emmet_mode='a'
+" }}}
+" Expandregion {{{
 " ------------------------------------------------------------------------------
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
+
 " }}}
-" Vim-Fugitive {{{
+" Fugitive {{{
 " ------------------------------------------------------------------------------
 nnoremap <leader>gs :Gstatus<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gd :Gvdiff<CR>
+
 " }}}
-" Neocomplete {{{
+" Gitgutter {{{
 " ------------------------------------------------------------------------------
-if !empty(glob("plugged/neocomplete"))
-    " Recommended key-mappings.
-    " <CR>: close popup and save indent.
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function()
-      return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-      " For no inserting <CR> key.
-      "return pumvisible() ? "\<C-y>" : "\<CR>"
-    endfunction
-    " <TAB>: completion.
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-endif
+" nnoremap <leader>gN :GitGutterPrevHunk<CR>
+" nnoremap <leader>gn :GitGutterNextHunk<CR>
+" nnoremap <leader>gs :GitGutterStageHunk<CR>
+" nnoremap <leader>gr :GitGutterRevertHunk<CR>
 " }}}
-" Vim-JsBeautify {{{
+" Gitgutter {{{
+" ------------------------------------------------------------------------------
+let g:gitgutter_override_sign_column_highlight = 0
+let g:gitgutter_sign_column_always = 0
+" let g:gitgutter_realtime = 0
+"  }}}
+" Goyo {{{
+" ------------------------------------------------------------------------------
+let g:goyo_height = "100%"
+let g:goyo_width = 90
+
+function! s:goyo_enter()
+    set noshowmode
+    set laststatus=0
+    set nonu nornu
+endfunction
+function! s:goyo_leave()
+    set showmode
+    set laststatus=2
+    set nu rnu
+endfunction
+
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User Goyoleave nested call <SID>goyo_leave()
+
+nnoremap <silent>           <leader>pz :Goyo<CR>
+"  }}}
+" Js-Beautify {{{
 " ------------------------------------------------------------------------------
 autocmd  FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
 autocmd  FileType json nnoremap <buffer>       <leader>pb :call JsonBeautify()<cr>
@@ -736,106 +716,7 @@ autocmd  FileType json vnoremap <buffer>       <leader>pb :call RangeJsonBeautif
 autocmd  FileType jsx vnoremap <buffer>        <leader>pb :call RangeJsxBeautify()<cr>
 autocmd  FileType html vnoremap <buffer>       <leader>pb :call RangeHtmlBeautify()<cr>
 autocmd  FileType css vnoremap <buffer>        <leader>pb :call RangeCSSBeautify()<cr>
-" }}}
-" Sayonara {{{
-" ------------------------------------------------------------------------------
-nnoremap <leader>q          :Sayonara<CR>
-" }}}
-" Startify {{{
-" ------------------------------------------------------------------------------
-nnoremap <leader>ps :Startify<CR>
-nnoremap <leader>sm :SSave default<CR>y<CR>
-nnoremap <leader>sl :SLoad default<CR>
-" }}}
-" Tabmerge {{{
-" ------------------------------------------------------------------------------
-noremap  <silent><leader>tm     :Tabmerge<CR>
-noremap  <silent><leader>t<C-h> :Tabmerge left<CR>
-noremap  <silent><leader>t<C-l> :Tabmerge right<CR>
-" }}}
-" Text-Obj-Fold{{{
-" ------------------------------------------------------------------------------
-vmap aö <Plug>(textobj-fold-a)
-vmap iö <Plug>(textobj-fold-i)
-" }}}
-" QuickScope {{{
-" ------------------------------------------------------------------------------
-nnoremap <leader>pq :QuickScopeToggle<CR>
-" }}}
-" Wimproved {{{
-" ------------------------------------------------------------------------------
-noremap <F11> :WToggleFullscreen<CR>
-" }}}
-" }}}
-" ##############################################################################
-" END MAPPINGS }}}
-" CONFIG PLUGINS {{{
-" ##############################################################################
-" Colorizer {{{
-" ------------------------------------------------------------------------------
-let g:colorizer_startup = 0
-"  }}}
-" CtrlP"{{{
-" ------------------------------------------------------------------------------
-let g:ctrlp_reuse_window = 'startify'
-let g:ctrlp_max_depth = 15
-let g:ctrlp_max_height = 20
-let g:ctrlp_match_window = 'bottom,order:ttb'
-let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
-"}}}
-" Goyo {{{
-" ------------------------------------------------------------------------------
-let g:goyo_height = "100%"
-let g:goyo_width = 90
-function! s:goyo_enter()
-    set noshowmode
-    set laststatus=0
-    set nonu nornu
-endfunction
-function! s:goyo_leave()
-    set showmode
-    set laststatus=2
-    set nu rnu
-endfunction
-autocmd! User GoyoEnter nested call <SID>goyo_enter()
-autocmd! User Goyoleave nested call <SID>goyo_leave()
-"  }}}
-" NERDTree {{{
-" ------------------------------------------------------------------------------
-let g:NERDTreeQuitOnOpen = 1
-let g:NERDTreeAutoCenter = 1
-let g:NERDTreeShowLineNumbers = 1
-let g:NERDTreeShowBookmarks = 1
-let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
-let g:NERDTreeMinimalUI = 0
-let g:NERDTreeWinPos = "left"
-let g:NERDTreeShowHidden = 1
-" let g:NERDTreeSortHiddenFirst = 1
-let g:NERDTreeAutoDeleteBuffer = 1
-let g:NERDTreeWinSize = 35
-"}}}
-" Syntastic {{{
-" ------------------------------------------------------------------------------
-let g:syntastic_loc_list_height = 2
-let g:syntastic_always_populate_loc_list = 0
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_javascript_checkers = ['jshint']
-let g:syntastic_HTML_checkers = ['jshint']
-" let g:syntastic_CSS_checkers = ['']
-let g:syntastic_BEMHTML_checkers = ['bemhtmllint']
-let g:syntastic_SASS_checkers = ['sass']
-let g:syntastic_SCSS_checkers = ['sass']
-"}}}
-" YankRing {{{
-" ------------------------------------------------------------------------------
-let g:yankring_history_dir = $rtp.'temp'
-"}}}
-" Emmet {{{
-" ------------------------------------------------------------------------------
-let g:user_emmet_mode='a'
+
 " }}}
 " Lexima {{{
 " ------------------------------------------------------------------------------
@@ -1004,7 +885,28 @@ function! s:syntastic()
 endfunction
 " end Lightline
 "}}}
-" Neoplete {{{
+" NERDTree {{{
+" ------------------------------------------------------------------------------
+let g:NERDTreeQuitOnOpen = 1
+let g:NERDTreeAutoCenter = 1
+let g:NERDTreeShowLineNumbers = 1
+let g:NERDTreeShowBookmarks = 1
+let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
+let g:NERDTreeMinimalUI = 0
+let g:NERDTreeWinPos = "left"
+let g:NERDTreeShowHidden = 1
+" let g:NERDTreeSortHiddenFirst = 1 " breaks on windows for some reason
+let g:NERDTreeAutoDeleteBuffer = 1
+let g:NERDTreeWinSize = 35
+
+noremap  <leader>nn         :NERDTreeToggle<cr>
+noremap  <leader>nh         :NERDTreeToggle ~/<cr>
+noremap  <silent>           <leader>nf :NERDTreeFind<cr>cd
+nnoremap <leader>nb         :Bookmark<space>
+
+let NERDTreeMapOpenVSplit='v'
+"}}}
+" Neocomplete {{{
 " ------------------------------------------------------------------------------
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
@@ -1015,10 +917,36 @@ let g:neocomplete#enable_smart_case = 1
 " Set minimum syntax keyword length.
 let g:neocomplete#sources#syntax#min_keyword_length = 3
 let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+if !empty(glob("plugged/neocomplete"))
+    " Recommended key-mappings.
+    " <CR>: close popup and save indent.
+    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+    function! s:my_cr_function()
+      return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+      " For no inserting <CR> key.
+      "return pumvisible() ? "\<C-y>" : "\<CR>"
+    endfunction
+    " <TAB>: completion.
+    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+    " <C-h>, <BS>: close popup and delete backword char.
+    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+endif
 " }}}
-" Vim-Plug {{{
+" Plug {{{
 " ------------------------------------------------------------------------------
 let g:plug_timeout = 240
+" }}}
+" QuickScope {{{
+" ------------------------------------------------------------------------------
+let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
+
+nnoremap <leader>pq :QuickScopeToggle<CR>
+"  }}}
+" Sayonara {{{
+" ------------------------------------------------------------------------------
+nnoremap <leader>q          :Sayonara<CR>
 " }}}
 " Startify {{{
 " ------------------------------------------------------------------------------
@@ -1075,40 +1003,87 @@ let g:startify_custom_footer = s:filter_header([
             \ '                                                  __/ |   ',
             \ '                                                 |___/    ',
             \ ])
+
+
+augroup Startify
+    au!
+    au User Startified file Startify
+    au User Startified setlocal buftype=
+    au User Startified setlocal nowrap
+augroup END
+
+nnoremap <leader>ps :Startify<CR>
+nnoremap <leader>sm :SSave default<CR>y<CR>
+nnoremap <leader>sl :SLoad default<CR>
 "  }}}
+" Surround {{{
+" ------------------------------------------------------------------------------
+nmap ms  ys
+nmap mS  ysiW
+nmap mss yss
+nmap mSS ySS
+" }}}
+" Syntastic {{{
+" ------------------------------------------------------------------------------
+let g:syntastic_loc_list_height = 2
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_HTML_checkers = ['jshint']
+" let g:syntastic_CSS_checkers = ['']
+let g:syntastic_BEMHTML_checkers = ['bemhtmllint']
+let g:syntastic_SASS_checkers = ['sass']
+let g:syntastic_SCSS_checkers = ['sass']
+"}}}
+" Tabmerge {{{
+" ------------------------------------------------------------------------------
+noremap  <silent><leader>tm     :Tabmerge<CR>
+noremap  <silent><leader>t<C-h> :Tabmerge left<CR>
+noremap  <silent><leader>t<C-l> :Tabmerge right<CR>
+" }}}
 " Text-Obj-Fold {{{
 " ------------------------------------------------------------------------------
 let g:textobj_fold_no_default_key_mappings = 1
+
+vmap aö <Plug>(textobj-fold-a)
+vmap iö <Plug>(textobj-fold-i)
 " }}}
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
 let g:UltiSnipsEditSplit = 'context'
+nmap <silent><leader>pu :UltiSnipsEdit<cr>
+" if !exists("g:UltiSnipsJumpForwardTrigger")
+"   let g:UltiSnipsJumpForwardTrigger = "<tab>"
+" endif
+" if !exists("g:UltiSnipsJumpBackwardTrigger")
+"   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" endif
+" au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
+" au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 "  }}}
-" Vim-Gitgutter {{{
+" Undotree {{{
 " ------------------------------------------------------------------------------
-let g:gitgutter_override_sign_column_highlight = 0
-let g:gitgutter_sign_column_always = 0
-" let g:gitgutter_realtime = 0
-"  }}}
-" QuickScope {{{
-" ------------------------------------------------------------------------------
-" Trigger a highlight in the appropriate direction when pressing these keys:
-let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
-"  }}}
+nnoremap <leader>pt :UndotreeToggle<cr>
+
+" }}}
 " Wimproved.vim {{{
 " ------------------------------------------------------------------------------
 if s:is_windows
     autocmd GUIEnter * silent! WToggleClean
 endif
+
+noremap <F11> :WToggleFullscreen<CR>
+" }}}
+" YankRing {{{
+" ------------------------------------------------------------------------------
+" let g:yankring_history_dir = $rtp.'temp'
+"}}}
+" YouCompleteMe {{{
+" ------------------------------------------------------------------------------
+let g:ycm_complete_in_comments = 1
 " }}}
 " ##############################################################################
 " END CONFIG PLUGINS }}}
-" ABBREVIATIONS {{{
-" ##############################################################################
-" ------------------------------------------------------------------------------
-" --- Open help in new tab
-" ------------------------------------------------------------------------------
-cnoreabbrev <expr> h getcmdtype() == ":" && getcmdline() == 'h' ? 'tab help' : 'h'
-" ##############################################################################
-" END ABBREVIATIONS }}}
 " vim:foldmethod=marker

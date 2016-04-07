@@ -1,10 +1,7 @@
 " ------------------------------------------------------------------------------
 " --- Zeitwerk vimrc
 " ------------------------------------------------------------------------------
-"  TODO change quickscope behaviour
-"  TODO fix the ultisnips situation
 "  TODO fix autocomplete
-"
 "  STARTUP {{{
 " ##############################################################################
 " check for compatible mode and stomp it
@@ -46,12 +43,11 @@ Plug 'chriskempson/base16-vim'             " base16 vim port
 " --- Interface / File management
 " ------------------------------------------------------------------------------
 Plug 'scrooloose/nerdtree',                " file browser
-            \ {
-            \ 'on' : ['NERDTreeFind', 'NERDTreeToggle'] 
-            \ }
+            \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
 Plug 'itchyny/lightline.vim'               " simple statusline
 Plug 'mhinz/vim-startify'                  " startup screen
-Plug 'ctrlpvim/ctrlp.vim'                  " complex fuzzy-finder (buffer, file, mru)
+Plug 'ctrlpvim/ctrlp.vim',                 " complex fuzzy-finder (buffer, file, mru)
+            \ { 'on', ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
 Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
 Plug 'vim-scripts/Tabmerge'                " merge tabs
 if s:is_windows
@@ -69,38 +65,28 @@ Plug 'othree/html5.vim'                    " html5
 " ------------------------------------------------------------------------------
 " --- Syntax formatting
 " ------------------------------------------------------------------------------
-Plug 'maksimr/vim-jsbeautify',             " js-beautify integration
-            \ {
-            \ 'for' : ['javascript', 'css', 'html', 'php', 'scss']
-            \ }
-"
+Plug 'maksimr/vim-jsbeautify'              " js-beautify integration
 " ------------------------------------------------------------------------------
 " --- Syntax
 " ------------------------------------------------------------------------------
 Plug 'scrooloose/syntastic',               " syntax integration (requires external tools)
-            \ {
-            \ 'for' : ['scss','html','javascript','css']
-            \ }
+            \ { 'for' : ['scss','html','javascript','css'] }
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
 Plug 'ervandew/supertab'                   " insert completion TODO
 " Plug 'Shougo/neocomplete.vim'              " completion engine
-Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
-            \ {
-            \ 'for' : ['hmtl','css','scss','javascript']
-            \ }
-Plug 'Valloric/YouCompleteMe', " completion engine, requires compilation
-            \ {
-            \ 'do' : 'cd '.expand($rtp).'/plugged/YouCompleteMe/ && python install.py',
-            \ 'for' : ['html','css','scss','javascript']
-            \ } 
+" Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
+"             \ { 'for' : ['hmtl','css','scss','javascript'] }
+" Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
+"             \ { 'do' : function('BuildYCM'), } 
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
-" Plug 'airblade/vim-gitgutter'              " adds diff status column
-Plug 'tpope/vim-fugitive'                  " git wrapper TODO
-Plug 'junegunn/gv.vim'                     " git commit browser TODO
+" Plug 'airblade/vim-gitgutter' " adds diff status column
+Plug 'tpope/vim-fugitive'     " git wrapper TODO
+Plug 'junegunn/gv.vim',       " git commit browser TODO
+            \ { 'on' : 'GV' }
 " ------------------------------------------------------------------------------
 " --- Language agnostic utility
 " ------------------------------------------------------------------------------
@@ -113,36 +99,34 @@ Plug 'lilydjwg/colorizer'                  " hex, rgb and named color highlighti
 " --- Language specific utility
 " ------------------------------------------------------------------------------
 Plug 'mattn/emmet-vim',                    " emmet integration TODO
-            \ {
-            \ 'for' : ['html', 'xml', 'xhtml', 'php']
-            \ }
+            \ { 'for' : ['html', 'xml', 'xhtml', 'php'] }
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
-Plug 'thinca/vim-visualstar'               " improves * and #
-Plug 'Konfekt/FastFold'                    " improves Folds TODO
-Plug 'tpope/vim-speeddating'               " improves number in-/decementation (C-X/C-A)
-Plug 'tpope/vim-repeat'                    " makes lots of commands repeatable with .
-Plug 'tpope/vim-abolish'                    " improves abbrev functionality
-Plug 'mhinz/vim-sayonara',                 " essentially :qw
-            \ {
-            \ 'on' : 'Sayonara'
-            \ }
-Plug 'amix/open_file_under_cursor.vim'     " read its name ...
-Plug 'terryma/vim-expand-region'           " expands visual selection TODO
-Plug 'edsono/vim-matchit'                  " improves % behaviour
-Plug 'unblevable/quick-scope'              " visual help with left and right motions
-Plug 'mbbill/undotree'              " visualizes vims undotree TODO
-" Plug 'vim-scripts/yankring.vim'            " easier yank / put register management
+Plug 'thinca/vim-visualstar'           " improves * and #
+Plug 'Konfekt/FastFold'                " improves Folds TODO
+Plug 'tpope/vim-speeddating'           " improves number in-/decementation (C-X/C-A)
+Plug 'tpope/vim-repeat'                " makes lots of commands repeatable with .
+Plug 'tpope/vim-abolish'               " improves abbrev functionality
+Plug 'mhinz/vim-sayonara',             " essentially :qw
+            \ { 'on' : 'Sayonara' }
+Plug 'amix/open_file_under_cursor.vim' " read its name ...
+Plug 'terryma/vim-expand-region'       " expands visual selection TODO
+Plug 'edsono/vim-matchit'              " improves % behaviour
+Plug 'unblevable/quick-scope'          " visual help with left and right motions
+Plug 'mbbill/undotree',                " visualizes vims undotree TODO
+            \ { 'on' : 'UndotreeToggle' }
+Plug 'haya14busa/incsearch.vim'        " improve incsearch
+Plug 'vim-scripts/YankRing.vim'        " easier yank / put register management
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
-Plug 'tpope/vim-surround'                  " surround text-objects
-Plug 'wellle/targets.vim'                  " more objects
-Plug 'kana/vim-textobj-user'               " new custom textobjects 
-Plug 'glts/vim-textobj-comment'            " adds comments as textobject 
-Plug 'kana/vim-textobj-fold'               " adds folds as textobjects 
-Plug 'kana/vim-textobj-indent'             " adds indents as textobjects 
+Plug 'tpope/vim-surround'       " surround text-objects
+Plug 'wellle/targets.vim'       " more objects
+Plug 'kana/vim-textobj-user'    " new custom textobjects
+Plug 'glts/vim-textobj-comment' " adds comments as textobject
+Plug 'kana/vim-textobj-fold'    " adds folds as textobjects
+Plug 'kana/vim-textobj-indent'  " adds indents as textobjects
 
 " }}}
 " Post-plugin {{{
@@ -263,6 +247,14 @@ source $rc/abbreviations.vim
 " }}}
 " Custom Functions {{{
 " ------------------------------------------------------------------------------
+" BuildYCM {{{
+" ------------------------------------------------------------------------------
+function! BuildYCM(info)
+  if a:info.status == 'installed' || a:info.force
+    !./python install.py --tern-completer
+  endif
+endfunction
+" }}}
 " Position-away window resizing {{{
 " ------------------------------------------------------------------------------
 
@@ -473,11 +465,11 @@ let mapleader   = "\<Space>"
 let g:mapleader = "\<Space>"
 " Unmap {{{
 " ------------------------------------------------------------------------------
-nmap <S-k>     <Nop>
-nmap <M-Right> <Nop>
-nmap <M-Left>  <Nop>
-nmap <M-Down>  <Nop>
-nmap <M-Up>    <Nop>
+map K         <Nop>
+map <M-Right> <Nop>
+map <M-Left>  <Nop>
+map <M-Down>  <Nop>
+map <M-Up>    <Nop>
 " }}}
 " Default remap {{{
 " ------------------------------------------------------------------------------
@@ -579,10 +571,6 @@ map <A-o> o<ESC>
 map <A-S-o> <S-o><ESC>
 " highlight last inserted text
 nnoremap gV                 `[v`]
-" put from sysclipboard
-nnoremap <A-p> "+p
-" yank to sysclipboard
-nnoremap <A-y> "*y
 " %% refers to directory of current file
 cnoremap %% <C-R>=expand('%:h').'/'<C-R>
 " Start substitute on current word under the cursor
@@ -649,12 +637,8 @@ nmap gl <Plug>(EasyAlign)
 " }}}
 " Emmet {{{
 " ------------------------------------------------------------------------------
-let g:user_emmet_leader_key='<C-m>'
-
-" }}}
-" Emmet {{{
-" ------------------------------------------------------------------------------
 let g:user_emmet_mode='a'
+let g:user_emmet_leader_key='<C-m>'
 " }}}
 " Expandregion {{{
 " ------------------------------------------------------------------------------
@@ -670,18 +654,10 @@ nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gd :Gvdiff<CR>
 
 " }}}
-" Gitgutter {{{
-" ------------------------------------------------------------------------------
-" nnoremap <leader>gN :GitGutterPrevHunk<CR>
-" nnoremap <leader>gn :GitGutterNextHunk<CR>
-" nnoremap <leader>gs :GitGutterStageHunk<CR>
-" nnoremap <leader>gr :GitGutterRevertHunk<CR>
-" }}}
-" Gitgutter {{{
+" ~~~ Gitgutter {{{
 " ------------------------------------------------------------------------------
 let g:gitgutter_override_sign_column_highlight = 0
 let g:gitgutter_sign_column_always = 0
-" let g:gitgutter_realtime = 0
 "  }}}
 " Goyo {{{
 " ------------------------------------------------------------------------------
@@ -885,6 +861,12 @@ function! s:syntastic()
 endfunction
 " end Lightline
 "}}}
+" Incsearch {{{
+" ------------------------------------------------------------------------------
+noremap / <Plug>(incsearch-forward)
+noremap ? <Plug>(incsearch-backward)
+noremap g/ <Plug>(incsearch-stay)
+" }}}
 " NERDTree {{{
 " ------------------------------------------------------------------------------
 let g:NERDTreeQuitOnOpen = 1
@@ -906,7 +888,7 @@ nnoremap <leader>nb         :Bookmark<space>
 
 let NERDTreeMapOpenVSplit='v'
 "}}}
-" Neocomplete {{{
+" ~~~ Neocomplete {{{
 " ------------------------------------------------------------------------------
 " Disable AutoComplPop.
 let g:acp_enableAtStartup = 0
@@ -1012,7 +994,6 @@ augroup Startify
     au User Startified setlocal nowrap
 augroup END
 
-nnoremap <leader>ps :Startify<CR>
 nnoremap <leader>sm :SSave default<CR>y<CR>
 nnoremap <leader>sl :SLoad default<CR>
 "  }}}
@@ -1022,6 +1003,10 @@ nmap ms  ys
 nmap mS  ysiW
 nmap mss yss
 nmap mSS ySS
+" }}}
+" Supertab {{{
+" ------------------------------------------------------------------------------
+let g:SuperTabDefaultCompletionType = '<C-n>'
 " }}}
 " Syntastic {{{
 " ------------------------------------------------------------------------------
@@ -1053,19 +1038,20 @@ vmap iö <Plug>(textobj-fold-i)
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
 let g:UltiSnipsEditSplit = 'context'
-nmap <silent><leader>pu :UltiSnipsEdit<cr>
-" if !exists("g:UltiSnipsJumpForwardTrigger")
-"   let g:UltiSnipsJumpForwardTrigger = "<tab>"
-" endif
-" if !exists("g:UltiSnipsJumpBackwardTrigger")
-"   let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-" endif
-" au InsertEnter * exec "inoremap <buffer> <silent> " . g:UltiSnipsExpandTrigger     . " <C-R>=g:UltiSnips_Complete()<cr>"
-" au InsertEnter * exec "inoremap <buffer> <silent> " .     g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsSnippetsDir=$rtp.'snippets'
+
+nmap <silent><leader>ps :UltiSnipsEdit<cr>
+"
+" au InsertEnter * exec 'inoremap <buffer> <silent> ' . g:UltiSnipsExpandTrigger     . ' <C-R>=g:UltiSnips_Complete()<cr>'
+" au InsertEnter * exec 'inoremap <buffer> <silent> ' .     g:UltiSnipsJumpBackwardTrigger . ' <C-R>=g:UltiSnips_Reverse()<cr>'
 "  }}}
 " Undotree {{{
 " ------------------------------------------------------------------------------
-nnoremap <leader>pt :UndotreeToggle<cr>
+" TODO change mapping
+nnoremap <leader>pu :UndotreeToggle<cr>
 
 " }}}
 " Wimproved.vim {{{
@@ -1078,11 +1064,21 @@ noremap <F11> :WToggleFullscreen<CR>
 " }}}
 " YankRing {{{
 " ------------------------------------------------------------------------------
-" let g:yankring_history_dir = $rtp.'temp'
+let g:yankring_history_dir = $rtp.'temp'
 "}}}
-" YouCompleteMe {{{
+" ~~~ Yankstack {{{
+" ------------------------------------------------------------------------------
+" nmap <leader>u :Yanks<cr>
+" nmap <A-p> :<Plug>yankstack_subsitute_older_paste
+" nmap <A-P> :<Plug>yankstack_subsitute_older_paste
+" }}}
+" ~~~ YouCompleteMe {{{
 " ------------------------------------------------------------------------------
 let g:ycm_complete_in_comments = 1
+let g:ycm_key_list_select_completion = ['<C-n>', '<down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<up>']
+
+autocmd! User YouCompleteMe call youcompleteme#Enable()
 " }}}
 " ##############################################################################
 " END CONFIG PLUGINS }}}

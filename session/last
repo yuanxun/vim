@@ -8,12 +8,11 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +0 vimrc
-badd +110 \Users\Timm\webdev\erinski\src\scss\main.scss
-badd +0 \Users\Timm\webdev\erinski\gulpfile.js
+badd +0 \Users\Timm\webdev\erinski\dist\index.htm
+badd +0 ~\vimfiles\vimrc
 argglobal
 silent! argdel *
-edit \Users\Timm\webdev\erinski\gulpfile.js
+edit \Users\Timm\webdev\erinski\dist\index.htm
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -28,13 +27,13 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-let s:l = 41 - ((18 * winheight(0) + 20) / 41)
+let s:l = 99 - ((25 * winheight(0) + 21) / 42)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-41
-normal! 06|
-tabedit vimrc
+99
+normal! 012|
+tabedit ~\vimfiles\vimrc
 set splitbelow splitright
 set nosplitbelow
 set nosplitright
@@ -49,17 +48,19 @@ setlocal fdl=0
 setlocal fml=1
 setlocal fdn=20
 setlocal fen
-30
+27
 normal! zo
-37
+34
 normal! zo
-let s:l = 142 - ((19 * winheight(0) + 21) / 42)
+139
+normal! zo
+let s:l = 143 - ((28 * winheight(0) + 20) / 41)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-142
-normal! 0
-tabnext 1
+143
+normal! 05|
+tabnext 2
 if exists('s:wipebuf')
   silent exe 'bwipe ' . s:wipebuf
 endif

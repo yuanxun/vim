@@ -49,11 +49,8 @@ Plug 'scrooloose/nerdtree',                " file browser
             \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
 Plug 'itchyny/lightline.vim'               " simple statusline
 Plug 'mhinz/vim-startify'                  " startup screen
-" Plug 'ctrlpvim/ctrlp.vim',                 " complex fuzzy-finder (buffer, file, mru)
-"             \ { 'on', ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
-Plug 'Shougo/vimproc.vim' " Asynchronous execution library
-Plug 'Shougo/unite.vim'                    " creates _uniting_ interfaces
-Plug 'Shougo/neoyank.vim'                  " yank buffer
+Plug 'ctrlpvim/ctrlp.vim' " fuzzy stuff
+            \ { 'on' : ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU'] }
 Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
 Plug 'vim-scripts/Tabmerge'                " merge tabs
 if s:is_windows
@@ -81,7 +78,6 @@ Plug 'scrooloose/syntastic',               " syntax integration (requires extern
 " --- Autocompletion
 " ------------------------------------------------------------------------------
 Plug 'ervandew/supertab'                   " insert completion TODO
-" Plug 'Shougo/neocomplete.vim'              " completion engine
 Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
             \ { 'for' : ['hmtl','css','scss','javascript'] }
 " Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
@@ -234,6 +230,7 @@ set shiftwidth=4                        " number of spaces converted to <tab>
 set tabstop=4                           " number of spaces that count as <tab>
 set smarttab                            " improves vims treatment of <tab>s
 set linebreak                           " soft breaks lines according to breakat
+set nowrap                              " softwrap
 set breakat=80                          " sets softwrap
 set textwidth=500                       " maximum amount of text til EOL
 set autoindent smartindent              " Auto indention
@@ -513,16 +510,16 @@ nmap gC <Plug>CommentaryLine
 " }}}
 " CtrlP"{{{
 " ------------------------------------------------------------------------------
-" let g:ctrlp_reuse_window = 'startify'
-" let g:ctrlp_max_depth = 15
-" let g:ctrlp_max_height = 20
-" let g:ctrlp_match_window = 'bottom,order:ttb'
-" let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
-" let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+let g:ctrlp_reuse_window = 'startify'
+let g:ctrlp_max_depth = 15
+let g:ctrlp_max_height = 20
+let g:ctrlp_match_window = 'bottom,order:ttb'
+let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$' " TODO
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 
-" map <leader>f :CtrlP<cr>
-" map <leader>b :CtrlPBuffer<cr>
-" map <leader>m :CtrlPMRU<cr>
+map <leader>f :CtrlP<cr>
+map <leader>b :CtrlPBuffer<cr>
+map <leader>m :CtrlPMRU<cr>
 "}}}
 " Easyalign {{{
 " ------------------------------------------------------------------------------
@@ -796,34 +793,6 @@ nnoremap <leader>nb         :Bookmark<space>
 
 let NERDTreeMapOpenVSplit='v'
 "}}}
-" ~~~ Neocomplete {{{
-" ------------------------------------------------------------------------------
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-if !empty(glob("plugged/neocomplete"))
-    " Recommended key-mappings.
-    " <CR>: close popup and save indent.
-    inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-    function! s:my_cr_function()
-        return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-        " For no inserting <CR> key.
-        "return pumvisible() ? "\<C-y>" : "\<CR>"
-    endfunction
-    " <TAB>: completion.
-    inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-    " <C-h>, <BS>: close popup and delete backword char.
-    inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-    inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-endif
-" }}}
 " Plug {{{
 " ------------------------------------------------------------------------------
 let g:plug_timeout = 240
@@ -985,73 +954,111 @@ nmap <silent><leader>ps :UltiSnipsEdit<cr>
 " nnoremap <leader>pu :UndotreeToggle<cr>
 
 " }}}
-" Unite {{{
-" ------------------------------------------------------------------------------
-if executable('ag')
-  let g:unite_source_grep_command='ag'
-  let g:unite_source_grep_default_opts='--nocolor --line-numbers --nogroup -S -C0'
-  let g:unite_source_grep_recursive_opt=''
-  let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
-endif
+" " Unite {{{
+" " ------------------------------------------------------------------------------
+" " Enable syntax highlighting 
+" let g:unite_source_line_enable_highlight=1
+" " Don't overwrite statusline
+" let g:unite_force_overwrite_statusline=0
+" let g:unite_source_history_enable = 1
+" " Use fuzzy if possible
+" call unite#filters#matcher_default#use(['matcher_fuzzy'])
+" call unite#filters#sorter_default#use(['sorter_rank'])
+" " Default options
+" call unite#custom#profile('default', 'context', {
+"             \   'start_insert': 1,
+"             \   'winheight': 14,
+"             \   'direction': 'botright',
+"             \ 'do-action' : 'tabnew',
+"             \ })
+" function! UniteFileAsync() abort
+"   execute 'Unite file_rec/async -custom-rec-ignore-directory-pattern'
+" endfunction
 
-function! s:unite_settings()
-  " Enable navigation with control-j and control-k in insert mode
-  imap <silent> <buffer> <C-j> <Plug>(unite_select_next_line)
-  imap <silent> <buffer> <C-k> <Plug>(unite_select_previous_line)
-  " Runs 'splits' action by <C-s> and <C-v>
-  imap <silent> <buffer> <expr> <C-s> unite#do_action('split')
-  imap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-  " Exit with escape
-  nmap <silent> <buffer> jk <Plug>(unite_exit)
-  " Mark candidates
-  xmap <silent> <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
-  nmap <silent> <buffer> m <Plug>(unite_toggle_mark_current_candidate)
-endfunction
-autocmd FileType unite call s:unite_settings()
+" function! UniteBuffers() abort
+"     execute 'Unite -quick-match buffer'
+" endfunction
 
-nnoremap <silent> <leader>f :call utils#uniteFileBrowse()<CR>
-nnoremap <silent> <leader>z :call utils#uniteYankHistory()<CR>
+" function! UniteYankHistory() abort
+"     execute 'Unite history/yank'
+" endfunction
 
+" function! UniteFileMRU() abort
+"   execute 'Unite file_mru' 
+" endfunction
+
+" function! UniteDirMRU() abort
+"   execute 'Unite directory_mru' 
+" endfunction
+
+" function! UniteCustomMenu() abort
+"   execute 'Unite menu'
+" endfunction
+
+" function! UniteJumps() abort
+"   execute 'Unite jump'
+" endfunction
+
+" function! UniteCommands() abort
+"   execute 'Unite command'
+" endfunction
+
+" function! UniteMappings() abort
+"   execute 'Unite mapping'
+" endfunction
+
+" " Custom mappings for the unite buffer
+" autocmd FileType unite call s:unite_settings()
+" function! s:unite_settings()
+"   " Enable navigation with control-j and control-k in insert mode
+"   imap <silent> <buffer> <C-j> <Plug>(unite_select_next_line)
+"   imap <silent> <buffer> <C-k> <Plug>(unite_select_previous_line)
+"   " Runs 'splits' action by <C-s> and <C-v>
+"   imap <silent> <buffer> <expr> <C-s> unite#do_action('split')
+"   imap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
+"   " Exit with escape
+"   nmap <silent> <buffer> <ESC> <Plug>(unite_exit)
+"   " Mark candidates
+"   vmap <silent> <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
+"   nmap <silent> <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+" endfunction
+
+" nnoremap <silent> <leader>f :call UniteFileAsync()<CR>
+" nnoremap <silent> <leader>z :call UniteYankHistory()<CR>
+" nnoremap <silent> <leader>b :call UniteBuffers()<CR>
+" nnoremap <silent> <leader>m :call UniteFileMRU()<CR>
+" nnoremap <silent> <leader>d :call UniteDirMRU()<CR>
+" nnoremap <silent> <leader>c :call UniteCustomMenu()<CR>
+
+" " Custom menus
 " let g:unite_source_menu_menus = {}
 " let g:unite_source_menu_menus.plug = {
-"       \     'description' : 'Plugin management commands',
-"       \ }
-" let g:unite_source_menu_menus.plug.command_candidates = [
-"       \       ['Install plugins', 'PlugInstall'],
-"       \       ['Update plugins', 'PlugUpdate'],
-"       \       ['Clean plugins', 'PlugClean'],
-"       \       ['Upgrade vim-plug', 'PlugUpgrade'],
-"       \     ]
-" let g:unite_source_menu_menus.unite = {
-"       \     'description' : 'My Unite sources',
-"       \ }
-" let g:unite_source_menu_menus.unite.command_candidates = [
-"       \       ['Unite MRUs', 'call utils#uniteMRUs()'],
-"       \       ['Unite buffers', 'call utils#uniteBuffers()'],
-"       \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
-"       \       ['Unite file search', 'call utils#uniteFileRec()'],
-"       \       ['Unite history', 'call utils#uniteHistory()'],
-"       \       ['Unite menu', 'call utils#uniteCustomMenu()'],
-"       \       ['Unite registers', 'call utils#uniteRegisters()'],
-"       \       ['Unite sources', 'call utils#uniteSources()'],
-"       \       ['Unite yank history', 'call utils#uniteYankHistory()'],
-"       \       ['Unite jump history', 'call utils#uniteJumps()'],
-"       \     ]
-" Custom mappings for the unite buffer
-" nnoremap <silent> <leader>uo :call utils#uniteFileRec()<CR>
-" nnoremap <silent> <leader>ur :call utils#uniteSources()<CR>
-" nnoremap <silent> <leader>ub :call utils#uniteBuffers()<CR>
-" nnoremap <silent> <leader>ut :call utils#uniteTags()<CR>
-" nnoremap <silent> <leader>ul :call utils#uniteLineSearch()<CR>
-" nnoremap <silent> <leader>up :call utils#uniteYankHistory()<CR>
-" nnoremap <silent> <leader>ur :call utils#uniteRegisters()<CR>
-" nnoremap <silent> <leader>uw :call utils#uniteWindows()<CR>
-" nnoremap <silent> <leader>us :call utils#uniteSnippets()<CR>
-" nnoremap <silent> <leader>uj :call utils#uniteJumps()<CR>
-" nnoremap <silent> <leader>uu :call utils#uniteCustomMenu()<CR>
-" nnoremap <silent> <leader>uc :call utils#uniteCommands()<CR>
-" nnoremap <silent> <leader>um :call utils#uniteMappings()<CR>
-" }}}
+"             \ 'description' : 'vim-plug commands',
+"             \ }
+" let g:unite_source_menu_menus.plug.commmand_candidates = [
+"             \       ['Install plugins', 'PlugInstall'],
+"             \       ['Update plugins', 'PlugUpdate'],
+"             \       ['Clean plugins', 'PlugClean'],
+"             \       ['Upgrade vim-plug', 'PlugUpgrade'],
+"             \ ]
+" " let g:unite_source_menu_menus.plug.command_candidates = [
+" "       \     ]
+" " let g:unite_source_menu_menus.unite = {
+" "       \     'description' : 'My Unite sources',
+" "       \ }
+" " let g:unite_source_menu_menus.unite.command_candidates = [
+" "       \       ['Unite MRUs', 'call utils#uniteMRUs()'],
+" "       \       ['Unite buffers', 'call utils#uniteBuffers()'],
+" "       \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
+" "       \       ['Unite file search', 'call utils#uniteFileRec()'],
+" "       \       ['Unite history', 'call utils#uniteHistory()'],
+" "       \       ['Unite menu', 'call utils#uniteCustomMenu()'],
+" "       \       ['Unite registers', 'call utils#uniteRegisters()'],
+" "       \       ['Unite sources', 'call utils#uniteSources()'],
+" "       \       ['Unite yank history', 'call utils#uniteYankHistory()'],
+" "       \       ['Unite jump history', 'call utils#uniteJumps()'],
+" "       \     ]
+" " }}}
 " Vimproc {{{
 " ------------------------------------------------------------------------------
 let g:vimproc#dll_path = $rtp.'lib/vimproc_win64.dll'

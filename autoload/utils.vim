@@ -77,69 +77,6 @@ function! g:utils#toggleRNU()
     endif
 endfun
 
-" Unite commands wrappers
-function! g:utils#uniteSources() abort
-  execute 'Unite -buffer-name=sources -start-insert source'
-endfunction
 
-function! g:utils#uniteMRUs() abort
-  execute 'Unite -buffer-name=most-recently-used -start-insert' 
-endfunction
-
-function! g:utils#uniteFileBrowse() abort
-  execute 'Unite -buffer-name=project-files -start-insert file'
-endfunction
-
-function! g:utils#uniteBuffers() abort
-  execute 'Unite -buffer-name=buffers -start-insert buffer'
-endfunction
-
-function! g:utils#uniteOutline() abort
-  execute 'Unite -buffer-name=symbols -start-insert outline'
-endfunction
-
-function! g:utils#uniteTags() abort
-  execute 'Unite -buffer-name=tags -start-insert tag'
-endfunction
-
-function! g:utils#uniteHistory() abort
-  execute 'Unite -buffer-name=edit-history change'
-endfunction
-
-function! g:utils#uniteLineSearch() abort
-  execute 'Unite -buffer-name=line-search -start-insert line'
-endfunction
-
-function! g:utils#uniteYankHistory() abort
-  execute 'Unite -buffer-name=yank-history history/yank'
-endfunction
-
-function! g:utils#uniteRegisters() abort
-  execute 'Unite -buffer-name=registers register'
-endfunction
-
-function! g:utils#uniteWindows() abort
-  execute 'Unite -buffer-name=splits window'
-endfunction
-
-function! g:utils#uniteSnippets() abort
-  execute 'Unite -buffer-name=snippets -start-insert ultisnips'
-endfunction
-
-function! g:utils#uniteCustomMenu() abort
-  execute 'Unite -buffer-name=menu -start-insert menu'
-endfunction
-
-function! g:utils#uniteJumps() abort
-  execute 'Unite -buffer-name=jumps -start-insert jump'
-endfunction
-
-function! g:utils#uniteCommands() abort
-  execute 'Unite -buffer-name=commands -start-insert command'
-endfunction
-
-function! g:utils#uniteMappings() abort
-  execute 'Unite -buffer-name=mappings -start-insert mapping'
-endfunction
 " ##############################################################################
 " END Utility functions 

@@ -49,8 +49,9 @@ Plug 'scrooloose/nerdtree',                " file browser
             \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
 Plug 'itchyny/lightline.vim'               " simple statusline
 Plug 'mhinz/vim-startify'                  " startup screen
-Plug 'ctrlpvim/ctrlp.vim',                 " complex fuzzy-finder (buffer, file, mru)
-            \ { 'on', ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+" Plug 'ctrlpvim/ctrlp.vim',                 " complex fuzzy-finder (buffer, file, mru)
+"             \ { 'on', ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+Plug 'Shougo/vimproc.vim' " Asynchronous execution library
 Plug 'Shougo/unite.vim'                    " creates _uniting_ interfaces
 Plug 'Shougo/neoyank.vim'                  " yank buffer
 Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
@@ -119,11 +120,10 @@ Plug 'amix/open_file_under_cursor.vim'     " read its name ...
 Plug 'terryma/vim-expand-region'           " expands visual selection TODO
 Plug 'edsono/vim-matchit'                  " improves % behaviour
 Plug 'unblevable/quick-scope'              " visual help with left and right motions
-Plug 'mbbill/undotree',                    " visualizes vims undotree TODO
-            \ { 'on' : 'UndotreeToggle' }
+" Plug 'mbbill/undotree',                    " visualizes vims undotree TODO
+"             \ { 'on' : 'UndotreeToggle' }
 Plug 'haya14busa/incsearch.vim'            " improve incsearch
-Plug 'haya14busa/incsearch-fuzzy.vim'      " fuzzy-incsearch
-" Plug 'vim-scripts/YankRing.vim'        " easier yank / put register management
+" Plug 'haya14busa/incsearch-fuzzy.vim'      " fuzzy-incsearch
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ set mouse=                              " disable mouseinteraction
 set backspace=indent,eol,start          " backspace scope in insert
 set whichwrap+=<,>,h,l                  " allows movement over indentation
 set ignorecase smartcase                " smartcase search
-set hlsearch                          " disable search highlighting
+set nohlsearch                          " disable search highlighting
 set incsearch                           " incremental search
 set showmatch                           " jumps to a matching bracket
 set lazyredraw                          " avoids unnessesarily redraws
@@ -210,8 +210,7 @@ set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 colorscheme desert                      " colorscheme fallback
 try
-    colorscheme jellybeans
-    " colorscheme base16-monokai          " set colorscheme
+    colorscheme jellybeans              " set colorscheme to jellybeans
 catch
 endtry
 let base16colorspace = 256              " terminal fix
@@ -238,13 +237,14 @@ set linebreak                           " soft breaks lines according to breakat
 set breakat=80                          " sets softwrap
 set textwidth=500                       " maximum amount of text til EOL
 set autoindent smartindent              " Auto indention
+  if executable('ag')                   " grep via silversearcher
+    set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
+    set grepformat=%f:%l:%c:%m
+  endif
 " ##############################################################################
 " END SETTINGS }}}
 " SOURCE {{{
 " ##############################################################################
-" --- utility functions
-" ------------------------------------------------------------------------------
-source $rc/utils.vim
 " ------------------------------------------------------------------------------
 " --- Sorts folded text without hickups
 " ------------------------------------------------------------------------------
@@ -442,13 +442,13 @@ noremap öM zM
 noremap öm zm
 noremap öR zR
 "resize viewport
-nnoremap <silent> <Right> :call g:utils#IntelligentVerticalResize('right')<CR>
-nnoremap <silent> <Left> :call g:utils#IntelligentVerticalResize('left')<CR>
+nnoremap <silent> <Right> :call utils#IntelligentVerticalResize('right')<CR>
+nnoremap <silent> <Left> :call utils#IntelligentVerticalResize('left')<CR>
 nnoremap <silent> <Up> :resize -5<CR>
 nnoremap <silent> <Down> :resize +5<CR>
 " source local stuff
-xmap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
-nmap <silent> g: :call SourceVimscript("currentline")<cr>
+xmap <silent> g: :<c-U>call utils#sourceVimscript("visual")<cr>
+nmap <silent> g: :call utils#sourceVimscript("currentline")<cr>
 " move a line of text using ALT+[jk] (TODO: credit, forgot who ...)
 nmap <A-k> :let fdm_sav=&fdm\|:set fdm=manual\|:m-2<CR>:let &fdm=fdm_sav<CR>==
 nmap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>==
@@ -457,9 +457,9 @@ xmap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=f
 " quick fold toggeling
 nnoremap <tab> za
 " mappings for trailing spaces function
-nmap <F12> :ShowSpaces 1<CR>
-nmap <S-F12> m`:TrimSpaces<CR>``
-xmap <S-F12> :TrimSpaces<CR>
+nmap <F12> utils#showSpaces 1<CR>
+nmap <S-F12> m`:utils#trimSpaces<CR>``
+xmap <S-F12> :utils#trimSpaces<CR>
 " newlines without insertmode
 map <A-o> o<ESC>
 map <A-S-o> <S-o><ESC>
@@ -513,16 +513,16 @@ nmap gC <Plug>CommentaryLine
 " }}}
 " CtrlP"{{{
 " ------------------------------------------------------------------------------
-let g:ctrlp_reuse_window = 'startify'
-let g:ctrlp_max_depth = 15
-let g:ctrlp_max_height = 20
-let g:ctrlp_match_window = 'bottom,order:ttb'
-let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
+" let g:ctrlp_reuse_window = 'startify'
+" let g:ctrlp_max_depth = 15
+" let g:ctrlp_max_height = 20
+" let g:ctrlp_match_window = 'bottom,order:ttb'
+" let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$'
+" let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 
-map <leader>f :CtrlP<cr>
-map <leader>b :CtrlPBuffer<cr>
-map <leader>m :CtrlPMRU<cr>
+" map <leader>f :CtrlP<cr>
+" map <leader>b :CtrlPBuffer<cr>
+" map <leader>m :CtrlPMRU<cr>
 "}}}
 " Easyalign {{{
 " ------------------------------------------------------------------------------
@@ -772,8 +772,8 @@ map n <Plug>(incsearch-nohl-n)
 map N <Plug>(incsearch-nohl-N)
 map * <Plug>(incsearch-nohl-*)
 map # <Plug>(incsearch-nohl-#)
-map <leader>/ <Plug>(incsearch-fuzzy-/)
-map <leader>? <Plug>(incsearch-fuzzy-?)
+" map <leader>/ <Plug>(incsearch-fuzzy-/)
+" map <leader>? <Plug>(incsearch-fuzzy-?)
 " }}}
 " NERDTree {{{
 " ------------------------------------------------------------------------------
@@ -979,10 +979,10 @@ nmap <silent><leader>ps :UltiSnipsEdit<cr>
 " au InsertEnter * exec 'inoremap <buffer> <silent> ' . g:UltiSnipsExpandTrigger     . ' <C-R>=g:UltiSnips_Complete()<cr>'
 " au InsertEnter * exec 'inoremap <buffer> <silent> ' .     g:UltiSnipsJumpBackwardTrigger . ' <C-R>=g:UltiSnips_Reverse()<cr>'
 "  }}}
-" Undotree {{{
+" ~~~ Undotree {{{
 " ------------------------------------------------------------------------------
 " TODO change mapping
-nnoremap <leader>pu :UndotreeToggle<cr>
+" nnoremap <leader>pu :UndotreeToggle<cr>
 
 " }}}
 " Unite {{{
@@ -993,35 +993,7 @@ if executable('ag')
   let g:unite_source_grep_recursive_opt=''
   let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
 endif
-let g:unite_source_menu_menus = {}
-" Plug menu
-let g:unite_source_menu_menus.plug = {
-      \     'description' : 'Plugin management commands',
-      \ }
-let g:unite_source_menu_menus.plug.command_candidates = [
-      \       ['Install plugins', 'PlugInstall'],
-      \       ['Update plugins', 'PlugUpdate'],
-      \       ['Clean plugins', 'PlugClean'],
-      \       ['Upgrade vim-plug', 'PlugUpgrade'],
-      \     ]
-" My unite menu
-let g:unite_source_menu_menus.unite = {
-      \     'description' : 'My Unite sources',
-      \ }
-let g:unite_source_menu_menus.unite.command_candidates = [
-      \       ['Unite MRUs', 'call utils#uniteMRUs()'],
-      \       ['Unite buffers', 'call utils#uniteBuffers()'],
-      \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
-      \       ['Unite file search', 'call utils#uniteFileRec()'],
-      \       ['Unite history', 'call utils#uniteHistory()'],
-      \       ['Unite menu', 'call utils#uniteCustomMenu()'],
-      \       ['Unite registers', 'call utils#uniteRegisters()'],
-      \       ['Unite sources', 'call utils#uniteSources()'],
-      \       ['Unite yank history', 'call utils#uniteYankHistory()'],
-      \       ['Unite jump history', 'call utils#uniteJumps()'],
-      \     ]
-" Custom mappings for the unite buffer
-autocmd FileType unite call s:unite_settings()
+
 function! s:unite_settings()
   " Enable navigation with control-j and control-k in insert mode
   imap <silent> <buffer> <C-j> <Plug>(unite_select_next_line)
@@ -1030,39 +1002,60 @@ function! s:unite_settings()
   imap <silent> <buffer> <expr> <C-s> unite#do_action('split')
   imap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
   " Exit with escape
-  nmap <silent> <buffer> <ESC> <Plug>(unite_exit)
+  nmap <silent> <buffer> jk <Plug>(unite_exit)
   " Mark candidates
   xmap <silent> <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
   nmap <silent> <buffer> m <Plug>(unite_toggle_mark_current_candidate)
 endfunction
-" Search files recursively ([o]pen file)
-nnoremap <silent> <leader>uo :call utils#uniteFileRec()<CR>
-" Browse [f]iles in CWD
-nnoremap <silent> <leader>uf :call utils#uniteFileBrowse()<CR>
-" [U]nite sources
-nnoremap <silent> <leader>ur :call utils#uniteSources()<CR>
-" Search between open files - [b]uffers
-nnoremap <silent> <leader>ub :call utils#uniteBuffers()<CR>
-" Search in current file ou[t]line (tags in current file)
-nnoremap <silent> <leader>ut :call utils#uniteTags()<CR>
-" Search in [l]ines on current buffer
-nnoremap <silent> <leader>ul :call utils#uniteLineSearch()<CR>
-" Search in [y]ank history
-nnoremap <silent> <leader>up :call utils#uniteYankHistory()<CR>
-" Search in [r]egisters
-nnoremap <silent> <leader>ur :call utils#uniteRegisters()<CR>
-" Search in opened [w]indow splits
-nnoremap <silent> <leader>uw :call utils#uniteWindows()<CR>
-" Search in ultisnips [s]nippets
-nnoremap <silent> <leader>us :call utils#uniteSnippets()<CR>
-" Search in latest [j]ump positions
-nnoremap <silent> <leader>uj :call utils#uniteJumps()<CR>
-" Search in my custom unite [m]enu with my commands
-nnoremap <silent> <leader>uu :call utils#uniteCustomMenu()<CR>
-" Seach in help menu for commands
-nnoremap <silent> <leader>uc :call utils#uniteCommands()<CR>
-" Seach in help menu for mappings
-nnoremap <silent> <leader>um :call utils#uniteMappings()<CR>
+autocmd FileType unite call s:unite_settings()
+
+nnoremap <silent> <leader>f :call utils#uniteFileBrowse()<CR>
+nnoremap <silent> <leader>z :call utils#uniteYankHistory()<CR>
+
+" let g:unite_source_menu_menus = {}
+" let g:unite_source_menu_menus.plug = {
+"       \     'description' : 'Plugin management commands',
+"       \ }
+" let g:unite_source_menu_menus.plug.command_candidates = [
+"       \       ['Install plugins', 'PlugInstall'],
+"       \       ['Update plugins', 'PlugUpdate'],
+"       \       ['Clean plugins', 'PlugClean'],
+"       \       ['Upgrade vim-plug', 'PlugUpgrade'],
+"       \     ]
+" let g:unite_source_menu_menus.unite = {
+"       \     'description' : 'My Unite sources',
+"       \ }
+" let g:unite_source_menu_menus.unite.command_candidates = [
+"       \       ['Unite MRUs', 'call utils#uniteMRUs()'],
+"       \       ['Unite buffers', 'call utils#uniteBuffers()'],
+"       \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
+"       \       ['Unite file search', 'call utils#uniteFileRec()'],
+"       \       ['Unite history', 'call utils#uniteHistory()'],
+"       \       ['Unite menu', 'call utils#uniteCustomMenu()'],
+"       \       ['Unite registers', 'call utils#uniteRegisters()'],
+"       \       ['Unite sources', 'call utils#uniteSources()'],
+"       \       ['Unite yank history', 'call utils#uniteYankHistory()'],
+"       \       ['Unite jump history', 'call utils#uniteJumps()'],
+"       \     ]
+" Custom mappings for the unite buffer
+" nnoremap <silent> <leader>uo :call utils#uniteFileRec()<CR>
+" nnoremap <silent> <leader>ur :call utils#uniteSources()<CR>
+" nnoremap <silent> <leader>ub :call utils#uniteBuffers()<CR>
+" nnoremap <silent> <leader>ut :call utils#uniteTags()<CR>
+" nnoremap <silent> <leader>ul :call utils#uniteLineSearch()<CR>
+" nnoremap <silent> <leader>up :call utils#uniteYankHistory()<CR>
+" nnoremap <silent> <leader>ur :call utils#uniteRegisters()<CR>
+" nnoremap <silent> <leader>uw :call utils#uniteWindows()<CR>
+" nnoremap <silent> <leader>us :call utils#uniteSnippets()<CR>
+" nnoremap <silent> <leader>uj :call utils#uniteJumps()<CR>
+" nnoremap <silent> <leader>uu :call utils#uniteCustomMenu()<CR>
+" nnoremap <silent> <leader>uc :call utils#uniteCommands()<CR>
+" nnoremap <silent> <leader>um :call utils#uniteMappings()<CR>
+" }}}
+" Vimproc {{{
+" ------------------------------------------------------------------------------
+let g:vimproc#dll_path = $rtp.'lib/vimproc_win64.dll'
+let g:vimproc_download_windows_dll = 1
 " }}}
 " Wimproved.vim {{{
 " ------------------------------------------------------------------------------
@@ -1085,19 +1078,14 @@ noremap <F11> :WToggleFullscreen<CR>
 "let g:yankring_replace_n_nkey = ''
 "nnoremap <silent> <leader>u :YRShow<CR>
 "}}}
-" ~~~ Yankstack {{{
-" ------------------------------------------------------------------------------
-" nmap <leader>u :Yanks<cr>
-" nmap <A-p> :<Plug>yankstack_subsitute_older_paste
-" nmap <A-P> :<Plug>yankstack_subsitute_older_paste
-" }}}
 " ~~~ YouCompleteMe {{{
 " ------------------------------------------------------------------------------
-let g:ycm_complete_in_comments = 1
-let g:ycm_key_list_select_completion = ['<C-n>', '<down>']
-let g:ycm_key_list_previous_completion = ['<C-p>', '<up>']
+" let g:ycm_complete_in_comments = 1
+" let g:ycm_key_list_select_completion = ['<C-n>', '<down>']
+" let g:ycm_key_list_previous_completion = ['<C-p>', '<up>']
+" let g:ycm_filetype_blacklist={'unite': 1}
 
-autocmd! User YouCompleteMe call youcompleteme#Enable()
+" autocmd! User YouCompleteMe call youcompleteme#Enable()
 " }}}
 " ##############################################################################
 " END CONFIG PLUGINS }}}

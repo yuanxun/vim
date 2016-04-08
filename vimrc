@@ -41,7 +41,7 @@ call plug#begin($rtp.'plugged')
 " --- Colorscheme
 " ------------------------------------------------------------------------------
 Plug 'chriskempson/base16-vim'             " base16 vim port
-Plug 'docapotamus/jellybeans.vim' " jellybeans
+Plug 'docapotamus/jellybeans.vim'          " jellybeans
 " ------------------------------------------------------------------------------
 " --- Interface / File management
 " ------------------------------------------------------------------------------
@@ -51,6 +51,8 @@ Plug 'itchyny/lightline.vim'               " simple statusline
 Plug 'mhinz/vim-startify'                  " startup screen
 Plug 'ctrlpvim/ctrlp.vim',                 " complex fuzzy-finder (buffer, file, mru)
             \ { 'on', ['CtrlP', 'CtrlPMRU', 'CtrlPBuffer', 'CtrlPLine'] }
+Plug 'Shougo/unite.vim'                    " creates _uniting_ interfaces
+Plug 'Shougo/neoyank.vim'                  " yank buffer
 Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
 Plug 'vim-scripts/Tabmerge'                " merge tabs
 if s:is_windows
@@ -79,16 +81,16 @@ Plug 'scrooloose/syntastic',               " syntax integration (requires extern
 " ------------------------------------------------------------------------------
 Plug 'ervandew/supertab'                   " insert completion TODO
 " Plug 'Shougo/neocomplete.vim'              " completion engine
-" Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
-"             \ { 'for' : ['hmtl','css','scss','javascript'] }
+Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
+            \ { 'for' : ['hmtl','css','scss','javascript'] }
 " Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
-"             \ { 'do' : function('BuildYCM'), } 
+"             \ { 'do' : function('g:utils#buildYCM'), } 
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
 " Plug 'airblade/vim-gitgutter' " adds diff status column
-Plug 'tpope/vim-fugitive'     " git wrapper TODO
-Plug 'junegunn/gv.vim',       " git commit browser TODO
+Plug 'tpope/vim-fugitive'                  " git wrapper TODO
+Plug 'junegunn/gv.vim',                    " git commit browser TODO
             \ { 'on' : 'GV' }
 " ------------------------------------------------------------------------------
 " --- Language agnostic utility
@@ -106,30 +108,31 @@ Plug 'mattn/emmet-vim',                    " emmet integration TODO
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
-Plug 'thinca/vim-visualstar'           " improves * and #
-Plug 'Konfekt/FastFold'                " improves Folds TODO
-Plug 'tpope/vim-speeddating'           " improves number in-/decementation (C-X/C-A)
-Plug 'tpope/vim-repeat'                " makes lots of commands repeatable with .
-Plug 'tpope/vim-abolish'               " improves abbrev functionality
-Plug 'mhinz/vim-sayonara',             " essentially :qw
+Plug 'thinca/vim-visualstar'               " improves * and #
+Plug 'Konfekt/FastFold'                    " improves Folds TODO
+Plug 'tpope/vim-speeddating'               " improves number in-/decementation (C-X/C-A)
+Plug 'tpope/vim-repeat'                    " makes lots of commands repeatable with .
+Plug 'tpope/vim-abolish'                   " improves abbrev functionality
+Plug 'mhinz/vim-sayonara',                 " essentially :qw
             \ { 'on' : 'Sayonara' }
-Plug 'amix/open_file_under_cursor.vim' " read its name ...
-Plug 'terryma/vim-expand-region'       " expands visual selection TODO
-Plug 'edsono/vim-matchit'              " improves % behaviour
-Plug 'unblevable/quick-scope'          " visual help with left and right motions
-Plug 'mbbill/undotree',                " visualizes vims undotree TODO
+Plug 'amix/open_file_under_cursor.vim'     " read its name ...
+Plug 'terryma/vim-expand-region'           " expands visual selection TODO
+Plug 'edsono/vim-matchit'                  " improves % behaviour
+Plug 'unblevable/quick-scope'              " visual help with left and right motions
+Plug 'mbbill/undotree',                    " visualizes vims undotree TODO
             \ { 'on' : 'UndotreeToggle' }
-Plug 'haya14busa/incsearch.vim'        " improve incsearch
-Plug 'vim-scripts/YankRing.vim'        " easier yank / put register management
+Plug 'haya14busa/incsearch.vim'            " improve incsearch
+Plug 'haya14busa/incsearch-fuzzy.vim'      " fuzzy-incsearch
+" Plug 'vim-scripts/YankRing.vim'        " easier yank / put register management
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
-Plug 'tpope/vim-surround'       " surround text-objects
-Plug 'wellle/targets.vim'       " more objects
-Plug 'kana/vim-textobj-user'    " new custom textobjects
-Plug 'glts/vim-textobj-comment' " adds comments as textobject
-Plug 'kana/vim-textobj-fold'    " adds folds as textobjects
-Plug 'kana/vim-textobj-indent'  " adds indents as textobjects
+Plug 'tpope/vim-surround'                  " surround text-objects
+Plug 'wellle/targets.vim'                  " more objects
+Plug 'kana/vim-textobj-user'               " new custom textobjects
+Plug 'glts/vim-textobj-comment'            " adds comments as textobject
+Plug 'kana/vim-textobj-fold'               " adds folds as textobjects
+Plug 'kana/vim-textobj-indent'             " adds indents as textobjects
 
 " }}}
 " Post-plugin {{{
@@ -158,11 +161,11 @@ else
     endtry
 endif
 if has("gui_running")                   " gui specific options
-    set guioptions-=m
-    set guioptions-=t
-    set guioptions-=T
-    set guioptions-=r
-    set guioptions-=L
+    set guioptions-=m " disable the menu
+    set guioptions-=t " disable tear-off menus
+    set guioptions-=T " disable toolbar
+    set guioptions-=r " disable righthand scrollbar
+    set guioptions-=L " disable lefthand scrollbar
     set guitablabel=%M\ %t              " tab title
 endif
 set encoding=utf-8                      " vim encoding
@@ -187,7 +190,7 @@ set mouse=                              " disable mouseinteraction
 set backspace=indent,eol,start          " backspace scope in insert
 set whichwrap+=<,>,h,l                  " allows movement over indentation
 set ignorecase smartcase                " smartcase search
-set nohlsearch                          " disable search highlighting
+set hlsearch                          " disable search highlighting
 set incsearch                           " incremental search
 set showmatch                           " jumps to a matching bracket
 set lazyredraw                          " avoids unnessesarily redraws
@@ -237,9 +240,11 @@ set textwidth=500                       " maximum amount of text til EOL
 set autoindent smartindent              " Auto indention
 " ##############################################################################
 " END SETTINGS }}}
-" VIM-SCRIPTS {{{
+" SOURCE {{{
 " ##############################################################################
-" Sourced Files {{{
+" --- utility functions
+" ------------------------------------------------------------------------------
+source $rc/utils.vim
 " ------------------------------------------------------------------------------
 " --- Sorts folded text without hickups
 " ------------------------------------------------------------------------------
@@ -248,113 +253,11 @@ source $rc/sortUnfolded.vim
 " --- Collection of abbreviations
 " ------------------------------------------------------------------------------
 source $rc/abbreviations.vim
-" }}}
-" Custom Functions {{{
-" ------------------------------------------------------------------------------
-" BuildYCM {{{
-" ------------------------------------------------------------------------------
-function! BuildYCM(info)
-    if a:info.status == 'installed' || a:info.force
-        !./python install.py --tern-completer
-    endif
-endfunction
-" }}}
-" Position-away window resizing {{{
-" ------------------------------------------------------------------------------
 
-function! IntelligentVerticalResize(direction) abort
-    let l:window_resize_count = 5
-    let l:current_window_is_last_window = (winnr() == winnr('$'))
-
-    if (a:direction ==# 'left')
-        let [l:modifier_1, l:modifier_2] = ['+', '-']
-    else
-        let [l:modifier_1, l:modifier_2] = ['-', '+']
-    endif
-
-    let l:modifier = l:current_window_is_last_window ? l:modifier_1 : l:modifier_2
-    let l:command = 'vertical resize ' . l:modifier . l:window_resize_count . '<CR>'
-    execute l:command
-endfunction
-" }}}
-" Center lines on screen {{{
-" ------------------------------------------------------------------------------
-
-function! s:filter_header(lines) abort
-    let longest_line   = max(map(copy(a:lines), 'len(v:val)'))
-    let centered_lines = map(copy(a:lines),
-                \ 'repeat(" ", (&columns / 2) - (longest_line / 2)) . v:val')
-    return centered_lines
-endfunction 
-" }}}
-" Current line becomes underlined {{{
-" ------------------------------------------------------------------------------
-function! ZWUnderlineComments()
-    :t.|s/[^/]/-/g|exe "normal! A-"|t-2
-endfun
-" }}}
-" Source lines (TODO credit, I forgot ...) {{{
-" ------------------------------------------------------------------------------
-function! SourceVimscript(type)
-    let sel_save = &selection
-    let &selection = "inclusive"
-    let reg_save = @"
-    if a:type == 'line'
-        silent execute "normal! '[V']y"
-    elseif a:type == 'char'
-        silent execute "normal! `[v`]y"
-    elseif a:type == "visual"
-        silent execute "normal! gvy"
-    elseif a:type == "currentline"
-        silent execute "normal! yy"
-    endif
-    let @" = substitute(@", '\n\s*\\', '', 'g')
-    " source the content
-    @"
-    let &selection = sel_save
-    let @" = reg_save
-endfunction
-" }}}
-" Find trailing spaces {{{
-" ------------------------------------------------------------------------------
-function! ShowSpaces(...)
-    let @/='\v(\s+$)|( +\ze\t)'
-    let oldhlsearch=&hlsearch
-    if !a:0
-        let &hlsearch=!&hlsearch
-    else
-        let &hlsearch=a:1
-    end
-    return oldhlsearch
-endfunction
-" }}}
-" Trim spaces before EOL {{{
-" ------------------------------------------------------------------------------
-function! TrimSpaces() range
-    let oldhlsearch=ShowSpaces(1)
-    execute a:firstline.",".a:lastline."substitute ///gec"
-    let &hlsearch=oldhlsearch
-endfunction
-command! -bar -nargs=? ShowSpaces call ShowSpaces(<args>)
-command! -bar -nargs=0 -range=% TrimSpaces <line1>,<line2>call TrimSpaces()
-" }}}
-" Toggle relativenumber {{{
-" ------------------------------------------------------------------------------
-function! ZWToggleRNU()
-    if !&nu && !&rnu
-        set rnu nu
-    elseif &nu && &rnu
-        set nornu
-    elseif &nu && !&rnu
-        set nornu nonu
-    else
-        set nonu nornu
-    endif
-endfun
-" }}}
-" }}}
-" Syntax Highlighting fixes {{{
-" ------------------------------------------------------------------------------
+" ##############################################################################
+" END SOURCE }}}
+" SYNTAX & HIGHLIGHTING {{{
+" ##############################################################################
 let s:colorAA = "#181818"
 " base16 {{{
 " ------------------------------------------------------------------------------
@@ -441,9 +344,9 @@ augroup END
 " --- Remove vertical split column
 " ------------------------------------------------------------------------------
 hi VertSplit guibg = NONE
-" }}}
+
 " ##############################################################################
-" END VIM-SCRIPTS }}}
+" END SYNTAX & HIGHLIGHTING }}}
 " MAPPINGS {{{
 " ##############################################################################
 " ------------------------------------------------------------------------------
@@ -463,15 +366,15 @@ map <M-Up>    <Nop>
 " ------------------------------------------------------------------------------
 "  default <C-c> breaks stuff
 inoremap <C-c> <esc>
-vnoremap <C-c> <esc>
+xnoremap <C-c> <esc>
 " Keep the cursor in place while joining lines
 nnoremap J mzJ`z
 " Don't yank to default register when changing something
 nnoremap c "xc
 xnoremap c "xc
 " go to end of inserted text after yank and put
-vnoremap <silent> y y`]
-vnoremap <silent> p p`]
+xnoremap <silent> y y`]
+xnoremap <silent> p p`]
 nnoremap <silent> p p`]
 " Yank until end of line with <S-y> as expected
 nnoremap Y y$
@@ -489,17 +392,20 @@ noremap  k g<up>
 " center screen after next & prev search
 nnoremap n nzz
 nnoremap N Nzz
-vnoremap n nzz
-vnoremap N Nzz
+xnoremap n nzz
+xnoremap N Nzz
+" don't cancel selection after indenting in visual
+xnoremap < <gv
+xnoremap > >gv
 " center screen when moving screenwise
 nnoremap <C-u> <C-u>zz
 nnoremap <C-d> <C-d>zz
 nnoremap <C-f> <C-f>zz
 nnoremap <C-b> <C-b>zz
-vnoremap <C-u> <C-u>zz
-vnoremap <C-d> <C-d>zz
-vnoremap <C-f> <C-f>zz
-vnoremap <C-b> <C-b>zz
+xnoremap <C-u> <C-u>zz
+xnoremap <C-d> <C-d>zz
+xnoremap <C-f> <C-f>zz
+xnoremap <C-b> <C-b>zz
 " delete with Ctrl-D in insertmode
 inoremap <C-D>       <backspace>
 " lower- and uppercase under cursor in normalmode
@@ -522,7 +428,7 @@ nnoremap Ä `
 " treat jk as <esc> in insertmode and commandmode
 noremap! jk <esc>
 " fold with ö instead of z 
-vnoremap öf mzzf`zzz
+xnoremap öf mzzf`zzz
 noremap öF zF
 noremap öo zo
 noremap öd zd
@@ -536,24 +442,24 @@ noremap öM zM
 noremap öm zm
 noremap öR zR
 "resize viewport
-nnoremap <silent> <Right> :call IntelligentVerticalResize('right')<CR>
-nnoremap <silent> <Left> :call IntelligentVerticalResize('left')<CR>
+nnoremap <silent> <Right> :call g:utils#IntelligentVerticalResize('right')<CR>
+nnoremap <silent> <Left> :call g:utils#IntelligentVerticalResize('left')<CR>
 nnoremap <silent> <Up> :resize -5<CR>
 nnoremap <silent> <Down> :resize +5<CR>
 " source local stuff
-vmap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
+xmap <silent> g: :<c-U>call SourceVimscript("visual")<cr>
 nmap <silent> g: :call SourceVimscript("currentline")<cr>
 " move a line of text using ALT+[jk] (TODO: credit, forgot who ...)
 nmap <A-k> :let fdm_sav=&fdm\|:set fdm=manual\|:m-2<CR>:let &fdm=fdm_sav<CR>==
 nmap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>==
-vmap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
-vmap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
+xmap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
+xmap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
 " quick fold toggeling
 nnoremap <tab> za
 " mappings for trailing spaces function
 nmap <F12> :ShowSpaces 1<CR>
 nmap <S-F12> m`:TrimSpaces<CR>``
-vmap <S-F12> :TrimSpaces<CR>
+xmap <S-F12> :TrimSpaces<CR>
 " newlines without insertmode
 map <A-o> o<ESC>
 map <A-S-o> <S-o><ESC>
@@ -583,7 +489,7 @@ nnoremap <leader>W  :update!<CR>
 " Quickly open a buffer for scribble
 noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
 " toggle numbers and relative numbers
-nmap <silent><leader>n  :call ZWToggleRNU()<cr>
+nmap <silent><leader>n  :call utils#toggleRNU()<cr>
 " edit and source vimrc
 nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
 nnoremap <silent><leader>vs :source $MYVIMRC<CR>
@@ -630,8 +536,8 @@ let g:user_emmet_leader_key='<C-m>'
 " }}}
 " Expandregion {{{
 " ------------------------------------------------------------------------------
-vmap v <Plug>(expand_region_expand)
-vmap <C-v> <Plug>(expand_region_shrink)
+xmap v <Plug>(expand_region_expand)
+xmap <C-v> <Plug>(expand_region_shrink)
 
 " }}}
 " Fugitive {{{
@@ -680,11 +586,11 @@ autocmd  FileType json nnoremap <buffer>       <leader>pb :call JsonBeautify()<c
 autocmd  FileType jsx nnoremap <buffer>        <leader>pb :call JsxBeautify()<cr>
 autocmd  FileType html nnoremap <buffer>       <leader>pb :call HtmlBeautify()<cr>
 autocmd  FileType css nnoremap <buffer>        <leader>pb :call CSSBeautify()<cr>
-autocmd  FileType javascript vnoremap <buffer> <leader>pb :call RangeJsBeautify()<cr>
-autocmd  FileType json vnoremap <buffer>       <leader>pb :call RangeJsonBeautify()<cr>
-autocmd  FileType jsx vnoremap <buffer>        <leader>pb :call RangeJsxBeautify()<cr>
-autocmd  FileType html vnoremap <buffer>       <leader>pb :call RangeHtmlBeautify()<cr>
-autocmd  FileType css vnoremap <buffer>        <leader>pb :call RangeCSSBeautify()<cr>
+autocmd  FileType javascript xnoremap <buffer> <leader>pb :call RangeJsBeautify()<cr>
+autocmd  FileType json xnoremap <buffer>       <leader>pb :call RangeJsonBeautify()<cr>
+autocmd  FileType jsx xnoremap <buffer>        <leader>pb :call RangeJsxBeautify()<cr>
+autocmd  FileType html xnoremap <buffer>       <leader>pb :call RangeHtmlBeautify()<cr>
+autocmd  FileType css xnoremap <buffer>        <leader>pb :call RangeCSSBeautify()<cr>
 
 " }}}
 " Lexima {{{
@@ -858,9 +764,16 @@ endfunction
 "}}}
 " Incsearch {{{
 " ------------------------------------------------------------------------------
-noremap / <Plug>(incsearch-forward)
-noremap ? <Plug>(incsearch-backward)
-noremap g/ <Plug>(incsearch-stay)
+let g:incsearch#auto_nohlsearch = 1
+map / <Plug>(incsearch-forward)
+map ? <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+map n <Plug>(incsearch-nohl-n)
+map N <Plug>(incsearch-nohl-N)
+map * <Plug>(incsearch-nohl-*)
+map # <Plug>(incsearch-nohl-#)
+map <leader>/ <Plug>(incsearch-fuzzy-/)
+map <leader>? <Plug>(incsearch-fuzzy-?)
 " }}}
 " NERDTree {{{
 " ------------------------------------------------------------------------------
@@ -961,7 +874,7 @@ let g:startify_list_order = [
             \ ['    Sessions:'],
             \ 'sessions',
             \ ]
-let g:startify_custom_header = s:filter_header([
+let g:startify_custom_header = g:utils#centerLines([
             \ '                                                                               ',
             \ '    ______      _  _ __          __          _     __      __ _____  __  __    ',
             \ '   |___  /     (_)| |\ \        / /         | |    \ \    / /|_   _||  \/  |   ',
@@ -970,7 +883,7 @@ let g:startify_custom_header = s:filter_header([
             \ '    / /__|  __/| || |_  \  /\  /|  __/| |   |   <     \  /    _| |_ | |  | |   ',
             \ '   /_____|\___||_| \__|  \/  \/  \___||_|   |_|\_\     \/    |_____||_|  |_|   ',
             \ ])
-let g:startify_custom_footer = s:filter_header([
+let g:startify_custom_footer = g:utils#centerLines([
             \ '         __   __  _        _                            _ ',
             \ '        / _| / _|(_)      (_)                          | |',
             \ '   ___ | |_ | |_  _   ___  _   ___  _ __    ___  _   _ | |',
@@ -1027,8 +940,8 @@ noremap  <silent><leader>t<C-l> :Tabmerge right<CR>
 " ------------------------------------------------------------------------------
 let g:textobj_fold_no_default_key_mappings = 1
 
-vmap aö <Plug>(textobj-fold-a)
-vmap iö <Plug>(textobj-fold-i)
+xmap aö <Plug>(textobj-fold-a)
+xmap iö <Plug>(textobj-fold-i)
 " }}}
 " UltiSnips {{{
 " ------------------------------------------------------------------------------
@@ -1057,10 +970,9 @@ vmap iö <Plug>(textobj-fold-i)
 " endif
 
 let g:UltiSnipsEditSplit = 'context'
-" let g:UltiSnipsExpandTrigger = '<tab>'
-" let g:UltiSnipsJumpForwardTrigger = '<tab>'
-" let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-let g:UltiSnipsSnippetsDir=$rtp.'snippets'
+let g:UltiSnipsExpandTrigger = '<tab>'
+let g:UltiSnipsJumpForwardTrigger = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 
 nmap <silent><leader>ps :UltiSnipsEdit<cr>
 "
@@ -1073,6 +985,85 @@ nmap <silent><leader>ps :UltiSnipsEdit<cr>
 nnoremap <leader>pu :UndotreeToggle<cr>
 
 " }}}
+" Unite {{{
+" ------------------------------------------------------------------------------
+if executable('ag')
+  let g:unite_source_grep_command='ag'
+  let g:unite_source_grep_default_opts='--nocolor --line-numbers --nogroup -S -C0'
+  let g:unite_source_grep_recursive_opt=''
+  let g:unite_source_rec_async_command = ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', '']
+endif
+let g:unite_source_menu_menus = {}
+" Plug menu
+let g:unite_source_menu_menus.plug = {
+      \     'description' : 'Plugin management commands',
+      \ }
+let g:unite_source_menu_menus.plug.command_candidates = [
+      \       ['Install plugins', 'PlugInstall'],
+      \       ['Update plugins', 'PlugUpdate'],
+      \       ['Clean plugins', 'PlugClean'],
+      \       ['Upgrade vim-plug', 'PlugUpgrade'],
+      \     ]
+" My unite menu
+let g:unite_source_menu_menus.unite = {
+      \     'description' : 'My Unite sources',
+      \ }
+let g:unite_source_menu_menus.unite.command_candidates = [
+      \       ['Unite MRUs', 'call utils#uniteMRUs()'],
+      \       ['Unite buffers', 'call utils#uniteBuffers()'],
+      \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
+      \       ['Unite file search', 'call utils#uniteFileRec()'],
+      \       ['Unite history', 'call utils#uniteHistory()'],
+      \       ['Unite menu', 'call utils#uniteCustomMenu()'],
+      \       ['Unite registers', 'call utils#uniteRegisters()'],
+      \       ['Unite sources', 'call utils#uniteSources()'],
+      \       ['Unite yank history', 'call utils#uniteYankHistory()'],
+      \       ['Unite jump history', 'call utils#uniteJumps()'],
+      \     ]
+" Custom mappings for the unite buffer
+autocmd FileType unite call s:unite_settings()
+function! s:unite_settings()
+  " Enable navigation with control-j and control-k in insert mode
+  imap <silent> <buffer> <C-j> <Plug>(unite_select_next_line)
+  imap <silent> <buffer> <C-k> <Plug>(unite_select_previous_line)
+  " Runs 'splits' action by <C-s> and <C-v>
+  imap <silent> <buffer> <expr> <C-s> unite#do_action('split')
+  imap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
+  " Exit with escape
+  nmap <silent> <buffer> <ESC> <Plug>(unite_exit)
+  " Mark candidates
+  xmap <silent> <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
+  nmap <silent> <buffer> m <Plug>(unite_toggle_mark_current_candidate)
+endfunction
+" Search files recursively ([o]pen file)
+nnoremap <silent> <leader>uo :call utils#uniteFileRec()<CR>
+" Browse [f]iles in CWD
+nnoremap <silent> <leader>uf :call utils#uniteFileBrowse()<CR>
+" [U]nite sources
+nnoremap <silent> <leader>ur :call utils#uniteSources()<CR>
+" Search between open files - [b]uffers
+nnoremap <silent> <leader>ub :call utils#uniteBuffers()<CR>
+" Search in current file ou[t]line (tags in current file)
+nnoremap <silent> <leader>ut :call utils#uniteTags()<CR>
+" Search in [l]ines on current buffer
+nnoremap <silent> <leader>ul :call utils#uniteLineSearch()<CR>
+" Search in [y]ank history
+nnoremap <silent> <leader>up :call utils#uniteYankHistory()<CR>
+" Search in [r]egisters
+nnoremap <silent> <leader>ur :call utils#uniteRegisters()<CR>
+" Search in opened [w]indow splits
+nnoremap <silent> <leader>uw :call utils#uniteWindows()<CR>
+" Search in ultisnips [s]nippets
+nnoremap <silent> <leader>us :call utils#uniteSnippets()<CR>
+" Search in latest [j]ump positions
+nnoremap <silent> <leader>uj :call utils#uniteJumps()<CR>
+" Search in my custom unite [m]enu with my commands
+nnoremap <silent> <leader>uu :call utils#uniteCustomMenu()<CR>
+" Seach in help menu for commands
+nnoremap <silent> <leader>uc :call utils#uniteCommands()<CR>
+" Seach in help menu for mappings
+nnoremap <silent> <leader>um :call utils#uniteMappings()<CR>
+" }}}
 " Wimproved.vim {{{
 " ------------------------------------------------------------------------------
 if s:is_windows
@@ -1081,9 +1072,18 @@ endif
 
 noremap <F11> :WToggleFullscreen<CR>
 " }}}
-" YankRing {{{
-" ------------------------------------------------------------------------------
-let g:yankring_history_dir = $rtp.'temp'
+" ~~~ YankRing {{{
+"" ------------------------------------------------------------------------------
+"let g:yankring_window_height = 4
+"let g:yankring_map_dot = 0
+"let g:yankring_max_history = 50
+"let g:yankring_history_dir = $rtp.'temp'
+"let g:yankring_history_file = 'yankringHistory'
+"let g:yankring_zap_keys = ''
+"let g:yankring_n_keys = 'X x'
+"let g:yankring_replace_n_pkey = ''
+"let g:yankring_replace_n_nkey = ''
+"nnoremap <silent> <leader>u :YRShow<CR>
 "}}}
 " ~~~ Yankstack {{{
 " ------------------------------------------------------------------------------

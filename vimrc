@@ -17,10 +17,8 @@ let s:is_windows = has('win32') || has('win64')
 if s:is_windows
     set shell=cmd.exe
     let $rtp = fnamemodify(resolve($HOME).'\vimfiles', ':p:gs?/?\\?')
-    let $rc = resolve($rtp).'rc\'
 else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
-    let $rc = resolve($rtp).'/rc'
 endif
 " ##############################################################################
 " END STARTUP }}}
@@ -240,19 +238,6 @@ set autoindent smartindent              " Auto indention
   endif
 " ##############################################################################
 " END SETTINGS }}}
-" SOURCE {{{
-" ##############################################################################
-" ------------------------------------------------------------------------------
-" --- Sorts folded text without hickups
-" ------------------------------------------------------------------------------
-source $rc/sortUnfolded.vim
-" ------------------------------------------------------------------------------
-" --- Collection of abbreviations
-" ------------------------------------------------------------------------------
-source $rc/abbreviations.vim
-
-" ##############################################################################
-" END SOURCE }}}
 " SYNTAX & HIGHLIGHTING {{{
 " ##############################################################################
 let s:colorAA = "#181818"
@@ -510,6 +495,7 @@ nmap gC <Plug>CommentaryLine
 " }}}
 " CtrlP"{{{
 " ------------------------------------------------------------------------------
+let g:ctrlp_open_new_file = 't'
 let g:ctrlp_reuse_window = 'startify'
 let g:ctrlp_max_depth = 15
 let g:ctrlp_max_height = 20

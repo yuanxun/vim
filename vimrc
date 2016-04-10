@@ -574,7 +574,7 @@ nnoremap <silent>           <leader>pz :Goyo<CR>
 " GV {{{
 " ------------------------------------------------------------------------------
 nmap <leader>gv :GV<cr>
-nmap <leader>gG :GV!<cr>
+nmap <leader>gV :GV!<cr>
 " }}}
 " Js-Beautify {{{
 " ------------------------------------------------------------------------------
@@ -953,116 +953,6 @@ nmap <silent><leader>ps :UltiSnipsEdit<cr>
 " TODO change mapping
 " nnoremap <leader>pu :UndotreeToggle<cr>
 
-" }}}
-" " Unite {{{
-" " ------------------------------------------------------------------------------
-" " Enable syntax highlighting 
-" let g:unite_source_line_enable_highlight=1
-" " Don't overwrite statusline
-" let g:unite_force_overwrite_statusline=0
-" let g:unite_source_history_enable = 1
-" " Use fuzzy if possible
-" call unite#filters#matcher_default#use(['matcher_fuzzy'])
-" call unite#filters#sorter_default#use(['sorter_rank'])
-" " Default options
-" call unite#custom#profile('default', 'context', {
-"             \   'start_insert': 1,
-"             \   'winheight': 14,
-"             \   'direction': 'botright',
-"             \ 'do-action' : 'tabnew',
-"             \ })
-" function! UniteFileAsync() abort
-"   execute 'Unite file_rec/async -custom-rec-ignore-directory-pattern'
-" endfunction
-
-" function! UniteBuffers() abort
-"     execute 'Unite -quick-match buffer'
-" endfunction
-
-" function! UniteYankHistory() abort
-"     execute 'Unite history/yank'
-" endfunction
-
-" function! UniteFileMRU() abort
-"   execute 'Unite file_mru' 
-" endfunction
-
-" function! UniteDirMRU() abort
-"   execute 'Unite directory_mru' 
-" endfunction
-
-" function! UniteCustomMenu() abort
-"   execute 'Unite menu'
-" endfunction
-
-" function! UniteJumps() abort
-"   execute 'Unite jump'
-" endfunction
-
-" function! UniteCommands() abort
-"   execute 'Unite command'
-" endfunction
-
-" function! UniteMappings() abort
-"   execute 'Unite mapping'
-" endfunction
-
-" " Custom mappings for the unite buffer
-" autocmd FileType unite call s:unite_settings()
-" function! s:unite_settings()
-"   " Enable navigation with control-j and control-k in insert mode
-"   imap <silent> <buffer> <C-j> <Plug>(unite_select_next_line)
-"   imap <silent> <buffer> <C-k> <Plug>(unite_select_previous_line)
-"   " Runs 'splits' action by <C-s> and <C-v>
-"   imap <silent> <buffer> <expr> <C-s> unite#do_action('split')
-"   imap <silent> <buffer> <expr> <C-v> unite#do_action('vsplit')
-"   " Exit with escape
-"   nmap <silent> <buffer> <ESC> <Plug>(unite_exit)
-"   " Mark candidates
-"   vmap <silent> <buffer> m <Plug>(unite_toggle_mark_selected_candidates)
-"   nmap <silent> <buffer> m <Plug>(unite_toggle_mark_current_candidate)
-" endfunction
-
-" nnoremap <silent> <leader>f :call UniteFileAsync()<CR>
-" nnoremap <silent> <leader>z :call UniteYankHistory()<CR>
-" nnoremap <silent> <leader>b :call UniteBuffers()<CR>
-" nnoremap <silent> <leader>m :call UniteFileMRU()<CR>
-" nnoremap <silent> <leader>d :call UniteDirMRU()<CR>
-" nnoremap <silent> <leader>c :call UniteCustomMenu()<CR>
-
-" " Custom menus
-" let g:unite_source_menu_menus = {}
-" let g:unite_source_menu_menus.plug = {
-"             \ 'description' : 'vim-plug commands',
-"             \ }
-" let g:unite_source_menu_menus.plug.commmand_candidates = [
-"             \       ['Install plugins', 'PlugInstall'],
-"             \       ['Update plugins', 'PlugUpdate'],
-"             \       ['Clean plugins', 'PlugClean'],
-"             \       ['Upgrade vim-plug', 'PlugUpgrade'],
-"             \ ]
-" " let g:unite_source_menu_menus.plug.command_candidates = [
-" "       \     ]
-" " let g:unite_source_menu_menus.unite = {
-" "       \     'description' : 'My Unite sources',
-" "       \ }
-" " let g:unite_source_menu_menus.unite.command_candidates = [
-" "       \       ['Unite MRUs', 'call utils#uniteMRUs()'],
-" "       \       ['Unite buffers', 'call utils#uniteBuffers()'],
-" "       \       ['Unite file browse', 'call utils#uniteFileBrowse()'],
-" "       \       ['Unite file search', 'call utils#uniteFileRec()'],
-" "       \       ['Unite history', 'call utils#uniteHistory()'],
-" "       \       ['Unite menu', 'call utils#uniteCustomMenu()'],
-" "       \       ['Unite registers', 'call utils#uniteRegisters()'],
-" "       \       ['Unite sources', 'call utils#uniteSources()'],
-" "       \       ['Unite yank history', 'call utils#uniteYankHistory()'],
-" "       \       ['Unite jump history', 'call utils#uniteJumps()'],
-" "       \     ]
-" " }}}
-" Vimproc {{{
-" ------------------------------------------------------------------------------
-let g:vimproc#dll_path = $rtp.'lib/vimproc_win64.dll'
-let g:vimproc_download_windows_dll = 1
 " }}}
 " Wimproved.vim {{{
 " ------------------------------------------------------------------------------

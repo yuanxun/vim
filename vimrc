@@ -33,9 +33,6 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " PLUGINS MARKED WITH TODO ARE NEW TO ME AND NOT YET FULLY EXPLORED
 " ------------------------------------------------------------------------------
-" --- Inhouse!
-" ------------------------------------------------------------------------------
-" ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
 Plug 'chriskempson/base16-vim'             " base16 vim port
@@ -113,9 +110,7 @@ Plug 'mhinz/vim-sayonara',                 " essentially :qw
 Plug 'amix/open_file_under_cursor.vim'     " read its name ...
 Plug 'terryma/vim-expand-region'           " expands visual selection TODO
 Plug 'edsono/vim-matchit'                  " improves % behaviour
-Plug 'unblevable/quick-scope'              " visual help with left and right motions
-" Plug 'mbbill/undotree',                    " visualizes vims undotree TODO
-"             \ { 'on' : 'UndotreeToggle' }
+Plug 'unblevable/quick-scope'              " visual help with fFtT-motions
 Plug 'haya14busa/incsearch.vim'            " improve incsearch
 " Plug 'haya14busa/incsearch-fuzzy.vim'      " fuzzy-incsearch
 " ------------------------------------------------------------------------------
@@ -136,6 +131,12 @@ filetype plugin indent on
 " }}}
 " ##############################################################################
 " END PLUGINS }}}
+" SOURCE {{{
+" ##############################################################################
+runtime autoload/abbreviations.vim
+runtime autoload/utils.vim
+" ##############################################################################
+" END SOURCE }}}
 " SETTINGS {{{
 " ##############################################################################
 " get patched fonts for powerline at github.com/powerline/fonts
@@ -526,7 +527,6 @@ xmap <C-v> <Plug>(expand_region_shrink)
 " Fugitive {{{
 " ------------------------------------------------------------------------------
 nnoremap <leader>gs :Gstatus<CR>
-nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gc :Gcommit --verbose<CR>
 nnoremap <leader>gd :Gvdiff<CR>
 

@@ -36,6 +36,7 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
+Plug 'tstelzer/newmoon.vim'                " newmoon port
 Plug 'chriskempson/base16-vim'             " base16 vim port
 Plug 'docapotamus/jellybeans.vim'          " jellybeans
 " ------------------------------------------------------------------------------

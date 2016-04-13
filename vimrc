@@ -2,6 +2,7 @@
 " --- Zeitwerk vimrc
 " ------------------------------------------------------------------------------
 "  TODO fix autocomplete
+"  TODO better implement git diff
 "  STARTUP {{{
 " ##############################################################################
 " check for compatible mode and stomp it
@@ -43,8 +44,9 @@ Plug 'docapotamus/jellybeans.vim'          " jellybeans
 Plug 'scrooloose/nerdtree',                " file browser
             \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
 Plug 'itchyny/lightline.vim'               " simple statusline
+Plug 'zefei/vim-wintabs'                   " per-windows tabline
 Plug 'mhinz/vim-startify'                  " startup screen
-Plug 'ctrlpvim/ctrlp.vim' " fuzzy stuff
+Plug 'ctrlpvim/ctrlp.vim'                  " fuzzy stuff
             \ { 'on' : ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU'] }
 Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
 Plug 'vim-scripts/Tabmerge'                " merge tabs
@@ -91,12 +93,13 @@ Plug 'sirver/ultisnips'                    " snippet integration
             \ | Plug 'honza/vim-snippets'  " snippets
 Plug 'tpope/vim-commentary'                " fileType specific comment creation mappings
 Plug 'junegunn/vim-easy-align'             " text align
-Plug 'lilydjwg/colorizer'                  " hex, rgb and named color highlighting
+Plug 'lilydjwg/colorizer',                  " hex, rgb and named color highlighting
+            \ { 'on' : 'Colorizer' }
 " ------------------------------------------------------------------------------
 " --- Language specific utility
 " ------------------------------------------------------------------------------
-Plug 'mattn/emmet-vim',                    " emmet integration TODO
-            \ { 'for' : ['html', 'xml', 'xhtml', 'php'] }
+" Plug 'mattn/emmet-vim',                    " emmet integration TODO
+"             \ { 'for' : ['html', 'xml', 'xhtml', 'php'] }
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
@@ -116,9 +119,11 @@ Plug 'haya14busa/incsearch.vim'            " improve incsearch
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
+Plug 'vim-scripts/camelcasemotion'
 Plug 'tpope/vim-surround'                  " surround text-objects
 Plug 'wellle/targets.vim'                  " more objects
 Plug 'kana/vim-textobj-user'               " new custom textobjects
+Plug 'kana/vim-textobj-function'           " adds functions as textobjects
 Plug 'glts/vim-textobj-comment'            " adds comments as textobject
 Plug 'kana/vim-textobj-fold'               " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'             " adds indents as textobjects
@@ -133,8 +138,10 @@ filetype plugin indent on
 " END PLUGINS }}}
 " SOURCE {{{
 " ##############################################################################
-runtime autoload/abbreviations.vim
-runtime autoload/utils.vim
+runtime rc/newmoon.vim
+runtime rc/abbreviations.vim
+runtime rc/utils.vim
+runtime rc/sortUnfolded.vim
 " ##############################################################################
 " END SOURCE }}}
 " SETTINGS {{{
@@ -143,7 +150,7 @@ runtime autoload/utils.vim
 if s:is_windows
     set guifont=Consolas:h10:cANSI " Font fallback
     try
-        set guifont=Fira_Mono:h10:cANSI
+        set guifont=Fira_Mono_Medium:h10:cANSI
         let s:patchedFont = 0               " is the font powerline patched?
     catch
     endtry
@@ -205,7 +212,7 @@ set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 colorscheme desert                      " colorscheme fallback
 try
-    colorscheme jellybeans              " set colorscheme to jellybeans
+    colorscheme newmoon              " set colorscheme
 catch
 endtry
 let base16colorspace = 256              " terminal fix
@@ -218,6 +225,7 @@ set numberwidth=3                       " width of numbergutter
 set so=5                                " lines at which vim starts scrolling
 set wildmenu                            " enhance commandline-completion
 set laststatus=2                        " always show statusline
+set cursorline                          " enable cursorline background
 if s:is_windows                         " files to ignore
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store 
 else
@@ -347,6 +355,8 @@ map <M-Up>    <Nop>
 " }}}
 " Default remap {{{
 " ------------------------------------------------------------------------------
+"  visual select behaviour
+xnoremap $ $h
 "  default <C-c> breaks stuff
 inoremap <C-c> <esc>
 xnoremap <C-c> <esc>
@@ -453,17 +463,17 @@ cnoremap %% <C-R>=expand('%:h').'/'<C-R>
 " Start substitute on current word under the cursor
 " nnoremap ,s :%s///gc<Left><Left><Left> TODO
 " manage tabs
-noremap  <silent><leader>tn :tabnew<cr>
-noremap  <silent><leader>to :tabonly<cr>
-noremap  <silent><leader>tl :tabnext<cr>
-noremap  <silent><leader>th :tabprevious<cr>
-noremap  <silent><leader>tj :tabfirst<cr>
-noremap  <silent><leader>tk :tablast<cr>
+noremap <C-t>n :tabnew<cr>
+noremap <C-t>o :tabonly<cr>
+noremap <C-t>l :tabnext<cr>
+noremap <C-t>h :tabprevious<cr>
+noremap <C-t>j :tabfirst<cr>
+noremap <C-t>k :tablast<cr>
 
-noremap  <silent><leader>t<S-h> :tabmove -<CR>
-noremap  <silent><leader>t<S-l> :tabmove +<CR>
-noremap  <silent><leader>t<S-j> :tabmove 0<CR>
-noremap  <silent><leader>t<S-k> :tabmove $<CR>
+noremap <C-t><S-h> :tabmove -<CR>
+noremap <C-t><S-l> :tabmove +<CR>
+noremap <C-t><S-j> :tabmove 0<CR>
+noremap <C-t><S-k> :tabmove $<CR>
 " Switch CWD to the directory of the open buffer
 noremap  <leader>cd :cd %:p:h<cr>:pwd<cr>
 " quickly write
@@ -476,6 +486,7 @@ nmap <silent><leader>n  :call utils#toggleRNU()<cr>
 " edit and source vimrc
 nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
 nnoremap <silent><leader>vs :source $MYVIMRC<CR>
+nnoremap <silent><leader>vf :source %<CR>
 " disable highlight when <leader><cr> is pressed
 noremap  <silent> <leader><cr> :let @/ = ""<cr>
 " save current session & close all buffers
@@ -513,16 +524,20 @@ map <leader>m :CtrlPMRU<cr>
 xmap gl <Plug>(EasyAlign)
 nmap gl <Plug>(EasyAlign)
 " }}}
-" Emmet {{{
+" ~~~ Emmet {{{
 " ------------------------------------------------------------------------------
-let g:user_emmet_mode='a'
-let g:user_emmet_leader_key='<C-m>'
+" let g:user_emmet_mode='a'
+" let g:user_emmet_leader_key='<C-m>'
 " }}}
 " Expandregion {{{
 " ------------------------------------------------------------------------------
 xmap v <Plug>(expand_region_expand)
 xmap <C-v> <Plug>(expand_region_shrink)
 
+" }}}
+" FastFold {{{
+" ------------------------------------------------------------------------------
+nmap öu <Plug>(FastFoldUpdate)
 " }}}
 " Fugitive {{{
 " ------------------------------------------------------------------------------
@@ -585,7 +600,6 @@ let g:lexima_enable_endwise_rules = 1
 " ------------------------------------------------------------------------------
 if s:patchedFont == 1
     let g:lightline = {
-                \ 'colorscheme' : 'jellybeans',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
                 \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
@@ -612,7 +626,6 @@ if s:patchedFont == 1
                 \ }
 else
     let g:lightline = {
-                \ 'colorscheme' : 'jellybeans',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
                 \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
@@ -887,9 +900,9 @@ let g:syntastic_SCSS_checkers = ['sass']
 "}}}
 " Tabmerge {{{
 " ------------------------------------------------------------------------------
-noremap  <silent><leader>tm     :Tabmerge<CR>
-noremap  <silent><leader>t<C-h> :Tabmerge left<CR>
-noremap  <silent><leader>t<C-l> :Tabmerge right<CR>
+noremap <C-t>m     :Tabmerge<CR>
+noremap <C-t><C-h> :Tabmerge left<CR>
+noremap <C-t><C-l> :Tabmerge right<CR>
 " }}}
 " Text-Obj-Fold {{{
 " ------------------------------------------------------------------------------
@@ -969,6 +982,9 @@ noremap <F11> :WToggleFullscreen<CR>
 " let g:ycm_filetype_blacklist={'unite': 1}
 
 " autocmd! User YouCompleteMe call youcompleteme#Enable()
+" }}}
+" wintabs {{{
+" ------------------------------------------------------------------------------
 " }}}
 " ##############################################################################
 " END CONFIG PLUGINS }}}

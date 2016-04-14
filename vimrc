@@ -36,47 +36,47 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
-Plug 'tstelzer/new-moon.vim'                " newmoon port
-Plug 'chriskempson/base16-vim'             " base16 vim port
-Plug 'docapotamus/jellybeans.vim'          " jellybeans
+Plug 'git@github.com:tstelzer/new-moon.vim.git'  " new-moon port
+Plug 'chriskempson/base16-vim'                   " base16 vim port
+Plug 'docapotamus/jellybeans.vim'                " jellybeans
 " ------------------------------------------------------------------------------
 " --- Interface / File management
 " ------------------------------------------------------------------------------
-Plug 'scrooloose/nerdtree',                " file browser
+Plug 'scrooloose/nerdtree',                      " file browser
             \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
-Plug 'itchyny/lightline.vim'               " simple statusline
-Plug 'zefei/vim-wintabs'                   " per-windows tabline
-Plug 'mhinz/vim-startify'                  " startup screen
-Plug 'ctrlpvim/ctrlp.vim'                  " fuzzy stuff
+Plug 'itchyny/lightline.vim'                     " simple statusline
+Plug 'zefei/vim-wintabs'                         " per-windows tabline
+Plug 'mhinz/vim-startify'                        " startup screen
+Plug 'ctrlpvim/ctrlp.vim'                        " fuzzy stuff
             \ { 'on' : ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU'] }
-Plug 'junegunn/goyo.vim'                   " removes UI elements for distraction free editing
-Plug 'vim-scripts/Tabmerge'                " merge tabs
+Plug 'junegunn/goyo.vim'                         " removes UI elements for distraction free editing
+Plug 'vim-scripts/Tabmerge'                      " merge tabs
 if s:is_windows
-    Plug 'kkoenig/wimproved.vim',          " Windows specific fullscreen mode
+    Plug 'kkoenig/wimproved.vim',                " Windows specific fullscreen mode
 endif
 " ------------------------------------------------------------------------------
 " --- Filetype
 " ------------------------------------------------------------------------------
 " Plug 'sheerun/vim-polyglot'              " multi lang
-Plug 'JulesWang/css.vim'                   " css (vim runtime)
-Plug 'hail2u/vim-css3-syntax'              " css3
-Plug 'cakebaker/scss-syntax.vim'           " sass
-Plug 'pangloss/vim-javascript'             " javascript
-Plug 'othree/html5.vim'                    " html5
+Plug 'JulesWang/css.vim'                         " css (vim runtime)
+Plug 'hail2u/vim-css3-syntax'                    " css3
+Plug 'cakebaker/scss-syntax.vim'                 " sass
+Plug 'pangloss/vim-javascript'                   " javascript
+Plug 'othree/html5.vim'                          " html5
 " ------------------------------------------------------------------------------
 " --- Syntax formatting
 " ------------------------------------------------------------------------------
-Plug 'maksimr/vim-jsbeautify'              " js-beautify integration
+Plug 'maksimr/vim-jsbeautify'                    " js-beautify integration
 " ------------------------------------------------------------------------------
 " --- Syntax
 " ------------------------------------------------------------------------------
-Plug 'scrooloose/syntastic',               " syntax integration (requires external tools)
+Plug 'scrooloose/syntastic',                     " syntax integration (requires external tools)
             \ { 'for' : ['scss','html','javascript','css'] }
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
-Plug 'ervandew/supertab'                   " insert completion TODO
-Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
+Plug 'ervandew/supertab'                         " insert completion TODO
+Plug 'cohama/lexima.vim',                        " auto close parentheses TODO
             \ { 'for' : ['hmtl','css','scss','javascript'] }
 " Plug 'Valloric/YouCompleteMe',             " completion engine, requires compilation
 "             \ { 'do' : function('g:utils#buildYCM'), } 
@@ -84,17 +84,17 @@ Plug 'cohama/lexima.vim',                  " auto close parentheses TODO
 " --- Git
 " ------------------------------------------------------------------------------
 " Plug 'airblade/vim-gitgutter' " adds diff status column
-Plug 'tpope/vim-fugitive'                  " git wrapper TODO
-Plug 'junegunn/gv.vim',                    " git commit browser TODO
+Plug 'tpope/vim-fugitive'                        " git wrapper TODO
+Plug 'junegunn/gv.vim',                          " git commit browser TODO
             \ { 'on' : 'GV' }
 " ------------------------------------------------------------------------------
 " --- Language agnostic utility
 " ------------------------------------------------------------------------------
-Plug 'sirver/ultisnips'                    " snippet integration
-            \ | Plug 'honza/vim-snippets'  " snippets
-Plug 'tpope/vim-commentary'                " fileType specific comment creation mappings
-Plug 'junegunn/vim-easy-align'             " text align
-Plug 'lilydjwg/colorizer',                  " hex, rgb and named color highlighting
+Plug 'sirver/ultisnips'                          " snippet integration
+            \ | Plug 'honza/vim-snippets'        " snippets
+Plug 'tpope/vim-commentary'                      " fileType specific comment creation mappings
+Plug 'junegunn/vim-easy-align'                   " text align
+Plug 'lilydjwg/colorizer',                       " hex, rgb and named color highlighting
             \ { 'on' : 'Colorizer' }
 " ------------------------------------------------------------------------------
 " --- Language specific utility
@@ -104,30 +104,31 @@ Plug 'lilydjwg/colorizer',                  " hex, rgb and named color highlight
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
-Plug 'thinca/vim-visualstar'               " improves * and #
-Plug 'Konfekt/FastFold'                    " improves Folds TODO
-Plug 'tpope/vim-speeddating'               " improves number in-/decementation (C-X/C-A)
-Plug 'tpope/vim-repeat'                    " makes lots of commands repeatable with .
-Plug 'tpope/vim-abolish'                   " improves abbrev functionality
-Plug 'mhinz/vim-sayonara',                 " essentially :qw
+Plug 'thinca/vim-visualstar'                     " improves * and #
+Plug 'Konfekt/FastFold'                          " improves Folds TODO
+Plug 'tpope/vim-speeddating'                     " improves number in-/decementation (C-X/C-A)
+Plug 'tpope/vim-repeat'                          " makes lots of commands repeatable with .
+Plug 'tpope/vim-abolish'                         " improves abbrev functionality
+Plug 'mhinz/vim-sayonara',                       " essentially :qw
             \ { 'on' : 'Sayonara' }
-Plug 'amix/open_file_under_cursor.vim'     " read its name ...
-Plug 'terryma/vim-expand-region'           " expands visual selection TODO
-Plug 'edsono/vim-matchit'                  " improves % behaviour
-Plug 'unblevable/quick-scope'              " visual help with fFtT-motions
-Plug 'haya14busa/incsearch.vim'            " improve incsearch
+Plug 'amix/open_file_under_cursor.vim'           " read its name ...
+" Plug 'terryma/vim-expand-region'                 " expands visual selection
+Plug 'edsono/vim-matchit'                        " improves % behaviour
+Plug 'unblevable/quick-scope'                    " visual help with fFtT-motions
+Plug 'haya14busa/incsearch.vim'                  " improve incsearch
 " Plug 'haya14busa/incsearch-fuzzy.vim'      " fuzzy-incsearch
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
-Plug 'vim-scripts/camelcasemotion'
-Plug 'tpope/vim-surround'                  " surround text-objects
-Plug 'wellle/targets.vim'                  " more objects
-Plug 'kana/vim-textobj-user'               " new custom textobjects
-Plug 'kana/vim-textobj-function'           " adds functions as textobjects
-Plug 'glts/vim-textobj-comment'            " adds comments as textobject
-Plug 'kana/vim-textobj-fold'               " adds folds as textobjects
-Plug 'kana/vim-textobj-indent'             " adds indents as textobjects
+Plug 'vim-scripts/camelcasemotion'               " allows camelcase motions TODO
+Plug 'tommcdo/vim-exchange'                      " exchange two words
+Plug 'tpope/vim-surround'                        " surround text-objects
+Plug 'wellle/targets.vim'                        " more objects
+Plug 'kana/vim-textobj-user'                     " new custom textobjects
+Plug 'kana/vim-textobj-function'                 " adds functions as textobjects
+Plug 'glts/vim-textobj-comment'                  " adds comments as textobject
+Plug 'kana/vim-textobj-fold'                     " adds folds as textobjects
+Plug 'kana/vim-textobj-indent'                   " adds indents as textobjects
 
 " }}}
 " Post-plugin {{{
@@ -213,10 +214,10 @@ set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 colorscheme desert                      " colorscheme fallback
 try
-    colorscheme newmoon              " set colorscheme
+    colorscheme new-moon              " set colorscheme
 catch
 endtry
-let base16colorspace = 256              " terminal fix
+" let base16colorspace = 256              " terminal fix
 set showtabline=2                       " show tabline with > 1 tabs
 
 set number relativenumber               " enable number gutter
@@ -420,7 +421,7 @@ noremap <S-space> /
 nnoremap ä '
 nnoremap Ä `
 " treat jk as <esc> in insertmode and commandmode
-noremap! jk <esc>
+noremap! jk <ESC>
 " fold with ö instead of z 
 xnoremap öf mzzf`zzz
 noremap öF zF
@@ -597,7 +598,6 @@ autocmd  FileType css xnoremap <buffer>        <leader>pb :call RangeCSSBeautify
 " Lexima {{{
 " ------------------------------------------------------------------------------
 let g:lexima_enable_newline_rules = 0
-let g:lexima_enable_endwise_rules = 1
 " }}}
 " Lightline {{{
 " ------------------------------------------------------------------------------

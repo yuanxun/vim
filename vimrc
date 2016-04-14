@@ -1,7 +1,7 @@
 " ------------------------------------------------------------------------------
 " --- Zeitwerk vimrc
 " ------------------------------------------------------------------------------
-"  TODO fix autocomplete
+"  TODO fix autocomplete test
 "  TODO better implement git diff
 "  STARTUP {{{
 " ##############################################################################
@@ -36,7 +36,7 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
-Plug 'tstelzer/newmoon.vim'                " newmoon port
+Plug 'tstelzer/new-moon.vim'                " newmoon port
 Plug 'chriskempson/base16-vim'             " base16 vim port
 Plug 'docapotamus/jellybeans.vim'          " jellybeans
 " ------------------------------------------------------------------------------
@@ -151,8 +151,8 @@ runtime rc/sortUnfolded.vim
 if s:is_windows
     set guifont=Consolas:h10:cANSI " Font fallback
     try
-        set guifont=Fira_Mono_Medium:h10:cANSI
-        let s:patchedFont = 0               " is the font powerline patched?
+        set guifont=DejaVu_Sans_Mono_NERD:h10:cANSI
+        let s:patchedFont = 1               " is the font powerline patched?
     catch
     endtry
 else
@@ -461,8 +461,10 @@ map <A-S-o> <S-o><ESC>
 nnoremap gV                 `[v`]
 " %% refers to directory of current file
 cnoremap %% <C-R>=expand('%:h').'/'<C-R>
-" Start substitute on current word under the cursor
-" nnoremap ,s :%s///gc<Left><Left><Left> TODO
+"substitute current word under the cursor
+nnoremap <C-s> :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+" substitute word in search register (/,?)
+nnoremap <A-s> :%s/\<<C-r>/\>//gc<Left><Left><Left>
 " manage tabs
 noremap <C-t>n :tabnew<cr>
 noremap <C-t>o :tabonly<cr>
@@ -486,7 +488,7 @@ noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
 nmap <silent><leader>n  :call utils#toggleRNU()<cr>
 " edit and source vimrc
 nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
-nnoremap <silent><leader>vs :source $MYVIMRC<CR>
+nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
 nnoremap <silent><leader>vf :source %<CR>
 " disable highlight when <leader><cr> is pressed
 noremap  <silent> <leader><cr> :let @/ = ""<cr>
@@ -594,7 +596,7 @@ autocmd  FileType css xnoremap <buffer>        <leader>pb :call RangeCSSBeautify
 " }}}
 " Lexima {{{
 " ------------------------------------------------------------------------------
-let g:lexima_enable_newline_rules = 1
+let g:lexima_enable_newline_rules = 0
 let g:lexima_enable_endwise_rules = 1
 " }}}
 " Lightline {{{
@@ -625,7 +627,7 @@ if s:patchedFont == 1
                 \ 'separator': { 'left': '', 'right': '' },
                 \ 'subseparator': { 'left': '', 'right': '' }
                 \ }
-else
+else 
     let g:lightline = {
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ], ['ctrlpmark'] ],
@@ -648,7 +650,8 @@ else
                 \ 'component_type': {
                 \   'syntastic': 'error',
                 \ },
-                \ 'subseparator': { 'left': '>', 'right': '<' }
+                \ 'separator': { 'left': '', 'right': '' },
+                \ 'subseparator': { 'left': '|', 'right': '|' }
                 \ }
 endif
 function! LightLineModified()
@@ -684,7 +687,7 @@ else
         if &filetype == "help"
             return ""
         elseif &readonly
-            return "⌧"
+            return "x"
         else
             return ""
         endif

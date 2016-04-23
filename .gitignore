@@ -1,4 +1,6 @@
 temp/**
 !temp
+session/**
+!session
 plug.vim.old
 plugged/**

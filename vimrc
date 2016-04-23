@@ -13,8 +13,10 @@ endif
 if has ('vim_starting')
     au!
 endif
-" variable to check if is windows version of vim
+" check if is windows version of vim
 let s:is_windows = has('win32') || has('win64')
+" check for gui
+let s:is_gui = has ('gui_running')
 if s:is_windows
     set shell=cmd.exe
     let $rtp = fnamemodify(resolve($HOME).'\vimfiles', ':p:gs?/?\\?')
@@ -129,7 +131,6 @@ Plug 'haya14busa/incsearch.vim'                      " improve incsearch
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
-Plug 'vim-scripts/camelcasemotion'                   " allows camelcase motions TODO
 Plug 'tommcdo/vim-exchange'                          " exchange two words
 Plug 'tpope/vim-surround'                            " surround text-objects
 Plug 'wellle/targets.vim'                            " more objects
@@ -138,7 +139,6 @@ Plug 'kana/vim-textobj-function'                     " adds functions as textobj
 Plug 'glts/vim-textobj-comment'                      " adds comments as textobject
 Plug 'kana/vim-textobj-fold'                         " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'                       " adds indents as textobjects
-
 " }}}
 " Post-plugin {{{
 " ------------------------------------------------------------------------------
@@ -149,7 +149,6 @@ filetype plugin indent on
 " END PLUGINS }}}
 " SOURCE {{{
 " ##############################################################################
-runtime rc/newmoon.vim
 runtime rc/abbreviations.vim
 runtime rc/utils.vim
 runtime rc/sortUnfolded.vim
@@ -173,14 +172,12 @@ else
     catch
     endtry
 endif
-if has( " gui_running")                   " gui specific options
-    set guioptions-=m " disable the menu
-    set guioptions-=t " disable tear-off menus
-    set guioptions-=T " disable toolbar
-    set guioptions-=r " disable righthand scrollbar
-    set guioptions-=L " disable lefthand scrollbar
-    set guitablabel=%M\ %t              " tab title
-endif
+set guioptions-=m " disable the menu
+set guioptions-=t " disable tear-off menus
+set guioptions-=T " disable toolbar
+set guioptions-=r " disable righthand scrollbar
+set guioptions-=L " disable lefthand scrollbar
+set guitablabel=%t              " tab title
 set encoding=utf-8                      " vim encoding
 scriptencoding utf-8                    " script encoding
 set termencoding=utf-8                  " terminal encoding
@@ -251,7 +248,7 @@ set linebreak                           " soft breaks lines according to breakat
 set nowrap                              " softwrap
 set breakat=80                          " sets softwrap
 set textwidth=500                       " maximum amount of text til EOL
-set colorcolumn=81                      " colorize column at 81 chars
+" set colorcolumn=81                      " colorize column at 81 chars
 set autoindent smartindent              " Auto indention
   if executable('ag')                   " grep via silversearcher
     set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
@@ -353,6 +350,7 @@ let mapleader   = "\<Space>"
 let g:mapleader = "\<Space>"
 " Unmap {{{
 " ------------------------------------------------------------------------------
+map , <Nop>
 map K         <Nop>
 map <M-Right> <Nop>
 map <M-Left>  <Nop>
@@ -415,6 +413,9 @@ nnoremap gwU viwgU
 " }}}
 " Custom {{{
 " ------------------------------------------------------------------------------
+" jump in diff
+nnoremap ,n ]c
+nnoremap ,N [c
 " select font 
 nnoremap <leader>pf :set guifont=*<CR> 
 " center viewport
@@ -422,7 +423,8 @@ nnoremap <leader><space> zz
 " Join upwards
 nnoremap K kJ
 " start makro with alt-q instead of @
-noremap Q @q
+nnoremap Q @q
+vnoremap Q :norm @q<cr>
 " searchmode with shift-space
 noremap <S-space> /
 " Jump to mark {a-zA-Z}
@@ -516,24 +518,6 @@ nmap <leader>pc <Plug>Colorizer
 " Commentary {{{
 " ------------------------------------------------------------------------------
 nmap gC <Plug>CommentaryLine
-" }}}
-" CamelCaseMotion {{{
-" ------------------------------------------------------------------------------
-" overwrite word-based motions 
-map <silent> w <Plug>CamelCaseMotion_w
-map <silent> b <Plug>CamelCaseMotion_b
-map <silent> e <Plug>CamelCaseMotion_e
-map <silent> ge <Plug>CamelCaseMotion_ge
-sunmap w
-sunmap b
-sunmap e
-sunmap ge
-omap <silent> iw <Plug>CamelCaseMotion_iw
-xmap <silent> iw <Plug>CamelCaseMotion_iw
-omap <silent> ib <Plug>CamelCaseMotion_ib
-xmap <silent> ib <Plug>CamelCaseMotion_ib
-omap <silent> ie <Plug>CamelCaseMotion_ie
-xmap <silent> ie <Plug>CamelCaseMotion_ie
 " }}}
 " CtrlP"{{{
 " ------------------------------------------------------------------------------
@@ -629,15 +613,16 @@ autocmd  FileType css xnoremap <buffer>        <leader>pb :call RangeCSSBeautify
 " }}}
 " Lexima {{{
 " ------------------------------------------------------------------------------
-let g:lexima_enable_newline_rules = 1
+let g:lexima_enable_newline_rules = 0
 " }}}
 " Lightline {{{
 " ------------------------------------------------------------------------------
 if s:patchedFont == 1
     let g:lightline = {
+                \ 'colorscheme': 'welpe',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-                \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \   'right': [ [ 'syntastic','percent', 'lineinfo' ], [ 'filetype' ], [ 'fileencoding' ] ]
                 \ },
                 \ 'component_function': {
                 \   'fugitive': 'LightLineFugitive',
@@ -661,9 +646,10 @@ if s:patchedFont == 1
                 \ }
 else 
     let g:lightline = {
+                \ 'colorscheme': 'welpe',
                 \ 'active': {
                 \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-                \   'right': [ [ 'syntastic', 'lineinfo' ], ['percent'], [ 'fileformat', 'fileencoding', 'filetype' ] ]
+                \   'right': [ [ 'syntastic','percent', 'lineinfo' ], [ 'filetype' ], [ 'fileencoding' ] ]
                 \ },
                 \ 'component_function': {
                 \   'fugitive': 'LightLineFugitive',
@@ -806,6 +792,10 @@ map * <Plug>(incsearch-nohl-*)
 map # <Plug>(incsearch-nohl-#)
 " map <leader>/ <Plug>(incsearch-fuzzy-/)
 " map <leader>? <Plug>(incsearch-fuzzy-?)
+" }}}
+" UnImpaired {{{
+" ------------------------------------------------------------------------------
+
 " }}}
 " NERDTree {{{
 " ------------------------------------------------------------------------------

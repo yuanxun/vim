@@ -510,11 +510,12 @@ nmap öu <Plug>(FastFoldUpdate)
 " }}}
 " Fugitive {{{
 " ------------------------------------------------------------------------------
-nmap <leader>gs :Gstatus<CR>
+" nmap <leader>gs :Gstatus<CR>
 nmap <leader>gd :Gvdiff<CR>
 nmap <leader>gw :Gwrite<CR>
 nmap <leader>gb :Gbrowse<CR>
 nmap <leader>gc :Gcommit
+nmap <silent> <leader>G :Git 
 " }}}
 " Gitgutter {{{
 " ------------------------------------------------------------------------------

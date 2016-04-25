@@ -4,6 +4,7 @@
 " Author: Timm Stelzer <timmstelzer@gmail.com>
 " Source: https://github.com/tstelzer/vim
 " ------------------------------------------------------------------------------
+" TODO better mapping sort
 "  STARTUP {{{
 " ##############################################################################
 " check for compatible mode and stomp it
@@ -275,12 +276,12 @@ augroup END
 " END SYNTAX & HIGHLIGHTING }}}
 " MAPPINGS {{{
 " ##############################################################################
-" ------------------------------------------------------------------------------
-" --- Choose Leader
+" --- Leader
 " ------------------------------------------------------------------------------
 let mapleader   = "\<Space>"
 let g:mapleader = "\<Space>"
-" Unmap {{{
+
+" --- Unmap
 " ------------------------------------------------------------------------------
 map , <Nop>
 map K         <Nop>
@@ -288,44 +289,22 @@ map <M-Right> <Nop>
 map <M-Left>  <Nop>
 map <M-Down>  <Nop>
 map <M-Up>    <Nop>
-" }}}
-" Default remap {{{
+
+" --- Default Remap
 " ------------------------------------------------------------------------------
 "  visual select behaviour
 xmap $ $h
-"  default <C-c> breaks stuff
+
+"  default <C-c> breaks stuff, don't use it
 imap <C-c> <esc>
 xmap <C-c> <esc>
-" Keep the cursor in place while joining lines
-nnoremap J mzJ`z
-" Don't yank to default register when changing something
-nnoremap c "xc
-xnoremap c "xc
-" go to end of inserted text after yank and put
-xnoremap <silent> y y`]
-xnoremap <silent> p p`]
-nnoremap <silent> p p`]
-" Yank until end of line with <S-y> as expected
-nnoremap Y y$
-" smart way to move between windows
-noremap <C-j> <C-W>j
-noremap <C-k> <C-W>k
-noremap <C-h> <C-W>h
-noremap <C-l> <C-W>l
-" goto start of fold
-noremap gk [z
-noremap gj ]z
-" treat long lines as break lines
-noremap  j g<down>
-noremap  k g<up>
-" center screen after next & prev search
-nnoremap n nzz
-nnoremap N Nzz
-xnoremap n nzz
-xnoremap N Nzz
-" don't cancel selection after indenting in visual
-xnoremap < <gv
-xnoremap > >gv
+
+" Visual Block mode is far more useful that Visual mode (so swap the commands)...
+nnoremap v <C-V>
+nnoremap <C-V> v
+vnoremap v <C-V>
+vnoremap <C-V> v
+
 " center screen when moving screenwise
 nnoremap <C-u> <C-u>zz
 nnoremap <C-d> <C-d>zz
@@ -335,45 +314,93 @@ xnoremap <C-u> <C-u>zz
 xnoremap <C-d> <C-d>zz
 xnoremap <C-f> <C-f>zz
 xnoremap <C-b> <C-b>zz
+
+" --- Custom
+" ------------------------------------------------------------------------------
+" Keep the cursor in place while joining lines
+nnoremap J mzJ`z
+
+" Don't yank to default register when changing something
+nnoremap c "xc
+xnoremap c "xc
+
+" go to start of inserted text after yank and put
+xnoremap <silent> y y`[
+xnoremap <silent> p p`[
+nnoremap <silent> p p`[
+
+" treat long lines as break lines
+noremap  j g<down>
+noremap  k g<up>
+
+" center screen after next & prev search
+nnoremap n nzz
+nnoremap N Nzz
+xnoremap n nzz
+xnoremap N Nzz
+
+" Yank until end of line with <S-y> as expected
+nnoremap Y y$
+
+" --- Window Management
+" ------------------------------------------------------------------------------
+" smart way to move between windows
+noremap <C-j> <C-W>j
+noremap <C-k> <C-W>k
+noremap <C-h> <C-W>h
+noremap <C-l> <C-W>l
+
+" goto start of fold
+map gk [z
+map gj ]z
+
+" don't cancel selection after indenting in visual
+xnoremap < <gv
+xnoremap > >gv
+
 " delete with Ctrl-D in insertmode
 inoremap <C-D>       <backspace>
+
 " lower- and uppercase under cursor in normalmode
 " nnoremap gu  vgu
 " nnoremap gU  vgU
 nnoremap gwu viwgu
 nnoremap gwU viwgU
-" Visual Block mode is far more useful that Visual mode (so swap the commands)...
-nnoremap v <C-V>
-nnoremap <C-V> v
-vnoremap v <C-V>
-vnoremap <C-V> v
-" }}}
-" Custom {{{
-" ------------------------------------------------------------------------------
+
 " Make vaG select the entire file...
 vmap aG VGo1G
+
 " jump around in diff
 nmap <silent> ,d ]c
 nmap <silent> ,D [c
+
 " jump aorund in errors
 nmap ,e :cnext<cr>
 nmap ,E :cprev<cr>
+
 " Temporary: select font 
 nnoremap <leader>pf :set guifont=*<CR> 
+
 " center viewport
 nnoremap <leader><space> zz
+
 " Join upwards
 map K kJ
+
 " start makro with alt-q instead of @
 nnoremap Q @q
 vnoremap Q :norm @q<cr>
+
 " searchmode with shift-space
 noremap <S-space> /
+
 " Jump to mark {a-zA-Z}
 nnoremap ä '
 nnoremap Ä `
+
 " treat jk as <esc> in insertmode and commandmode
 map! jk <ESC>
+
 " fold with ö instead of z 
 xmap öf mzzf`zzz
 map öF zF
@@ -388,34 +415,39 @@ map öA zA
 map öM zM
 map öm zm
 map öR zR
+
 "resize viewport
 nmap <silent> <Right> :call utils#intelligentVerticalResize('right')<CR>
 nmap <silent> <Left> :call utils#intelligentVerticalResize('left')<CR>
 nmap <silent> <Up> :resize -5<CR>
 nmap <silent> <Down> :resize +5<CR>
+
 " source local stuff
 xmap <silent> g: :<c-U>call utils#sourceVimscript("visual")<cr>
 nmap <silent> g: :call utils#sourceVimscript("currentline")<cr>
+
 " move a line of text using ALT+[jk] (TODO: credit, forgot who ...)
 nmap <A-k> :let fdm_sav=&fdm\|:set fdm=manual\|:m-2<CR>:let &fdm=fdm_sav<CR>==
 nmap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>==
 xmap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
 xmap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
+
 " quick fold toggeling
 nnoremap <tab> za
-" mappings for trailing spaces function
-nmap <F12> utils#showSpaces 1<CR>
-nmap <S-F12> m`:utils#trimSpaces<CR>``
-xmap <S-F12> :utils#trimSpaces<CR>
+
 " newlines without insertmode
 map <A-o> o<ESC>
 map <A-S-o> <S-o><ESC>
+
 " highlight last inserted text
 nmap gV `[v`]
+
 "substitute current word under the cursor
 nmap <C-s> :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+
 " substitute word in search register (/,?)
 nmap <A-s> :%s/\<<C-r>/\>//gc<Left><Left><Left>
+
 " manage tabs
 noremap <C-t>n :tabnew<cr>
 noremap <C-t>o :tabonly<cr>
@@ -423,27 +455,32 @@ noremap <C-t>l :tabnext<cr>
 noremap <C-t>h :tabprevious<cr>
 noremap <C-t>j :tabfirst<cr>
 noremap <C-t>k :tablast<cr>
-
 noremap <C-t><S-h> :tabmove -<CR>
 noremap <C-t><S-l> :tabmove +<CR>
 noremap <C-t><S-j> :tabmove 0<CR>
 noremap <C-t><S-k> :tabmove $<CR>
+
 " Switch CWD to the directory of the open buffer
 noremap  <leader>cd :cd %:p:h<cr>:pwd<cr>
+
 " quickly write
 nnoremap <leader>w  :update<CR>
 nnoremap <leader>W  :update!<CR>
+
 " Quickly open a buffer for scribble
 noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
+
 " toggle numbers and relative numbers
 nmap <silent><leader>n  :call utils#toggleRNU()<cr>
+
 " edit and source vimrc
 nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
 nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
 nnoremap <silent><leader>vf :source %<CR>
+
 " disable highlight when <leader><cr> is pressed
 noremap  <silent> <leader><cr> :let @/ = ""<cr>
-" }}}
+
 " ##############################################################################
 " END MAPPINGS }}}
 " PLUGIN SETTINGS & MAPPINGS{{{
@@ -500,7 +537,7 @@ nmap gl <Plug>(EasyAlign)
 " Emmet {{{
 " ------------------------------------------------------------------------------
 let g:user_emmet_install_global=0
-" autocmd FileType html,css EmmetInstall
+autocmd FileType html,css EmmetInstall
 let g:user_emmet_mode='a'
 let g:user_emmet_leader_key='<C-e>'
 " }}}
@@ -515,22 +552,25 @@ nmap <leader>gd :Gvdiff<CR>
 nmap <leader>gw :Gwrite<CR>
 nmap <leader>gb :Gbrowse<CR>
 nmap <leader>gc :Gcommit
-nmap <silent> <leader>G :Git 
+nmap <leader>G :Git 
 " }}}
 " Gitgutter {{{
 " ------------------------------------------------------------------------------
-" let g:gitgutter_sign_added = ''
-" let g:gitgutter_sign_modified = ''
-" let g:gitgutter_sign_removed = ''
-" let g:gitgutter_sign_removed_first_line = ''
-" let g:gitgutter_sign_modified_removed = ''
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '-'
+let g:gitgutter_sign_removed_first_line = '_'
+let g:gitgutter_sign_modified_removed = '*'
 nmap <leader>hn <Plug>GitGutterNextHunk
 nmap <leader>hp <Plug>GitGutterPrevHunk
 nmap <Leader>ha <Plug>GitGutterStageHunk
 nmap <Leader>hr <Plug>GitGutterUndoHunk
+nmap <Leader>hv <Plug>GitGutterPreviewHunk
 let g:gitgutter_override_sign_column_highlight = 1
 let g:gitgutter_sign_column_always = 1
-let g:gitgutter_diff_args = '-w'
+let g:gitgutter_diff_args = '--ignore-space-at-eol --ignore-all-space --ignore-blank-lines'
+let g:gitgutter_realtime = 0
+let g:gitgutter_eager = 0
 "  }}}
 " Goyo {{{
 " " ------------------------------------------------------------------------------
@@ -927,11 +967,24 @@ set omnifunc=syntaxcomplete#Complete
 let g:ycm_auto_trigger = 1
 let g:ycm_complete_in_comments = 1
 let g:ycm_seed_identifiers_with_syntax = 1
-let g:ycm_filetype_blacklist={'unite': 1}
-let g:ycm_filetype_specific_completion_to_disable = {
-            \ 'gitcommit': 1,
-            \ 'html': 1
+let g:ycm_filetype_blacklist = {
+            \ 'html': 1,
+            \ 'php': 1,
+            \ 'tagbar' : 1,
+            \ 'qf' : 1,
+            \ 'notes' : 1,
+            \ 'markdown' : 1,
+            \ 'unite' : 1,
+            \ 'text' : 1,
+            \ 'vimwiki' : 1,
+            \ 'pandoc' : 1,
+            \ 'infolog' : 1,
+            \ 'mail' : 1
             \}
+" let g:ycm_filetype_specific_completion_to_disable = {
+"             \ 'gitcommit': 1,
+"             \ 'html': 1
+"             \ }
 if exists('youcompleteme#Enable()')
     augroup load_us_ycm
         autocmd!

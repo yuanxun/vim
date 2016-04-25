@@ -1,5 +1,5 @@
 " ------------------------------------------------------------------------------
-" --- Parts of this file were originally created by github.com/martin-svk
+" Parts of this file were originally created by github.com/martin-svk
 " ------------------------------------------------------------------------------
 " Utility functions 
 " ##############################################################################

@@ -4,9 +4,10 @@
 " Author: Timm Stelzer <timmstelzer@gmail.com>
 " Source: https://github.com/tstelzer/vim
 " ------------------------------------------------------------------------------
-" TODO better mapping sort
-"  STARTUP {{{
+" vim:foldmethod=expr
+" STARTUP 
 " ##############################################################################
+
 " check for compatible mode and stomp it
 if &compatible
     set nocompatible
@@ -25,16 +26,16 @@ if s:is_windows
 else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
 endif
+
+" PLUGINS 
 " ##############################################################################
-" END STARTUP }}}
-" PLUGINS {{{
-" ##############################################################################
-" Pre-plugin {{{
+
+" Pre-plugin 
 " ------------------------------------------------------------------------------
 set runtimepath+=$rtp
 call plug#begin($rtp.'plugged')
-" }}}
-" Plugin list {{{
+
+" Plugin list 
 " ------------------------------------------------------------------------------
 " PLUGINS MARKED WITH TODO ARE NEW TO ME AND NOT YET FULLY EXPLORED
 " ------------------------------------------------------------------------------
@@ -138,22 +139,21 @@ Plug 'kana/vim-textobj-function'                     " adds functions as textobj
 Plug 'glts/vim-textobj-comment'                      " adds comments as textobject
 Plug 'kana/vim-textobj-fold'                         " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'                       " adds indents as textobjects
-" }}}
-" Post-plugin {{{
+
+" Post-plugin 
 " ------------------------------------------------------------------------------
 call plug#end()
 filetype plugin indent on
-" }}}
+
+" SOURCE 
 " ##############################################################################
-" END PLUGINS }}}
-" SOURCE {{{
-" ##############################################################################
+
 runtime rc/abbreviations.vim
 runtime rc/utils.vim
+
+" SETTINGS 
 " ##############################################################################
-" END SOURCE }}}
-" SETTINGS {{{
-" ##############################################################################
+
 if s:is_windows
     try
         set guifont=Fira_Mono_Patch_Medium:h10:cANSI
@@ -243,12 +243,13 @@ if executable('ag')                     " grep via silversearcher
     set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
     set grepformat=%f:%l:%c:%m
 endif
+
+" SYNTAX & HIGHLIGHTING 
 " ##############################################################################
-" END SETTINGS }}}
-" SYNTAX & HIGHLIGHTING {{{
-" ##############################################################################
-" CSS3 Fixes {{{
+
+" CSS3 Fixes 
 " ------------------------------------------------------------------------------
+
 augroup CSS3Fix
     au!
     " No idea where this comes from
@@ -271,17 +272,16 @@ augroup CSS3Fix
     au FileType css setlocal iskeyword+=-
     au FileType scss setlocal iskeyword+=-
 augroup END
-" }}}
+
+" MAPPINGS 
 " ##############################################################################
-" END SYNTAX & HIGHLIGHTING }}}
-" MAPPINGS {{{
-" ##############################################################################
-" --- Leader
+
+" --- (Leader) 
 " ------------------------------------------------------------------------------
 let mapleader   = "\<Space>"
 let g:mapleader = "\<Space>"
 
-" --- Unmap
+" --- (Unmap) 
 " ------------------------------------------------------------------------------
 map , <Nop>
 map K         <Nop>
@@ -290,20 +290,28 @@ map <M-Left>  <Nop>
 map <M-Down>  <Nop>
 map <M-Up>    <Nop>
 
-" --- Default Remap
+" --- Default Remap 
 " ------------------------------------------------------------------------------
-"  visual select behaviour
+" ignore EOL sign when using $ in visualmode
 xmap $ $h
 
-"  default <C-c> breaks stuff, don't use it
+" using Ctrl-C doesn't properly call InsertLeave trigger in insertmode
 imap <C-c> <esc>
 xmap <C-c> <esc>
 
-" Visual Block mode is far more useful that Visual mode (so swap the commands)...
+" don't yank to default register when changing something
+nnoremap c "xc
+xnoremap c "xc
+
+" swap visualblock and visualselect
 nnoremap v <C-V>
 nnoremap <C-V> v
 vnoremap v <C-V>
 vnoremap <C-V> v
+
+" don't move cursor when yanking in visualmode
+vnoremap y myy`y
+vnoremap Y myY`y
 
 " center screen when moving screenwise
 nnoremap <C-u> <C-u>zz
@@ -315,14 +323,8 @@ xnoremap <C-d> <C-d>zz
 xnoremap <C-f> <C-f>zz
 xnoremap <C-b> <C-b>zz
 
-" --- Custom
-" ------------------------------------------------------------------------------
 " Keep the cursor in place while joining lines
 nnoremap J mzJ`z
-
-" Don't yank to default register when changing something
-nnoremap c "xc
-xnoremap c "xc
 
 " go to start of inserted text after yank and put
 xnoremap <silent> y y`[
@@ -342,64 +344,18 @@ xnoremap N Nzz
 " Yank until end of line with <S-y> as expected
 nnoremap Y y$
 
-" --- Window Management
-" ------------------------------------------------------------------------------
-" smart way to move between windows
-noremap <C-j> <C-W>j
-noremap <C-k> <C-W>k
-noremap <C-h> <C-W>h
-noremap <C-l> <C-W>l
-
-" goto start of fold
-map gk [z
-map gj ]z
-
 " don't cancel selection after indenting in visual
 xnoremap < <gv
 xnoremap > >gv
 
-" delete with Ctrl-D in insertmode
-inoremap <C-D>       <backspace>
+" --- Keyboard specific alternatives 
+" ------------------------------------------------------------------------------
+" quickly write
+nnoremap <leader>w  :update<CR>
+nnoremap <leader>W  :update!<CR>
 
-" lower- and uppercase under cursor in normalmode
-" nnoremap gu  vgu
-" nnoremap gU  vgU
-nnoremap gwu viwgu
-nnoremap gwU viwgU
-
-" Make vaG select the entire file...
-vmap aG VGo1G
-
-" jump around in diff
-nmap <silent> ,d ]c
-nmap <silent> ,D [c
-
-" jump aorund in errors
-nmap ,e :cnext<cr>
-nmap ,E :cprev<cr>
-
-" Temporary: select font 
-nnoremap <leader>pf :set guifont=*<CR> 
-
-" center viewport
-nnoremap <leader><space> zz
-
-" Join upwards
-map K kJ
-
-" start makro with alt-q instead of @
-nnoremap Q @q
-vnoremap Q :norm @q<cr>
-
-" searchmode with shift-space
-noremap <S-space> /
-
-" Jump to mark {a-zA-Z}
-nnoremap ä '
-nnoremap Ä `
-
-" treat jk as <esc> in insertmode and commandmode
-map! jk <ESC>
+" quick fold toggeling
+nnoremap <tab> za
 
 " fold with ö instead of z 
 xmap öf mzzf`zzz
@@ -415,6 +371,104 @@ map öA zA
 map öM zM
 map öm zm
 map öR zR
+
+" Jump to mark {a-zA-Z}
+nnoremap ä '
+nnoremap Ä `
+
+" treat jk as <esc> in insertmode and commandmode
+map! jk <ESC>
+
+" start makro with alt-q instead of @
+nnoremap Q @q
+vnoremap Q :norm @q<cr>
+
+" searchmode with shift-space
+noremap <S-space> /
+
+" --- Motion and Movement 
+" ------------------------------------------------------------------------------
+" goto start of fold
+map gk [z
+map gj ]z
+
+" --- Manipulation and Selection 
+" ------------------------------------------------------------------------------
+" newlines without insertmode
+map <A-o> o<ESC>cc<ESC>
+map <A-S-o> <S-o><ESC>cc<ESC>
+
+" highlight last inserted text
+nmap gV `[v`]
+
+" Join upwards
+map K kJ
+
+" Make vaG select the entire file...
+vmap aG VGo1G
+
+" lower- and uppercase under cursor in normalmode
+nnoremap gu  vgu
+nnoremap gU  vgU
+nnoremap gwu viwgu
+nnoremap gwU viwgU
+
+" --- Alt-Leader
+" ------------------------------------------------------------------------------
+" jump to diffs
+nmap ,d ]c
+nmap ,D [c
+
+" jump to errors
+nmap ,e :cnext<cr>
+nmap ,E :cprev<cr>
+
+" --- Viewport Management 
+" ------------------------------------------------------------------------------
+" move between splits
+noremap <C-j> <C-W>j
+noremap <C-k> <C-W>k
+noremap <C-h> <C-W>h
+noremap <C-l> <C-W>l
+
+" center viewport
+nnoremap <leader><space> zz
+
+" switch to tabs
+noremap <C-t>n :tabnew<cr>
+noremap <C-t>o :tabonly<cr>
+noremap <C-t>l :tabnext<cr>
+noremap <C-t>h :tabprevious<cr>
+noremap <C-t>j :tabfirst<cr>
+noremap <C-t>k :tablast<cr>
+
+" move tabs around
+noremap <C-t><S-h> :tabmove -<CR>
+noremap <C-t><S-l> :tabmove +<CR>
+noremap <C-t><S-j> :tabmove 0<CR>
+noremap <C-t><S-k> :tabmove $<CR>
+
+" --- Custom functions and behaviour 
+" ------------------------------------------------------------------------------
+" disable highlight when <leader><cr> is pressed
+noremap  <silent> <leader><cr> :let @/ = ""<cr>
+
+" edit and source vimrc
+nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
+nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
+nnoremap <silent><leader>vf :source %<CR>
+
+" Quickly open a buffer for scribble
+noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
+
+" Switch CWD to the directory of the open buffer
+noremap  <leader>cd :cd %:p:h<cr>:pwd<cr>
+
+"substitute current word under the cursor
+nmap <C-s> :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
+
+" substitute word in search register (/,?)
+nmap <A-s> :%s/\<<C-r>/\>//gc<Left><Left><Left>
 
 "resize viewport
 nmap <silent> <Right> :call utils#intelligentVerticalResize('right')<CR>
@@ -432,69 +486,24 @@ nmap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>==
 xmap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
 xmap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
 
-" quick fold toggeling
-nnoremap <tab> za
-
-" newlines without insertmode
-map <A-o> o<ESC>
-map <A-S-o> <S-o><ESC>
-
-" highlight last inserted text
-nmap gV `[v`]
-
-"substitute current word under the cursor
-nmap <C-s> :%s/\<<C-r><C-w>\>//gc<Left><Left><Left>
-
-" substitute word in search register (/,?)
-nmap <A-s> :%s/\<<C-r>/\>//gc<Left><Left><Left>
-
-" manage tabs
-noremap <C-t>n :tabnew<cr>
-noremap <C-t>o :tabonly<cr>
-noremap <C-t>l :tabnext<cr>
-noremap <C-t>h :tabprevious<cr>
-noremap <C-t>j :tabfirst<cr>
-noremap <C-t>k :tablast<cr>
-noremap <C-t><S-h> :tabmove -<CR>
-noremap <C-t><S-l> :tabmove +<CR>
-noremap <C-t><S-j> :tabmove 0<CR>
-noremap <C-t><S-k> :tabmove $<CR>
-
-" Switch CWD to the directory of the open buffer
-noremap  <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" quickly write
-nnoremap <leader>w  :update<CR>
-nnoremap <leader>W  :update!<CR>
-
-" Quickly open a buffer for scribble
-noremap  <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
-
+" --- Options
+" ------------------------------------------------------------------------------
 " toggle numbers and relative numbers
 nmap <silent><leader>n  :call utils#toggleRNU()<cr>
 
-" edit and source vimrc
-nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
-nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
-nnoremap <silent><leader>vf :source %<CR>
-
-" disable highlight when <leader><cr> is pressed
-noremap  <silent> <leader><cr> :let @/ = ""<cr>
-
+" PLUGIN SETTINGS & MAPPINGS
 " ##############################################################################
-" END MAPPINGS }}}
-" PLUGIN SETTINGS & MAPPINGS{{{
-" ##############################################################################
-" Colorizer {{{
+
+" Colorizer 
 " ------------------------------------------------------------------------------
 let g:colorizer_startup = 0
 nmap <leader>pc <Plug>Colorizer
-"  }}}
-" Commentary {{{
+"  
+" Commentary 
 " ------------------------------------------------------------------------------
 nmap gC <Plug>CommentaryLine
-" }}}
-" CtrlP"{{{
+
+" CtrlP
 " ------------------------------------------------------------------------------
 let g:ctrlp_open_new_file = 't'
 let g:ctrlp_reuse_window = 'startify'
@@ -507,8 +516,8 @@ let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-
 map <leader>f :CtrlP<cr>
 map <leader>b :CtrlPBuffer<cr>
 map <leader>m :CtrlPMRU<cr>
-"}}}
-" delimitMate {{{
+
+" delimitMate 
 " ------------------------------------------------------------------------------
 map! <C-l> <Plug>delimitMateS-Tab
 map! <S-Tab> <Plug>delimitMateJumpMany
@@ -528,24 +537,24 @@ let delimitMate_expand_space = 1
 " au FileType tcl let b:delimitMate_expand_space = 1
 " let delimitMate_excluded_regions = "Comment,String"
 au FileType javascript let b:delimitMate_eol_marker = ";"
-" }}}
-" Easyalign {{{
+ 
+" Easyalign 
 " ------------------------------------------------------------------------------
 xmap gl <Plug>(EasyAlign)
 nmap gl <Plug>(EasyAlign)
-" }}}
-" Emmet {{{
+ 
+" Emmet 
 " ------------------------------------------------------------------------------
 let g:user_emmet_install_global=0
 autocmd FileType html,css EmmetInstall
 let g:user_emmet_mode='a'
 let g:user_emmet_leader_key='<C-e>'
-" }}}
-" FastFold {{{
+ 
+" FastFold 
 " ------------------------------------------------------------------------------
 nmap öu <Plug>(FastFoldUpdate)
-" }}}
-" Fugitive {{{
+
+" Fugitive 
 " ------------------------------------------------------------------------------
 " nmap <leader>gs :Gstatus<CR>
 nmap <leader>gd :Gvdiff<CR>
@@ -553,8 +562,8 @@ nmap <leader>gw :Gwrite<CR>
 nmap <leader>gb :Gbrowse<CR>
 nmap <leader>gc :Gcommit
 nmap <leader>G :Git 
-" }}}
-" Gitgutter {{{
+
+" Gitgutter 
 " ------------------------------------------------------------------------------
 let g:gitgutter_sign_added = '+'
 let g:gitgutter_sign_modified = '~'
@@ -571,8 +580,8 @@ let g:gitgutter_sign_column_always = 1
 let g:gitgutter_diff_args = '--ignore-space-at-eol --ignore-all-space --ignore-blank-lines'
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 0
-"  }}}
-" Goyo {{{
+  
+" Goyo 
 " " ------------------------------------------------------------------------------
 let g:goyo_height = "100%"
 let g:goyo_width = 90
@@ -592,17 +601,17 @@ autocmd! User GoyoEnter nested call <SID>goyo_enter()
 autocmd! User Goyoleave nested call <SID>goyo_leave()
 
 nnoremap <silent>           <leader>pz :Goyo<CR>
-" "  }}}
-" GV {{{
+" "  
+" GV 
 " ------------------------------------------------------------------------------
 nmap <leader>gl :GV<cr>
 nmap <leader>gL :GV!<cr>
-" }}}
-" HiLinkTrace {{{
+
+" HiLinkTrace 
 " ------------------------------------------------------------------------------
 nnoremap <leader>ph :HLT<CR>
-" }}}
-" Js-Beautify {{{
+
+" Js-Beautify 
 " ------------------------------------------------------------------------------
 autocmd FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
 autocmd FileType json nnoremap <buffer> <leader>pb :call JsonBeautify()<cr>
@@ -614,12 +623,12 @@ autocmd FileType css nnoremap <buffer> <leader>pb :call CSSBeautify()<cr>
 " autocmdFileType jsx xnoremap <buffer><leader>pb :call RangeJsxBeautify()<cr>
 " autocmdFileType html xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
 " autocmdFileType css xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
-" }}}
-" Lexima {{{
+
+" Lexima 
 " ------------------------------------------------------------------------------
 let g:lexima_enable_newline_rules = 1
-" }}}
-" Lightline {{{
+
+" Lightline 
 " ------------------------------------------------------------------------------
 if s:patchedFont == 1
     let g:lightline = {
@@ -755,8 +764,8 @@ function! s:syntastic()
     SyntasticCheck
     call lightline#update()
 endfunction
-"}}}
-" Incsearch {{{
+
+" Incsearch 
 " ------------------------------------------------------------------------------
 let g:incsearch#auto_nohlsearch = 1
 map / <Plug>(incsearch-forward)
@@ -768,18 +777,18 @@ map * <Plug>(incsearch-nohl-*)
 map # <Plug>(incsearch-nohl-#)
 " map <leader>/ <Plug>(incsearch-fuzzy-/)
 " map <leader>? <Plug>(incsearch-fuzzy-?)
-" }}}
-" indentLine {{{
+
+" indentLine 
 " ------------------------------------------------------------------------------
 let g:indentLine_fileTypeExclude = ['help', 'text', 'vim']
 let g:indentLine_color_term = 244
 let g:indentLine_first_char = '>'
-" }}}
-" matchit {{{
+
+" matchit 
 " ------------------------------------------------------------------------------
 set matchpairs+=<:>
-" }}}
-" NERDTree {{{
+
+" NERDTree 
 " ------------------------------------------------------------------------------
 let g:NERDTreeQuitOnOpen = 1
 let g:NERDTreeAutoCenter = 1
@@ -800,8 +809,8 @@ noremap <silent> <leader>nf :NERDTreeFind<cr>cd
 nnoremap <leader>nb :Bookmark<space>
 
 let NERDTreeMapOpenVSplit='v'
-"}}}
-" Neocomplete {{{
+
+" Neocomplete 
 " ------------------------------------------------------------------------------
 " let g:acp_enableAtStartup = 0
 " let g:neocomplete#enable_at_startup = 0
@@ -818,27 +827,27 @@ let NERDTreeMapOpenVSplit='v'
 " if !exists('g:neocomplete#sources#omni#input_patterns')
 "   let g:neocomplete#sources#omni#input_patterns = {}
 " endif
-" }}}
-" Plug {{{
+
+" Plug 
 " ------------------------------------------------------------------------------
 let g:plug_timeout = 240
-" }}}
-" polyglot {{{
+
+" polyglot 
 " ------------------------------------------------------------------------------
 let g:polyglot_disabled = ['css', 'markdown', 'javaScript', 'html']
-" }}}
-" ~~~ QuickScope {{{
+
+" ~~~ QuickScope 
 " ------------------------------------------------------------------------------
 " let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
 " nnoremap <leader>pq :QuickScopeToggle<CR>
-"  }}}
-" Sayonara {{{
+"  
+" Sayonara 
 " ------------------------------------------------------------------------------
 " save current session & close all buffers
 nnoremap <leader>Q :SSave last<CR>y<CR>:wqa<CR>
 nnoremap <leader>q          :Sayonara<CR>
-" }}}
-" Startify {{{
+
+" Startify 
 " ------------------------------------------------------------------------------
 let g:startify_session_delete_buffers = 1
 let g:startify_files_number = 7
@@ -894,7 +903,6 @@ let g:startify_custom_footer = g:utils#centerLines([
             \ '                                                 |___/    ',
             \ ])
 
-
 augroup Startify
     au!
     au User Startified file Startify
@@ -907,19 +915,19 @@ augroup END
 nnoremap <leader>sd :SSave default<CR>y<CR>
 nnoremap <leader>sD :SLoad default<CR>
 nnoremap <leader>sm :SSave _<C-r>%<CR>
-"  }}}
-" Surround {{{
+"  
+" Surround 
 " ------------------------------------------------------------------------------
 nmap ms  ys
 nmap mS  ysiW
 nmap mss yss
 nmap mSS ySS
-" }}}
-" Supertab {{{
+
+" Supertab 
 " ------------------------------------------------------------------------------
 " let g:SuperTabDefaultCompletionType = '<C-n>'
-" }}}
-" Syntastic {{{
+
+" Syntastic 
 " ------------------------------------------------------------------------------
 let g:syntastic_loc_list_height = 2
 let g:syntastic_always_populate_loc_list = 0
@@ -931,20 +939,20 @@ let g:syntastic_HTML_checkers = ['jshint']
 let g:syntastic_BEMHTML_checkers = ['bemhtmllint']
 let g:syntastic_SASS_checkers = ['sass']
 let g:syntastic_SCSS_checkers = ['sass']
-"}}}
-" Tabmerge {{{
+
+" Tabmerge 
 " ------------------------------------------------------------------------------
 noremap <C-t>mh :Tabmerge left<CR>
 noremap <C-t>ml :Tabmerge right<CR>
-" }}}
-" Text-Obj-Fold {{{
+
+" Text-Obj-Fold 
 " ------------------------------------------------------------------------------
 let g:textobj_fold_no_default_key_mappings = 1
 
 xmap aö <Plug>(textobj-fold-a)
 xmap iö <Plug>(textobj-fold-i)
-" }}}
-" UltiSnips {{{
+
+" UltiSnips 
 " ------------------------------------------------------------------------------
 let g:UltiSnipsEditSplit = 'context'
 let g:UltiSnipsExpandTrigger = '<C-j>'
@@ -952,16 +960,16 @@ let g:UltiSnipsJumpForwardTrigger = '<C-j>'
 let g:UltiSnipsJumpBackwardTrigger= '<C-k>'
 
 nmap <silent><leader>ps :UltiSnipsEdit<cr>
-"  }}}
-" Wimproved.vim {{{
+"  
+" Wimproved.vim 
 " ------------------------------------------------------------------------------
 if s:is_windows
     autocmd GUIEnter * silent! WToggleClean
 endif
 
 noremap <F11> :WToggleFullscreen<CR>
-" }}}
-" YouCompleteMe {{{
+
+" YouCompleteMe 
 " ------------------------------------------------------------------------------
 set omnifunc=syntaxcomplete#Complete
 let g:ycm_auto_trigger = 1
@@ -992,11 +1000,8 @@ if exists('youcompleteme#Enable()')
                     \| call youcompleteme#Enable() | autocmd! load_us_ycm
     augroup END
 endif
-" }}}
-" xterm colors {{{
+
+" xterm colors 
 " ------------------------------------------------------------------------------
 nnoremap <silent><leader>px :VXtermColorTable<CR>
-" }}}
-" ##############################################################################
-" END CONFIG PLUGINS }}}
-" vim:foldmethod=marker
+

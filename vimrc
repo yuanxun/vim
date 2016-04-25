@@ -4,8 +4,7 @@
 " Author: Timm Stelzer <timmstelzer@gmail.com>
 " Source: https://github.com/tstelzer/vim
 " ------------------------------------------------------------------------------
-" vim:foldmethod=expr
-" STARTUP 
+" STARTUP
 " ##############################################################################
 
 " check for compatible mode and stomp it
@@ -27,7 +26,7 @@ else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
 endif
 
-" PLUGINS 
+" PLUGINS
 " ##############################################################################
 
 " Pre-plugin 
@@ -145,13 +144,13 @@ Plug 'kana/vim-textobj-indent'                       " adds indents as textobjec
 call plug#end()
 filetype plugin indent on
 
-" SOURCE 
+" SOURCE
 " ##############################################################################
 
 runtime rc/abbreviations.vim
 runtime rc/utils.vim
 
-" SETTINGS 
+" SETTINGS
 " ##############################################################################
 
 if s:is_windows
@@ -244,7 +243,7 @@ if executable('ag')                     " grep via silversearcher
     set grepformat=%f:%l:%c:%m
 endif
 
-" SYNTAX & HIGHLIGHTING 
+" SYNTAX & HIGHLIGHTING
 " ##############################################################################
 
 " CSS3 Fixes 
@@ -273,7 +272,7 @@ augroup CSS3Fix
     au FileType scss setlocal iskeyword+=-
 augroup END
 
-" MAPPINGS 
+" MAPPINGS
 " ##############################################################################
 
 " --- (Leader) 

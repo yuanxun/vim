@@ -6,9 +6,20 @@ function! VimFolds()
         return ">2"
     elseif match(nextline, '^"\s###') >= 0
         return ">1"
+    elseif match(thisline, '^" vim:') >= 0
+        return "0"
     else
         return "="
     endif
 endfunction
+
 setlocal foldmethod=expr
 setlocal foldexpr=VimFolds()
+
+" function! VimFoldText()
+"     let foldsize = (v:foldend-v:foldstart)
+"     return getline(v:foldstart).' ('.foldsize.' lines)'
+" endfunction
+
+" setlocal foldtext=VimFoldText()
+

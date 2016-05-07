@@ -14,12 +14,6 @@ snippet "#
 " ### $0
 " ##############################################################################
 endsnippet
-snippet ".
-" ${1:sectionTitle} {{{
-" ------------------------------------------------------------------------------
-${VISUAL}
-" }}}
-endsnippet
 snippet "---
 " ------------------------------------------------------------------------------
 " --- ${1:subSectionTitle}
@@ -32,4 +26,7 @@ snippet "-
 endsnippet
 snippet s:c
 let s:${1:gray} = [ '${2:${VISUAL}}', ${3:7}, ${4:7}, ${5:7} ]
+endsnippet
+snippet Plug
+Plug '${1:maintainer}/${2:repo}' " ${0:description}
 endsnippet

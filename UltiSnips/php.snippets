@@ -1,0 +1,23 @@
+snippet c:gf "Couch get_custom_field" i
+<cms:get_custom_field '$1' masterpage='$2' />
+endsnippet
+snippet c:ed "Couch editable" i
+<cms:editable name='$1' label='${2:$1}' desc='$3' type='$4'>$0${VISUAL}</cms:editable>
+endsnippet
+snippet c:t
+<cms:template title='$1'>
+	$0${VISUAL}
+</cms:template>
+endsnippet
+snippet c:sh "Couch show variable" i
+<cms:show $1 />
+endsnippet
+snippet c:se "Couch set variable" i
+<cms:set ${1:var}='${0:string}' />
+endsnippet
+snippet c:em
+<cms:embed '$1' />$0
+endsnippet
+snippet c:l "Couch link" i
+<cms:link '$1' />$0
+endsnippet

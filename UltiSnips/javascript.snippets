@@ -1,0 +1,29 @@
+snippet c.l
+console.log($0);
+endsnippet
+snippet cat
+${1:catename}: {
+	route: '${1/\w+/\L$0\E/g}',
+	name: '${1/\w+/\U$0\E/g}',
+	dependency: '$2',
+	description: '$3',
+	options: {
+		$0
+	},
+},
+endsnippet
+snippet opt
+${1:optionname}: {
+	route: '${1/\w+/\L$0\E/g}',
+	name: '${1/\w+/\L$0\E/g}',
+	syntax: '$2',
+	example: '$3',
+	description: '$4',
+	configString: '$5',
+	configDefault: '$6',
+	configComment: '$7',
+	doc: [
+		'$8',
+	],
+},$0
+endsnippet

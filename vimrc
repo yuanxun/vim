@@ -45,8 +45,7 @@ Plug 'guns/xterm-color-table.vim'                    " show xterm color list
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
-Plug 'tstelzer/welpe.vim',                           " welpe colorscheme (local)
-            \ { 'frozen': 1 }
+Plug 'C:/Users/Timm/vimfiles/plugged/welpe.vim'      " welpe colorscheme (local)
 Plug 'chriskempson/base16-vim'                       " base16 vim port
 Plug 'docapotamus/jellybeans.vim'                    " jellybeans
 Plug 'altercation/vim-colors-solarized'              " solarized colorscheme
@@ -114,16 +113,19 @@ Plug 'mattn/emmet-vim'                               " emmet integration
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
+Plug 'triglav/vim-visual-increment'                  " increment sequencially with Ctrl-A
 Plug 'thinca/vim-visualstar'                         " improves * and #
 Plug 'Konfekt/FastFold'                              " improves Folds
 Plug 'tpope/vim-speeddating'                         " improves number in-/decementation (C-X/C-A)
 Plug 'tpope/vim-repeat'                              " makes lots of commands repeatable with .
 Plug 'tpope/vim-abolish'                             " improves abbrev functionality
-Plug 'mhinz/vim-sayonara',                           " essentially :qw TODO
+Plug 'mhinz/vim-sayonara',                           " essentially :qw
             \ { 'on' : 'Sayonara' }
 Plug 'amix/open_file_under_cursor.vim'               " read its name ...
 Plug 'edsono/vim-matchit'                            " improves % behaviour
 Plug 'haya14busa/incsearch.vim'                      " improve incsearch
+Plug 'justinmk/vim-sneak'                            " sneaky twochar motion
+Plug 'Yggdroot/indentLine'                            " show indentation line
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
@@ -148,21 +150,20 @@ runtime rc/utils.vim
 
 " SETTINGS
 " ##############################################################################
-
 if s:is_windows
-    try
-        set guifont=Fira_Mono_Patch_Medium:h10:cANSI
-        let s:patchedFont = 1           " is the font powerline patched?
-    catch
-    endtry
-    set columns=160
-    set lines=40
+  try
+    set guifont=Fira_Mono_Patch_Medium:h10:cANSI
+    let s:patchedFont = 1           " is the font powerline patched?
+  catch
+  endtry
+  set columns=160
+  set lines=40
 else
-    try
-        set guifont==Fira\ Mono\ Medium\ 10
-        let s:patchedFont = 0           " is the font powerline patched?
-    catch
-    endtry
+  try
+    set guifont==Fira\ Mono\ Medium\ 10
+    let s:patchedFont = 0           " is the font powerline patched?
+  catch
+  endtry
 endif
 set guioptions-=m                       " disable the menu
 set guioptions-=t                       " disable tear-off menus
@@ -180,6 +181,8 @@ set fileencodings=ucs-bom,utf8,prc      " encoding
 set langmenu=en helplang=en             " set menu and help language
 set modelines=1 noshowmode              " allows filespefic vim options
 set virtualedit=block                   " allows blockwise visualmode over EOL
+set conceallevel=1                      " defines behaviour of concealed text
+set concealcursor=ic                    " modes in which cursor is concealed
 set wrapscan                            " search wraps around at EOF
 set nojoinspaces                        " remove spaces when joining lines
 set shortmess=atI                       " shortens some hit-enter prompts
@@ -189,7 +192,7 @@ syntax enable                           " enable syntax highlighting
 set history=500                         " length of history, see :h history
 set undolevels=500                      " undo history lenght
 set autoread                            " update files changed outside of vim
-" set hidden                              " abandoned buffers become hidden
+set hidden                              " abandoned buffers become hidden
 set nobackup nowb noswapfile            " disable backupfiles
 set mouse=                              " disable mouseinteraction
 set backspace=indent,eol,start          " backspace scope in insert
@@ -207,13 +210,13 @@ set ttimeoutlen=500                     " mapping timeout
 set foldmethod=marker                   " use markers for folding
 set foldlevel=0                         " depth of autoopening folds
 try
-    set switchbuf=useopen,usetab,newtab " rules for new buffers
+  set switchbuf=useopen,split         " rules for new buffers
 catch
 endtry
 set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 try
-    colorscheme welpe                   " set colorscheme
+  colorscheme welpe                   " set colorscheme
 catch
 endtry
 set showtabline=2                       " always show tabline
@@ -224,16 +227,20 @@ set wildmenu                            " enhance commandline-completion
 set laststatus=2                        " always show statusline
 set cursorline                          " enable cursorline background
 if s:is_windows                         " files to ignore
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store 
+  set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store 
 else
-    set wildignore+=.git\*,.hg\*,.svn\*
+  set wildignore+=.git\*,.hg\*,.svn\*
 endif
 set cmdheight=1                         " height of commandline in lines
 set expandtab                           " converts <tab> to spaces
-set shiftwidth=4                        " number of spaces converted to <tab>
-set tabstop=4                           " number of spaces that count as <tab>
-au! FileType javascript setlocal shiftwidth=2 tabstop=2
-au! FileType html setlocal shiftwidth=2 tabstop=2
+set shiftwidth=2                        " number of spaces converted to <tab>
+set tabstop=2                           " number of spaces that count as <tab>
+augroup tabstopGroup
+  au!
+  au FileType css setlocal tabstop=4 shiftwidth=4
+  au FileType sass setlocal tabstop=4 shiftwidth=4
+  au FileType scss setlocal tabstop=4 shiftwidth=4
+augroup end
 set smarttab                            " improves vims treatment of <tab>s
 set linebreak                           " soft breaks lines according to breakat
 set nowrap                              " no wrap
@@ -241,8 +248,8 @@ set breakat=80                          " sets softwrap, needs wrap
 set textwidth=500                       " maximum amount of text til forced EOL
 set autoindent smartindent              " Auto indention
 if executable('ag')                     " grep via silversearcher
-    set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
-    set grepformat=%f:%l:%c:%m
+  set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
+  set grepformat=%f:%l:%c:%m
 endif
 
 " SYNTAX & HIGHLIGHTING
@@ -358,19 +365,19 @@ nnoremap <leader>W  :update!<CR>
 nnoremap <tab> za
 
 " fold with ö instead of z 
-xnoremap öf mzzf`zzz
-noremap öF zF
-noremap öo zo
-noremap öd zd
-noremap öD zD
-noremap öC zC
-noremap öc zc
-noremap öa za
-noremap öA zA
-noremap öA zA
-noremap öM zM
-noremap öm zm
-noremap öR zR
+" xnoremap öf mzzf`zzz
+" noremap öF zF
+" noremap öo zo
+" noremap öd zd
+" noremap öD zD
+" noremap öC zC
+" noremap öc zc
+" noremap öa za
+" noremap öA zA
+" noremap öA zA
+" noremap öM zM
+" noremap öm zm
+" noremap öR zR
 
 " Jump to mark {a-zA-Z}
 nnoremap ä '
@@ -416,22 +423,30 @@ nnoremap gU  vgU
 nnoremap gwu viwgu
 nnoremap gwU viwgU
 
+" in- and decrement visual (-block) selection
+vnoremap <c-a> <c-a>gv
+vnoremap <c-x> <c-x>gv
+
 " --- Alt-Leader
 " ------------------------------------------------------------------------------
 " jump to diffs
-nnoremap üd ]c
-nnoremap üD [c
+" nnoremap üd ]c
+" nnoremap üD [c
 
 " jump to errors
-nnoremap üe :cnext<cr>
-nnoremap üE :cprev<cr>
+" nnoremap üe :cnext<cr>
+" nnoremap üE :cprev<cr>
 
 " jump to errors
-nnoremap ül :lnext<cr>
-nnoremap üL :lprev<cr>
+" nnoremap ül :lnext<cr>
+" nnoremap üL :lprev<cr>
 
-" --- Viewport Management 
+" --- Buffer and Window Management 
 " ------------------------------------------------------------------------------
+
+" buffers
+nnoremap <leader>bn :bnew<cr>
+
 " resize entire vim
 nnoremap <S-right> :set columns+=5<CR>
 nnoremap <S-left> :set columns-=5<CR>
@@ -470,15 +485,20 @@ nnoremap <silent><leader>Q :confirm wqa<CR>
 noremap <silent><leader><cr> :let @/ = ""<cr>
 
 " edit and source vimrc
-nnoremap <silent><leader>ve :cd $rtp<cr>:tabnew $MYVIMRC<CR>
+nnoremap <silent><leader>ve :cd $rtp<cr>:e $MYVIMRC<CR>
+nnoremap <silent><leader>vs :cd $rtp<cr>:split $MYVIMRC<CR>
+nnoremap <silent><leader>vv :cd $rtp<cr>:vsplit $MYVIMRC<CR>
+nnoremap <silent><leader>vt :cd $rtp<cr>:tabnew $MYVIMRC<CR>
 nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
+
+" source current buffer
 nnoremap <silent><leader>vf :source %<CR>
 
 " Quickly open a buffer for scribble
 noremap <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
 
 " Switch CWD to the directory of the open buffer
-noremap <leader>cd :cd %:p:h<cr>:pwd<cr>
+" noremap <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 "substitute current word under the cursor
 nnoremap <C-s> :%s/\M\<<C-r><C-w>\>//gc<Left><Left><Left>
@@ -506,7 +526,7 @@ xnoremap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &f
 " --- Options
 " ------------------------------------------------------------------------------
 " toggle numbers and relative numbers
-nnoremap <silent><leader>r  :call utils#toggleRNU()<cr>
+nnoremap <silent><leader>tn  :call utils#toggleRNU()<cr>
 
 " PLUGIN SETTINGS & MAPPINGS
 " ##############################################################################
@@ -514,7 +534,7 @@ nnoremap <silent><leader>r  :call utils#toggleRNU()<cr>
 " Colorizer 
 " ------------------------------------------------------------------------------
 let g:colorizer_startup = 0
-map <leader>pc <Plug>Colorizer
+map <leader>tc <Plug>Colorizer
 
 " Commentary 
 " ------------------------------------------------------------------------------
@@ -522,17 +542,18 @@ nmap gC <Plug>CommentaryLine
 
 " CtrlP
 " ------------------------------------------------------------------------------
-let g:ctrlp_open_new_file = 't'
+let g:ctrlp_working_path_mode = 'r'
+" let g:ctrlp_open_new_file = 't'
 let g:ctrlp_reuse_window = 'startify'
 let g:ctrlp_max_depth = 15
 let g:ctrlp_max_height = 20
 let g:ctrlp_match_window = 'bottom,order:ttb'
-let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$' " TODO
+let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$|\node-modules'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 
-map <leader>f :CtrlP<cr>
-map <leader>b :CtrlPBuffer<cr>
-map <leader>m :CtrlPMRU<cr>
+map <leader>cf :CtrlP<cr>
+map <leader>cb :CtrlPBuffer<cr>
+map <leader>cm :CtrlPMRU<cr>
 
 " delimitMate 
 " ------------------------------------------------------------------------------
@@ -543,17 +564,16 @@ imap <expr> <CR> pumvisible()
             \ : "<Plug>delimitMateCR"
 let delimitMate_expand_cr = 1
 let delimitMate_expand_space = 1
+let delimitMate_excluded_regions = "Comment"
 " let delimitMate_matchpairs = "(:),[:],{:},<:>"
-" au FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
 " let delimitMate_quotes = "\" ' ` *"
 " au FileType html let b:delimitMate_quotes = "\" '"
 " au FileType mail let b:delimitMate_expand_cr = 1
 " let delimitMate_nesting_quotes = ['"','`']
 " au FileType python let b:delimitMate_nesting_quotes = ['"']
-" let delimitMate_expand_space = 1
 " au FileType tcl let b:delimitMate_expand_space = 1
-" let delimitMate_excluded_regions = "Comment,String"
-au FileType javascript let b:delimitMate_eol_marker = ";"
+au! FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
+" au! FileType javascript let b:delimitMate_eol_marker = ';'
 
 " Easyalign 
 " ------------------------------------------------------------------------------
@@ -563,13 +583,13 @@ nmap gl <Plug>(EasyAlign)
 " Emmet 
 " ------------------------------------------------------------------------------
 let g:user_emmet_install_global=0
-autocmd FileType html,php EmmetInstall
+autocmd FileType html,php,css,scss EmmetInstall
 let g:user_emmet_mode='a'
 let g:user_emmet_leader_key='<C-e>'
 
 " FastFold 
 " ------------------------------------------------------------------------------
-nmap öu <Plug>(FastFoldUpdate)
+nmap zu <Plug>(FastFoldUpdate)
 
 " Fugitive 
 " ------------------------------------------------------------------------------
@@ -644,10 +664,6 @@ autocmd FileType html xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
 autocmd FileType php xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
 autocmd FileType css xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
 autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
-
-" Lexima 
-" ------------------------------------------------------------------------------
-let g:lexima_enable_newline_rules = 1
 
 " Lightline 
 " ------------------------------------------------------------------------------
@@ -758,6 +774,7 @@ function! LightLineFilename()
                 \ ('' != fname ? fname : '[No Name]') .
                 \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
 endfunction
+
 function! LightLineFileformat()
     return winwidth(0) > 70 ? &fileformat : ''
 endfunction
@@ -769,21 +786,12 @@ endfunction
 function! LightLineFileencoding()
     return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
 endfunction
+
 function! LightLineMode()
     let fname = expand('%:t')
     return fname == 'ControlP' ? 'CtrlP' :
                 \ fname =~ 'NERD_tree' ? 'NERDTree' :
                 \ winwidth(0) > 60 ? lightline#mode() : ''
-endfunction
-
-augroup AutoSyntastic
-    autocmd!
-    autocmd BufWritePost *.scss,*.css call s:syntastic()
-augroup END
-
-function! s:syntastic()
-    SyntasticCheck
-    call lightline#update()
 endfunction
 
 " Incsearch 
@@ -801,12 +809,13 @@ map # <Plug>(incsearch-nohl-#)
 
 " indentLine 
 " ------------------------------------------------------------------------------
-let g:indentLine_fileTypeExclude = ['help', 'text', 'vim']
-let g:indentLine_color_term = 244
+let g:indentLine_color_term = 236
+" let g:indentLine_conceallevel = 2
+let g:indentLine_enabled = 0
 let g:indentLine_faster = 1
+let g:indentLine_concealcursor = 'ic'
 
-" matchit 
-" ------------------------------------------------------------------------------
+map <leader>ti :IndentLinesToggle<cr>
 
 " MatchTagAlways 
 " ------------------------------------------------------------------------------
@@ -833,7 +842,7 @@ let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortHiddenFirst = 1
 let g:NERDTreeAutoDeleteBuffer = 1
 let g:NERDTreeWinSize = 35
-let g:NERDTreeIgnore = ['.git','.swp']
+let g:NERDTreeIgnore = ['.git','.swp', 'NTUSER*']
 let g:NERDTreeChDirMode = 1
 let g:NERDTreeStatusline = ''
 let g:NERDTreeCascadeOpenSingleChildDir = 0
@@ -846,7 +855,7 @@ nnoremap <leader>nb :Bookmark<space>
 let NERDTreeMapOpenVSplit='v'
 let NERDTreeMapOpenSplit='s'
 
-" Neocomplete 
+" ~~~ Neocomplete 
 " ------------------------------------------------------------------------------
 " let g:acp_enableAtStartup = 0
 " let g:neocomplete#enable_at_startup = 0
@@ -868,15 +877,15 @@ let NERDTreeMapOpenSplit='s'
 " ------------------------------------------------------------------------------
 let g:plug_timeout = 240
 
-" polyglot 
+" ~~~ polyglot 
 " ------------------------------------------------------------------------------
-let g:polyglot_disabled = ['css', 'markdown', 'javaScript', 'html']
+" let g:polyglot_disabled = ['css', 'markdown', 'javaScript', 'html']
 
 " ~~~ QuickScope 
 " ------------------------------------------------------------------------------
 " let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
 " nnoremap <leader>pq :QuickScopeToggle<CR>
-"  
+  
 " Sayonara 
 " ------------------------------------------------------------------------------
 " save current session & close all buffers
@@ -952,17 +961,34 @@ nmap mSS ySS
 
 " Syntastic 
 " ------------------------------------------------------------------------------
-let g:syntastic_loc_list_height = 1
-let g:syntastic_always_populate_loc_list = 0
 let g:syntastic_auto_loc_list = 0
+let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_loc_list_height = 1
+let g:syntastic_auto_jump = 3 " only jump if errors are present
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
+let g:syntastic_cursor_column = 0
+let g:syntastic_stl_format = "[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]"
+
+let g:syntastic_error_symbol = "E "
+let g:syntastic_warning_symbol = "W "
 
 let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_HTML_checkers = ['jshint', 'bemhtmllint']
-let g:syntastic_BEMHTML_checkers = ['bemhtmllint']
+let g:syntastic_HTML_checkers = ['jshint']
 let g:syntastic_SASS_checkers = ['sass']
 let g:syntastic_SCSS_checkers = ['sass']
+let g:syntastic_CSS_checkers = ['sass']
+
+map <leader>ps :SyntasticCheck<cr>
+
+" sneak
+" ------------------------------------------------------------------------------
+let g:sneak#streak = 1
+let g:sneak#textobject_z = 0
+let g:sneak#use_ic_scs = 1
+
+map ö <Plug>Sneak_s
+map Ö <Plug>Sneak_S
 
 " Tabmerge 
 " ------------------------------------------------------------------------------
@@ -983,12 +1009,12 @@ let g:UltiSnipsExpandTrigger = '<C-j>'
 let g:UltiSnipsJumpForwardTrigger = '<C-j>'
 let g:UltiSnipsJumpBackwardTrigger= '<C-k>'
 
-nmap <silent><leader>ps :UltiSnipsEdit<cr>
+nmap <silent><leader>pu :UltiSnipsEdit<cr>
 
 " Wimproved.vim 
 " ------------------------------------------------------------------------------
 if s:is_windows
-    autocmd GUIEnter * silent! WToggleClean
+  autocmd GUIEnter * silent! WToggleClean
 endif
 
 noremap <F11> :WToggleFullscreen<CR>
@@ -1001,23 +1027,23 @@ let g:ycm_complete_in_comments = 1
 let g:ycm_complete_in_strings = 1
 let g:ycm_seed_identifiers_with_syntax = 1
 let g:ycm_filetype_blacklist = {
-            \ 'tagbar' : 1,
-            \ 'qf' : 1,
-            \ 'notes' : 1,
-            \ 'markdown' : 1,
-            \ 'unite' : 1,
-            \ 'text' : 1,
-            \ 'vimwiki' : 1,
-            \ 'pandoc' : 1,
-            \ 'infolog' : 1,
-            \ 'mail' : 1
-            \}
+      \ 'tagbar' : 1,
+      \ 'qf' : 1,
+      \ 'notes' : 1,
+      \ 'markdown' : 1,
+      \ 'unite' : 1,
+      \ 'text' : 1,
+      \ 'vimwiki' : 1,
+      \ 'pandoc' : 1,
+      \ 'infolog' : 1,
+      \ 'mail' : 1
+      \}
 if exists('youcompleteme#Enable()')
-    augroup load_us_ycm
-        autocmd!
-        autocmd InsertEnter * call plug#load('YouCompleteMe')
-                    \| call youcompleteme#Enable() | autocmd! load_us_ycm
-    augroup END
+  augroup load_us_ycm
+    autocmd!
+    autocmd InsertEnter * call plug#load('YouCompleteMe')
+          \| call youcompleteme#Enable() | autocmd! load_us_ycm
+  augroup END
 endif
 
 " xterm colors 

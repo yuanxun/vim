@@ -150,29 +150,6 @@ runtime rc/utils.vim
 
 " SETTINGS
 " ##############################################################################
-if s:is_windows
-  try
-    set guifont=Fira_Mono_Patch_Medium:h10:cANSI
-    let s:patchedFont = 1           " is the font powerline patched?
-  catch
-  endtry
-  set columns=160
-  set lines=40
-else
-  try
-    set guifont==Fira\ Mono\ Medium\ 10
-    let s:patchedFont = 0           " is the font powerline patched?
-  catch
-  endtry
-endif
-set guioptions-=m                       " disable the menu
-set guioptions-=t                       " disable tear-off menus
-set guioptions-=T                       " disable toolbar
-set guioptions-=r                       " disable righthand scrollbar
-set guioptions-=L                       " disable lefthand scrollbar
-set guitablabel=%N\ %f                      " tab title
-set guicursor+=n-v-c:block-Cursor-blinkon0
-set guicursor+=i-ci:ver15-iCursor-blinkwait100-blinkon350-blinkoff350
 set encoding=utf-8                      " vim encoding
 scriptencoding utf-8                    " script encoding
 set termencoding=utf-8                  " terminal encoding
@@ -667,6 +644,7 @@ autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
 
 " Lightline 
 " ------------------------------------------------------------------------------
+let s:patchedFont = 1           " is the font powerline patched?
 if s:patchedFont == 1
     let g:lightline = {
                 \ 'colorscheme': 'welpe',
@@ -955,7 +933,7 @@ nmap mS  ysiW
 nmap mss yss
 nmap mSS ySS
 
-" Supertab 
+" ~~~ Supertab 
 " ------------------------------------------------------------------------------
 " let g:SuperTabDefaultCompletionType = '<C-n>'
 
@@ -1011,14 +989,6 @@ let g:UltiSnipsJumpBackwardTrigger= '<C-k>'
 
 nmap <silent><leader>pu :UltiSnipsEdit<cr>
 
-" Wimproved.vim 
-" ------------------------------------------------------------------------------
-if s:is_windows
-  autocmd GUIEnter * silent! WToggleClean
-endif
-
-noremap <F11> :WToggleFullscreen<CR>
-
 " YouCompleteMe 
 " ------------------------------------------------------------------------------
 set omnifunc=syntaxcomplete#Complete
@@ -1050,3 +1020,10 @@ endif
 " ------------------------------------------------------------------------------
 nnoremap <silent><leader>px :VXtermColorTable<CR>
 
+" Wimproved.vim 
+" ------------------------------------------------------------------------------
+if s:is_windows
+  autocmd GUIEnter * silent! WToggleClean
+endif
+
+noremap <F11> :WToggleFullscreen<CR>

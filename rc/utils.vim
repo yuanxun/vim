@@ -1,8 +1,23 @@
-" ------------------------------------------------------------------------------
-" Parts of this file were originally created by github.com/martin-svk
-" ------------------------------------------------------------------------------
 " Utility functions 
 " ##############################################################################
+
+" source: https://github.com/airblade/dotvim/blob/dd5d7737e39aad5e24c1a4a8c0d115ff2ae7b488/vimrc#L294-L310
+function! g:utils#pulse()
+  setlocal cursorline
+  redraw
+  sleep 100m
+
+  setlocal nocursorline
+  redraw
+  sleep 100m
+
+  setlocal cursorline
+  redraw
+  sleep 100m
+
+  setlocal nocursorline
+  redraw
+endfunction
 
 " sources VimL under curser / selected line 
 function! g:utils#sourceVimscript(type)
@@ -186,5 +201,3 @@ function! s:SortUnfolded( bang, startLnum, endLnum, sortArgs )
 endfunction
 command! -bang -range=% -nargs=* SortUnfolded call setline(<line1>, getline(<line1>)) | call s:SortUnfolded('<bang>', <line1>, <line2>, <q-args>)
 
-" ##############################################################################
-" END Utility functions 

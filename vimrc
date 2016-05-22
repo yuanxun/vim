@@ -101,7 +101,7 @@ Plug 'junegunn/gv.vim',                              " git commit browser
 " --- Language agnostic utility
 " ------------------------------------------------------------------------------
 Plug 'sirver/ultisnips'                              " snippet integration
-            \ | Plug 'honza/vim-snippets'            " snippets
+Plug 'honza/vim-snippets'                            " snippets
 Plug 'tpope/vim-commentary'                          " fileType specific comment creation mappings
 Plug 'junegunn/vim-easy-align'                       " text align
 Plug 'lilydjwg/colorizer'                            " hex, rgb and named color highlighting
@@ -202,13 +202,17 @@ set numberwidth=4                       " width of numbergutter
 set so=5                                " lines at which vim starts scrolling
 set wildmenu                            " enhance commandline-completion
 set laststatus=2                        " always show statusline
+
 set cursorline                          " enable cursorline background
+" autocmd FocusGained * call g:utils#pulse()
+
 if s:is_windows                         " files to ignore
   set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store 
 else
   set wildignore+=.git\*,.hg\*,.svn\*
 endif
 set cmdheight=1                         " height of commandline in lines
+
 set expandtab                           " converts <tab> to spaces
 set shiftwidth=2                        " number of spaces converted to <tab>
 set tabstop=2                           " number of spaces that count as <tab>
@@ -218,6 +222,7 @@ augroup tabstopGroup
   au FileType sass setlocal tabstop=4 shiftwidth=4
   au FileType scss setlocal tabstop=4 shiftwidth=4
 augroup end
+
 set smarttab                            " improves vims treatment of <tab>s
 set linebreak                           " soft breaks lines according to breakat
 set nowrap                              " no wrap
@@ -560,7 +565,7 @@ nmap gl <Plug>(EasyAlign)
 " Emmet 
 " ------------------------------------------------------------------------------
 let g:user_emmet_install_global=0
-autocmd FileType html,php,css,scss EmmetInstall
+autocmd FileType jade,html,php,css,scss EmmetInstall
 let g:user_emmet_mode='a'
 let g:user_emmet_leader_key='<C-e>'
 
@@ -644,7 +649,7 @@ autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
 
 " Lightline 
 " ------------------------------------------------------------------------------
-let s:patchedFont = 1           " is the font powerline patched?
+let s:patchedFont = 0           " is the font powerline patched?
 if s:patchedFont == 1
     let g:lightline = {
                 \ 'colorscheme': 'welpe',
@@ -739,7 +744,7 @@ else
     function! LightLineFugitive()
         if exists("*fugitive#head")
             let _ = fugitive#head()
-            return strlen(_) ? '∫ '._ : ''
+            return strlen(_) ? '# '._ : ''
         endif
         return ''
     endfunction
@@ -789,7 +794,7 @@ map # <Plug>(incsearch-nohl-#)
 " ------------------------------------------------------------------------------
 let g:indentLine_color_term = 236
 " let g:indentLine_conceallevel = 2
-let g:indentLine_enabled = 0
+let g:indentLine_enabled = 1
 let g:indentLine_faster = 1
 let g:indentLine_concealcursor = 'ic'
 
@@ -892,7 +897,6 @@ if s:is_windows
     let g:startify_skiplist = [
                 \ '\.vim',
                 \ '\.log',
-                \ '\.txt',
                 \ 'plugged\.*\doc',
                 \ 'COMMIT_EDITMSG'
                 \ ]

@@ -10,16 +10,16 @@
 let s:is_windows = has('win32') || has('win64')
 if s:is_windows
   try
-    set guifont=Fira_Mono_Patch_Medium:h10:cANSI
-    let s:patchedFont = 1           " is the font powerline patched?
+    " set guifont=Fira_Mono_Patch_Medium:h10:cANSI
+    set guifont=Consolas:h11:cANSI
   catch
   endtry
   set columns=160
   set lines=40
+  return strlen(_) ? '# '._ : ''
 else
   try
     set guifont==Fira\ Mono\ Medium\ 10
-    let s:patchedFont = 0           " is the font powerline patched?
   catch
   endtry
 endif

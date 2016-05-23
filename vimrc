@@ -25,6 +25,7 @@ if s:is_windows
 else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
 endif
+let s:patchedFont = 1           " is the font powerline patched?
 
 " PLUGINS
 " ##############################################################################
@@ -409,19 +410,19 @@ nnoremap gwU viwgU
 vnoremap <c-a> <c-a>gv
 vnoremap <c-x> <c-x>gv
 
-" --- Alt-Leader
+" --- jump to ...
 " ------------------------------------------------------------------------------
 " jump to diffs
 " nnoremap üd ]c
 " nnoremap üD [c
 
 " jump to errors
-" nnoremap üe :cnext<cr>
-" nnoremap üE :cprev<cr>
+nnoremap ge :cnext<cr>
+nnoremap gE :cprev<cr>
 
 " jump to errors
-" nnoremap ül :lnext<cr>
-" nnoremap üL :lprev<cr>
+nnoremap gl :lnext<cr>
+nnoremap gL :lprev<cr>
 
 " --- Buffer and Window Management 
 " ------------------------------------------------------------------------------
@@ -546,7 +547,7 @@ imap <expr> <CR> pumvisible()
             \ : "<Plug>delimitMateCR"
 let delimitMate_expand_cr = 1
 let delimitMate_expand_space = 1
-let delimitMate_excluded_regions = "Comment"
+" let delimitMate_excluded_regions = ''
 " let delimitMate_matchpairs = "(:),[:],{:},<:>"
 " let delimitMate_quotes = "\" ' ` *"
 " au FileType html let b:delimitMate_quotes = "\" '"
@@ -554,13 +555,17 @@ let delimitMate_excluded_regions = "Comment"
 " let delimitMate_nesting_quotes = ['"','`']
 " au FileType python let b:delimitMate_nesting_quotes = ['"']
 " au FileType tcl let b:delimitMate_expand_space = 1
-au! FileType vim,html let b:delimitMate_matchpairs = "(:),[:],{:},<:>"
+augroup delimitMateMatchpairs
+  au! 
+  au FileType vim let b:delimitMate_matchpairs = "(:),[:],{:}"
+  au FileType html let b:delimitMate_matchpairs = "(:),<:>"
+augroup END
 " au! FileType javascript let b:delimitMate_eol_marker = ';'
 
 " Easyalign 
 " ------------------------------------------------------------------------------
-xmap gl <Plug>(EasyAlign)
-nmap gl <Plug>(EasyAlign)
+xmap <leader>pl <Plug>(EasyAlign)
+nmap <leader>pl <Plug>(EasyAlign)
 
 " Emmet 
 " ------------------------------------------------------------------------------
@@ -649,133 +654,113 @@ autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
 
 " Lightline 
 " ------------------------------------------------------------------------------
-let s:patchedFont = 0           " is the font powerline patched?
-if s:patchedFont == 1
-    let g:lightline = {
-                \ 'colorscheme': 'welpe',
-                \ 'active': {
-                \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-                \   'right': [ [ 'syntastic','percent', 'lineinfo' ], [ 'filetype' ], [ 'fileencoding' ] ]
-                \ },
-                \ 'component_function': {
-                \   'fugitive': 'LightLineFugitive',
-                \   'readonly': 'LightLineReadonly',
-                \   'modified': 'LightLineModified',
-                \   'filename': 'LightLineFilename',
-                \   'fileformat': 'LightLineFileformat',
-                \   'filetype': 'LightLineFiletype',
-                \   'fileencoding': 'LightLineFileencoding',
-                \   'mode': 'LightLineMode',
-                \ },
-                \ 'component_expand': {
-                \   'syntastic': 'SyntasticStatuslineFlag',
-                \ },
-                \ 'component_type': {
-                \   'syntastic': 'error',
-                \ },
-                \ 'separator': { 'left': '', 'right': '' },
-                \ 'subseparator': { 'left': '', 'right': '' }
-                \ }
-else 
-    let g:lightline = {
-                \ 'colorscheme': 'welpe',
-                \ 'active': {
-                \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-                \   'right': [ [ 'syntastic','percent', 'lineinfo' ], [ 'filetype' ], [ 'fileencoding' ] ]
-                \ },
-                \ 'component_function': {
-                \   'fugitive': 'LightLineFugitive',
-                \   'readonly': 'LightLineReadonly',
-                \   'modified': 'LightLineModified',
-                \   'filename': 'LightLineFilename',
-                \   'fileformat': 'LightLineFileformat',
-                \   'filetype': 'LightLineFiletype',
-                \   'fileencoding': 'LightLineFileencoding',
-                \   'mode': 'LightLineMode',
-                \ },
-                \ 'component_expand': {
-                \   'syntastic': 'SyntasticStatuslineFlag',
-                \ },
-                \ 'component_type': {
-                \   'syntastic': 'error',
-                \ },
-                \ 'separator': { 'left': '', 'right': '' },
-                \ 'subseparator': { 'left': '|', 'right': '|' }
-                \ }
-endif
-function! LightLineModified()
-    if &filetype == "help"
-        return ""
-    elseif &modified
-        return "+"
-    elseif &modifiable
-        return ""
+let s:LLMaxWidth = 80
+
+function! LLMode()
+  return lightline#mode()
+endfunction
+
+function! LLFugitive()
+  if exists("*fugitive#head")
+    let _ = fugitive#head()
+    if s:patchedFont == 1
+      return winwidth(0) > s:LLMaxWidth ? (strlen(_) ? ' '._ : '?') : ''
     else
-        return ""
+      return winwidth(0) > s:LLMaxWidth ? (strlen(_) ? '# '._ : '?') : ''
     endif
-endfunction
-if s:patchedFont == 1
-    function! LightLineReadonly()
-        if &filetype == "help"
-            return ""
-        elseif &readonly
-            return ""
-        else
-            return ""
-        endif
-    endfunction
-    function! LightLineFugitive()
-        if exists("*fugitive#head")
-            let _ = fugitive#head()
-            return strlen(_) ? ' '._ : ''
-        endif
-        return ''
-    endfunction
-else
-    function! LightLineReadonly()
-        if &filetype == "help"
-            return ""
-        elseif &readonly
-            return "x"
-        else
-            return ""
-        endif
-    endfunction
-    function! LightLineFugitive()
-        if exists("*fugitive#head")
-            let _ = fugitive#head()
-            return strlen(_) ? '# '._ : ''
-        endif
-        return ''
-    endfunction
-endif
-
-function! LightLineFilename()
-    let fname = expand('%:t')
-    return fname == 'NERD_tree' ? '' :
-                \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
-                \ ('' != fname ? fname : '[No Name]') .
-                \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
+  endif
 endfunction
 
-function! LightLineFileformat()
-    return winwidth(0) > 70 ? &fileformat : ''
+function! LLPercent()
+  return winwidth(0) > s:LLMaxWidth ? 'percent' : ''
 endfunction
 
-function! LightLineFiletype()
-    return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+function! LLLineinfo()
+  return winwidth(0) > s:LLMaxWidth ? 'lineinfo' : ''
 endfunction
 
-function! LightLineFileencoding()
-    return winwidth(0) > 70 ? (strlen(&fenc) ? &fenc : &enc) : ''
+function! LLModified()
+  if &filetype != "help" && &modified
+    if s:patchedFont == 1
+      return ""
+    else
+      return "+"
+    endif
+  else
+    return ""
+  endif
 endfunction
 
-function! LightLineMode()
-    let fname = expand('%:t')
-    return fname == 'ControlP' ? 'CtrlP' :
-                \ fname =~ 'NERD_tree' ? 'NERDTree' :
-                \ winwidth(0) > 60 ? lightline#mode() : ''
+function! LLReadonly()
+  if &filetype == "help" || &readonly
+    if s:patchedFont == 1
+      return ""
+    else
+      return "x"
+    endif
+  else
+    return ""
+  endif
 endfunction
+
+function! LLFilepath()
+  " split path into list
+  let path = split(expand('%:p:h'), '\\')
+  " show only tail of path
+  let shorterpath = '..\'.path[-2].'\'.path[-1].'\'
+  return winwidth(0) > s:LLMaxWidth ? shorterpath : ''
+endfunction
+
+function! LLFilename()
+  let fname = expand('%:t')
+  if winwidth(0) > s:LLMaxWidth 
+    return fname == 'NERD_tree' ? 'NERD' :
+          \ ('' != LLFilepath() ?  LLFilepath() : '') .
+          \ ('' != fname ? fname  : '[no name]') .
+          \ ('' != LLReadonly() ? ' ' . LLReadonly() . ' ' : '') .
+          \ ('' != LLModified() ? ' ' . LLModified() . ' ' : '')
+  else
+    return fname
+  endif
+endfunction
+
+function! LLFiletype()
+  return winwidth(0) > s:LLMaxWidth ? (strlen(&filetype) ? &filetype : '?') : ''
+endfunction
+
+let g:lightline = {
+      \ 'colorscheme': 'welpe',
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '', 'right': '' },
+      \ 'component': {
+      \ 'lineinfo': '%l:%c (%L)',
+      \ 'zeitwerk': 'Zeitwerk gVIM'
+      \ },
+      \ 'component_function': {
+      \ 'mode': 'LLMode',
+      \ 'fugitive': 'LLFugitive',
+      \ 'filename': 'LLFilename',
+      \ 'readonly': 'LLReadonly',
+      \ },
+      \ 'component_expand': {
+      \   'syntastic': 'SyntasticStatuslineFlag',
+      \ },
+      \ 'component_type': {
+      \   'syntastic': 'error',
+      \ },
+      \ 'active': {
+      \ 'left': [ ['fugitive'], ['filename'] ],
+      \ 'right': [ ['filetype'], ['lineinfo', 'syntastic'] ]
+      \ },
+      \ 'inactive': {
+      \ 'left': [ ['filename'] ],
+      \ 'right': [ ['filetype'] ]
+      \ },
+      \ 'tabline': {
+      \ 'left': [ [ 'tabs' ] ],
+      \ 'right': [ [ 'zeitwerk' ] ]
+      \ },
+      \ }
 
 " Incsearch 
 " ------------------------------------------------------------------------------
@@ -794,7 +779,7 @@ map # <Plug>(incsearch-nohl-#)
 " ------------------------------------------------------------------------------
 let g:indentLine_color_term = 236
 " let g:indentLine_conceallevel = 2
-let g:indentLine_enabled = 1
+let g:indentLine_enabled = 0
 let g:indentLine_faster = 1
 let g:indentLine_concealcursor = 'ic'
 
@@ -804,12 +789,12 @@ map <leader>ti :IndentLinesToggle<cr>
 " ------------------------------------------------------------------------------
 let g:mta_use_matchparen_group = 1
 let g:mta_filetypes = {
-            \ 'html' : 1,
-            \ 'xhtml' : 1,
-            \ 'xml' : 1,
-            \ 'jade' : 1,
-            \ 'php' : 1,
-            \}
+      \ 'html' : 1,
+      \ 'xhtml' : 1,
+      \ 'xml' : 1,
+      \ 'jade' : 1,
+      \ 'php' : 1,
+      \}
 nnoremap <silent>gt :MtaJumpToOtherTag<cr>
 
 " NERDTree 
@@ -819,12 +804,12 @@ let g:NERDTreeAutoCenter = 1
 let g:NERDTreeShowLineNumbers = 0
 let g:NERDTreeShowBookmarks = 1
 let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
-let g:NERDTreeMinimalUI = 0
+let g:NERDTreeMinimalUI = 1
 let g:NERDTreeWinPos = "left"
 let g:NERDTreeShowHidden = 1
 let g:NERDTreeSortHiddenFirst = 1
 let g:NERDTreeAutoDeleteBuffer = 1
-let g:NERDTreeWinSize = 35
+let g:NERDTreeWinSize = 40
 let g:NERDTreeIgnore = ['.git','.swp', 'NTUSER*']
 let g:NERDTreeChDirMode = 1
 let g:NERDTreeStatusline = ''
@@ -868,7 +853,7 @@ let g:plug_timeout = 240
 " ------------------------------------------------------------------------------
 " let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
 " nnoremap <leader>pq :QuickScopeToggle<CR>
-  
+
 " Sayonara 
 " ------------------------------------------------------------------------------
 " save current session & close all buffers
@@ -884,47 +869,47 @@ let g:startify_use_env = 1
 let g:startify_enable_special = 0
 let g:startify_custom_indices = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'v', 'g', 't', 'd', 'D', 'r', 'R', 'l', 'L']
 if s:is_windows
-    let g:startify_bookmarks = [
-                \ $rtp,
-                \ '~/Google Drive/',
-                \ '~/temp'
-                \ ]
+  let g:startify_bookmarks = [
+        \ $rtp,
+        \ '~/Google Drive/',
+        \ '~/temp'
+        \ ]
 endif
 let g:startify_update_oldfiles = 1
 let g:startify_session_autoload = 0
 let g:startify_session_persistence = 0
 if s:is_windows
-    let g:startify_skiplist = [
-                \ '\.vim',
-                \ '\.log',
-                \ 'plugged\.*\doc',
-                \ 'COMMIT_EDITMSG'
-                \ ]
+  let g:startify_skiplist = [
+        \ '\.vim',
+        \ '\.log',
+        \ 'plugged\.*\doc',
+        \ 'COMMIT_EDITMSG'
+        \ ]
 endif
 let g:startify_list_order = [
-            \ ['    LRU:'],
-            \ 'files',
-            \ ['    Bookmarks:'],
-            \ 'bookmarks',
-            \ ['    Sessions:'],
-            \ 'sessions',
-            \ ]
+      \ ['    LRU:'],
+      \ 'files',
+      \ ['    Bookmarks:'],
+      \ 'bookmarks',
+      \ ['    Sessions:'],
+      \ 'sessions',
+      \ ]
 let g:startify_custom_header = g:utils#centerLines([
-            \ '                               ',
-            \ '   __      __ _____  __  __    ',
-            \ '   \ \    / /|_   _||  \/  |   ',
-            \ '    \ \  / /   | |  | \  / |   ',
-            \ '     \ \/ /    | |  | |\/| |   ',
-            \ '      \  /    _| |_ | |  | |   ',
-            \ '       \/    |_____||_|  |_|   ',
-            \ ])
+      \ '                               ',
+      \ '   __      __ _____  __  __    ',
+      \ '   \ \    / /|_   _||  \/  |   ',
+      \ '    \ \  / /   | |  | \  / |   ',
+      \ '     \ \/ /    | |  | |\/| |   ',
+      \ '      \  /    _| |_ | |  | |   ',
+      \ '       \/    |_____||_|  |_|   ',
+      \ ])
 augroup Startify
-    au!
-    au User Startified file Startify
-    au User Startified setlocal buftype=
-    au User Startified setlocal nowrap
-    au User Startified setlocal nonu norln
-    au User Startified setlocal colorcolumn=
+  au!
+  au User Startified file Startify
+  au User Startified setlocal buftype=
+  au User Startified setlocal nowrap
+  au User Startified setlocal nonu norln
+  au User Startified setlocal colorcolumn=
 augroup END
 
 nnoremap <leader>sd :SSave default<CR>y<CR>
@@ -950,18 +935,23 @@ let g:syntastic_auto_jump = 3 " only jump if errors are present
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_cursor_column = 0
-let g:syntastic_stl_format = "[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]"
-
+let g:syntastic_stl_format = "%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}"
+let g:syntastic_full_redraws = 1
 let g:syntastic_error_symbol = "E "
 let g:syntastic_warning_symbol = "W "
+let g:syntastic_mode_map = {
+      \ "mode": "passive",
+      \ "active_filetypes": [],
+      \ "passive_filetypes": [] }
 
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_HTML_checkers = ['jshint']
 let g:syntastic_SASS_checkers = ['sass']
 let g:syntastic_SCSS_checkers = ['sass']
 let g:syntastic_CSS_checkers = ['sass']
+let g:syntastic_pug_checkers = ['pug_lint']
 
-map <leader>ps :SyntasticCheck<cr>
+map <leader>ps :SyntasticCheck<cr>:call lightline#update()<cr>
 
 " sneak
 " ------------------------------------------------------------------------------
@@ -1027,6 +1017,8 @@ nnoremap <silent><leader>px :VXtermColorTable<CR>
 " Wimproved.vim 
 " ------------------------------------------------------------------------------
 if s:is_windows
+  autocmd GUIEnter * set columns=120
+  autocmd GUIEnter * set lines=38
   autocmd GUIEnter * silent! WToggleClean
 endif
 

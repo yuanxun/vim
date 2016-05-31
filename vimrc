@@ -7,6 +7,18 @@
 " STARTUP
 " ##############################################################################
 
+if !empty($CONEMUBUILD) 
+  set shell=/usr/bin/bash
+  set shellslash
+  set term=xterm
+  set t_Co=16
+  let &t_AB="\e[48;5;%dm" 
+  let &t_AF="\e[38;5;%dm" 
+  let s:patchedFont = 0
+else
+  let s:patchedFont = 1
+endif 
+
 " check for compatible mode and stomp it
 if &compatible
     set nocompatible
@@ -25,7 +37,6 @@ if s:is_windows
 else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
 endif
-let s:patchedFont = 1           " is the font powerline patched?
 
 " PLUGINS
 " ##############################################################################
@@ -47,14 +58,10 @@ Plug 'guns/xterm-color-table.vim'                    " show xterm color list
 " --- Colorscheme
 " ------------------------------------------------------------------------------
 Plug 'C:/Users/Timm/vimfiles/plugged/welpe.vim'      " welpe colorscheme (local)
-Plug 'chriskempson/base16-vim'                       " base16 vim port
-Plug 'docapotamus/jellybeans.vim'                    " jellybeans
-Plug 'altercation/vim-colors-solarized'              " solarized colorscheme
 " ------------------------------------------------------------------------------
 " --- Interface / File management
 " ------------------------------------------------------------------------------
-Plug 'scrooloose/nerdtree',                          " file browser
-            \ { 'on' : ['NERDTreeFind', 'NERDTreeToggle'] }
+Plug 'tpope/vim-vinegar'                             " split explorer
 Plug 'itchyny/lightline.vim'                         " simple statusline
 Plug 'mhinz/vim-startify'                            " startup screen
 Plug 'ctrlpvim/ctrlp.vim'                            " fuzzy stuff
@@ -67,7 +74,7 @@ endif
 " ------------------------------------------------------------------------------
 " --- Filetype
 " ------------------------------------------------------------------------------
-Plug 'sheerun/vim-polyglot'              " multi lang
+Plug 'sheerun/vim-polyglot'                          " multi lang
 Plug 'JulesWang/css.vim'                             " css (vim runtime)
 Plug 'hail2u/vim-css3-syntax'                        " css3
 Plug 'cakebaker/scss-syntax.vim'                     " sass
@@ -82,12 +89,10 @@ Plug 'maksimr/vim-jsbeautify'                        " js-beautify integration
 " ------------------------------------------------------------------------------
 " --- Syntax
 " ------------------------------------------------------------------------------
-Plug 'scrooloose/syntastic',                         " syntax integration (requires external tools)
-            \ { 'for' : ['scss','html','javascript','css'] }
+Plug 'scrooloose/syntastic'                            " syntax integration (requires external tools)
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
-" Plug 'ervandew/supertab'                             " insert completion
 Plug 'Raimondi/delimitMate'                            " auto close parentheses
 Plug 'Valloric/YouCompleteMe',                         " completion engine, requires compilation
             \ { 'on': [] }
@@ -109,7 +114,7 @@ Plug 'lilydjwg/colorizer'                            " hex, rgb and named color 
 " ------------------------------------------------------------------------------
 " --- HTML
 " ------------------------------------------------------------------------------
-Plug 'Valloric/MatchTagAlways'                       " Highlight XML matching tags
+" Plug 'Valloric/MatchTagAlways'                       " Highlight XML matching tags
 Plug 'mattn/emmet-vim'                               " emmet integration
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
@@ -120,13 +125,11 @@ Plug 'Konfekt/FastFold'                              " improves Folds
 Plug 'tpope/vim-speeddating'                         " improves number in-/decementation (C-X/C-A)
 Plug 'tpope/vim-repeat'                              " makes lots of commands repeatable with .
 Plug 'tpope/vim-abolish'                             " improves abbrev functionality
-Plug 'mhinz/vim-sayonara',                           " essentially :qw
-            \ { 'on' : 'Sayonara' }
 Plug 'amix/open_file_under_cursor.vim'               " read its name ...
 Plug 'edsono/vim-matchit'                            " improves % behaviour
 Plug 'haya14busa/incsearch.vim'                      " improve incsearch
 Plug 'justinmk/vim-sneak'                            " sneaky twochar motion
-Plug 'Yggdroot/indentLine'                            " show indentation line
+Plug 'Yggdroot/indentLine'                           " show indentation line
 " ------------------------------------------------------------------------------
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
@@ -188,7 +191,7 @@ set ttimeoutlen=500                     " mapping timeout
 set foldmethod=marker                   " use markers for folding
 set foldlevel=0                         " depth of autoopening folds
 try
-  set switchbuf=useopen,split         " rules for new buffers
+  set switchbuf=useopen,vsplit         " rules for new buffers
 catch
 endtry
 set t_Co=256                            " terminal number of colors
@@ -345,7 +348,7 @@ nnoremap <leader>w  :update<CR>
 nnoremap <leader>W  :update!<CR>
 
 " quick fold toggeling
-nnoremap <tab> za
+" nnoremap <tab> za
 
 " fold with ö instead of z 
 " xnoremap öf mzzf`zzz
@@ -427,6 +430,10 @@ nnoremap gL :lprev<cr>
 " --- Buffer and Window Management 
 " ------------------------------------------------------------------------------
 
+" netrw specific
+autocmd FileType netrw nnoremap o <CR>
+autocmd FileType netrw nnoremap <CR> o
+
 " buffers
 nnoremap <leader>bn :bnew<cr>
 
@@ -461,6 +468,8 @@ noremap <C-t><S-k> :tabmove $<CR>
 
 " --- Custom functions and behaviour 
 " ------------------------------------------------------------------------------
+" quit
+nnoremap <silent><leader>q :q<cr>
 " quitall
 nnoremap <silent><leader>Q :confirm wqa<CR>
 
@@ -714,7 +723,7 @@ endfunction
 function! LLFilename()
   let fname = expand('%:t')
   if winwidth(0) > s:LLMaxWidth 
-    return fname == 'NERD_tree' ? 'NERD' :
+    return fname == 'netrw' ? 'browser' :
           \ ('' != LLFilepath() ?  LLFilepath() : '') .
           \ ('' != fname ? fname  : '[no name]') .
           \ ('' != LLReadonly() ? ' ' . LLReadonly() . ' ' : '') .
@@ -797,31 +806,31 @@ let g:mta_filetypes = {
       \}
 nnoremap <silent>gt :MtaJumpToOtherTag<cr>
 
-" NERDTree 
+" ~~~ NERDTree 
 " ------------------------------------------------------------------------------
-let g:NERDTreeQuitOnOpen = 1
-let g:NERDTreeAutoCenter = 1
-let g:NERDTreeShowLineNumbers = 0
-let g:NERDTreeShowBookmarks = 1
-let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
-let g:NERDTreeMinimalUI = 1
-let g:NERDTreeWinPos = "left"
-let g:NERDTreeShowHidden = 1
-let g:NERDTreeSortHiddenFirst = 1
-let g:NERDTreeAutoDeleteBuffer = 1
-let g:NERDTreeWinSize = 40
-let g:NERDTreeIgnore = ['.git','.swp', 'NTUSER*']
-let g:NERDTreeChDirMode = 1
-let g:NERDTreeStatusline = ''
-let g:NERDTreeCascadeOpenSingleChildDir = 0
+" let g:NERDTreeQuitOnOpen = 1
+" let g:NERDTreeAutoCenter = 1
+" let g:NERDTreeShowLineNumbers = 0
+" let g:NERDTreeShowBookmarks = 1
+" let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
+" let g:NERDTreeMinimalUI = 1
+" let g:NERDTreeWinPos = "left"
+" let g:NERDTreeShowHidden = 1
+" let g:NERDTreeSortHiddenFirst = 1
+" let g:NERDTreeAutoDeleteBuffer = 1
+" let g:NERDTreeWinSize = 40
+" let g:NERDTreeIgnore = ['.git','.swp', 'NTUSER*']
+" let g:NERDTreeChDirMode = 1
+" let g:NERDTreeStatusline = ''
+" let g:NERDTreeCascadeOpenSingleChildDir = 0
 
-noremap <leader>nn :NERDTreeToggle<cr>
-noremap <leader>nh :NERDTreeToggle ~/<cr>
-noremap <silent> <leader>nf :NERDTreeFind<cr>cd
-nnoremap <leader>nb :Bookmark<space>
+" noremap <leader>nn :NERDTreeToggle<cr>
+" noremap <leader>nh :NERDTreeToggle ~/<cr>
+" noremap <silent> <leader>nf :NERDTreeFind<cr>cd
+" nnoremap <leader>nb :Bookmark<space>
 
-let NERDTreeMapOpenVSplit='v'
-let NERDTreeMapOpenSplit='s'
+" let NERDTreeMapOpenVSplit='v'
+" let NERDTreeMapOpenSplit='s'
 
 " ~~~ Neocomplete 
 " ------------------------------------------------------------------------------
@@ -854,10 +863,10 @@ let g:plug_timeout = 240
 " let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
 " nnoremap <leader>pq :QuickScopeToggle<CR>
 
-" Sayonara 
+" ~~~ Sayonara 
 " ------------------------------------------------------------------------------
 " save current session & close all buffers
-nnoremap <leader>q :Sayonara<CR>
+" nnoremap <leader>q :Sayonara<CR>
 
 " Startify 
 " ------------------------------------------------------------------------------
@@ -919,7 +928,6 @@ nnoremap <leader>sD :SLoad default<CR>
 " ------------------------------------------------------------------------------
 nmap ms  ys
 nmap mS  ysiW
-nmap mss yss
 nmap mSS ySS
 
 " ~~~ Supertab 
@@ -948,7 +956,7 @@ let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_HTML_checkers = ['jshint']
 let g:syntastic_SASS_checkers = ['sass']
 let g:syntastic_SCSS_checkers = ['sass']
-let g:syntastic_CSS_checkers = ['sass']
+let g:syntastic_CSS_checkers = ['scss_lint']
 let g:syntastic_pug_checkers = ['pug_lint']
 
 map <leader>ps :SyntasticCheck<cr>:call lightline#update()<cr>

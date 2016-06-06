@@ -140,6 +140,7 @@ Plug 'kana/vim-textobj-function'                     " adds functions as textobj
 Plug 'glts/vim-textobj-comment'                      " adds comments as textobject
 Plug 'kana/vim-textobj-fold'                         " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'                       " adds indents as textobjects
+Plug 'whatyouhide/vim-textobj-xmlattr'               " adds XML attributes as txobj
 
 " Post-plugin 
 " ------------------------------------------------------------------------------

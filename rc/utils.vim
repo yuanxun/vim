@@ -92,6 +92,16 @@ function! g:utils#toggleRNU()
     endif
 endfun
 
+" by /u/ghost-in-a-shell from /r/vim
+function! g:utils#plainText()
+  " We don't have a notion of comments in plain text.
+  " This also un-fucks the use of '*' in formatlistpat.
+  setlocal comments=
+  " Use comment string for quoting
+  setlocal commentstring=>\ %s
+  setlocal spell
+endfunction
+
 ":[range]SortUnfolded[!] [i][u][r][n][x][o] [/{pattern}/]
 "			Sort visible lines in [range]. Lines inside closed folds
 "			are kept intact; sorting is done only on the first line

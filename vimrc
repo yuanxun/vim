@@ -7,17 +7,15 @@
 " STARTUP
 " ##############################################################################
 
-if !empty($CONEMUBUILD) 
-  set shell=/usr/bin/bash
-  set shellslash
-  set term=xterm
-  set t_Co=16
-  let &t_AB="\e[48;5;%dm" 
-  let &t_AF="\e[38;5;%dm" 
-  let s:patchedFont = 0
-else
-  let s:patchedFont = 1
-endif 
+" if !empty($CONEMUBUILD) 
+"   set shell=/usr/bin/bash
+"   set shellslash
+"   set term=xterm
+"   set t_Co=16
+"   let &t_AB="\e[48;5;%dm" 
+"   let &t_AF="\e[38;5;%dm" 
+"   let s:patchedFont = 0
+let s:patchedFont = 1
 
 " check for compatible mode and stomp it
 if &compatible
@@ -34,8 +32,10 @@ let s:is_gui = has ('gui_running')
 if s:is_windows
     " set shell=cmd.exe
     let $rtp = fnamemodify(resolve($HOME).'\vimfiles', ':p:gs?/?\\?')
+    let $undodir=fnamemodify(resolve($rtp.'\undodir'), ':p:gs?/?\\?')
 else " linux or mac
     let $rtp = fnamemodify(resolve($HOME.'/.vim'), ':p')
+    let $undodir=fnamemodify(resolve($rtp.'/undodir'), ':p')
 endif
 
 " PLUGINS
@@ -52,36 +52,36 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " --- Meta
 " ------------------------------------------------------------------------------
-Plug 'gerw/vim-HiLinkTrace'                          " reveal syntax group stacks
-Plug 'guns/xterm-color-table.vim'                    " show xterm color list
+" Plug 'gerw/vim-HiLinkTrace'                          " reveal syntax group stacks
+" Plug 'guns/xterm-color-table.vim'                    " show xterm color list
 " ------------------------------------------------------------------------------
 " --- Colorscheme
 " ------------------------------------------------------------------------------
-Plug 'C:/Users/Timm/vimfiles/plugged/welpe.vim'      " welpe colorscheme (local)
+Plug 'tstelzer/welpe.vim'                            " welpe
 " ------------------------------------------------------------------------------
 " --- Interface / File management
 " ------------------------------------------------------------------------------
 Plug 'tpope/vim-vinegar'                             " split explorer
 Plug 'itchyny/lightline.vim'                         " simple statusline
-Plug 'mhinz/vim-startify'                            " startup screen
+" Plug 'mhinz/vim-startify'                            " startup screen
 Plug 'ctrlpvim/ctrlp.vim'                            " fuzzy stuff
             \ { 'on' : ['CtrlP', 'CtrlPBuffer', 'CtrlPMRU'] }
 Plug 'junegunn/goyo.vim'                             " removes UI elements for distraction free editing
 Plug 'vim-scripts/Tabmerge'                          " merge tabs
 if s:is_windows
-    Plug 'kkoenig/wimproved.vim',                    " Windows specific fullscreen mode
+    Plug 'kkoenig/wimproved.vim', { 'branch': 'dev' }                    " Windows specific fullscreen mode
 endif
 " ------------------------------------------------------------------------------
 " --- Filetype
 " ------------------------------------------------------------------------------
-Plug 'sheerun/vim-polyglot'                          " multi lang
+" Plug 'sheerun/vim-polyglot'                          " multi lang
 Plug 'JulesWang/css.vim'                             " css (vim runtime)
 Plug 'hail2u/vim-css3-syntax'                        " css3
 Plug 'cakebaker/scss-syntax.vim'                     " sass
 Plug 'pangloss/vim-javascript'                       " javascript
 Plug 'othree/html5.vim'                              " html5
 Plug 'tpope/vim-markdown'                            " markdown
-Plug 'captbaritone/better-indent-support-for-php-with-html'
+" Plug 'captbaritone/better-indent-support-for-php-with-html'
 " ------------------------------------------------------------------------------
 " --- Syntax formatting
 " ------------------------------------------------------------------------------
@@ -93,22 +93,24 @@ Plug 'scrooloose/syntastic'                            " syntax integration (req
 " ------------------------------------------------------------------------------
 " --- Autocompletion
 " ------------------------------------------------------------------------------
-Plug 'Raimondi/delimitMate'                            " auto close parentheses
-Plug 'Valloric/YouCompleteMe',                         " completion engine, requires compilation
-            \ { 'on': [] }
+Plug 'Raimondi/delimitMate'                          " auto close parentheses
+Plug 'ervandew/supertab'                             " Perform insert mode compl. with tab
+" Plug 'Valloric/YouCompleteMe',                     " completion engine, requires compilation
+"             \ { 'on': [] }
 " ------------------------------------------------------------------------------
 " --- Git
 " ------------------------------------------------------------------------------
 Plug 'airblade/vim-gitgutter' " adds diff status column
 Plug 'tpope/vim-fugitive'                            " git wrapper
-Plug 'junegunn/gv.vim',                              " git commit browser
-            \ { 'on' : 'GV' }
+" Plug 'junegunn/gv.vim',                              " git commit browser
+"             \ { 'on' : 'GV' }
 " ------------------------------------------------------------------------------
 " --- Language agnostic utility
 " ------------------------------------------------------------------------------
 Plug 'sirver/ultisnips'                              " snippet integration
-Plug 'honza/vim-snippets'                            " snippets
+" Plug 'honza/vim-snippets'                            " snippets
 Plug 'tpope/vim-commentary'                          " fileType specific comment creation mappings
+"Plug 'tomtom/tcomment_vim'                         " like vim-commentary?
 Plug 'junegunn/vim-easy-align'                       " text align
 Plug 'lilydjwg/colorizer'                            " hex, rgb and named color highlighting
 " ------------------------------------------------------------------------------
@@ -119,7 +121,6 @@ Plug 'mattn/emmet-vim'                               " emmet integration
 " ------------------------------------------------------------------------------
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
-Plug 'triglav/vim-visual-increment'                  " increment sequencially with Ctrl-A
 Plug 'thinca/vim-visualstar'                         " improves * and #
 Plug 'Konfekt/FastFold'                              " improves Folds
 Plug 'tpope/vim-speeddating'                         " improves number in-/decementation (C-X/C-A)
@@ -141,6 +142,7 @@ Plug 'glts/vim-textobj-comment'                      " adds comments as textobje
 Plug 'kana/vim-textobj-fold'                         " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'                       " adds indents as textobjects
 Plug 'whatyouhide/vim-textobj-xmlattr'               " adds XML attributes as txobj
+Plug 'tommcdo/vim-exchange'                          " easy word exchange
 
 " Post-plugin 
 " ------------------------------------------------------------------------------
@@ -161,40 +163,54 @@ set termencoding=utf-8                  " terminal encoding
 set fileencoding=utf-8                  " file encoding
 set fileencodings=ucs-bom,utf8,prc      " encoding
 set langmenu=en helplang=en             " set menu and help language
+set nospell                             " disable spellcheck
+set spelllang=en                        " set spellcheck language
 set modelines=1 noshowmode              " allows filespefic vim options
 set virtualedit=block                   " allows blockwise visualmode over EOL
-set conceallevel=1                      " defines behaviour of concealed text
+" set conceallevel=1                      " defines behaviour of concealed text
 set concealcursor=ic                    " modes in which cursor is concealed
 set wrapscan                            " search wraps around at EOF
 set nojoinspaces                        " remove spaces when joining lines
 set shortmess=atI                       " shortens some hit-enter prompts
 set shortmess+=c                        " fix for YCM error message
+let g:netrw_bufsettings='noma nomod nu rnu nobl nowrap ro' 
+let g:netrw_banner = 0 " hide banner
+let g:netrw_list_hide='.*\.swp$,\.DS_Store' " hide swp, DS_Store files
+let g:netrw_liststyle=3 " set tree style listing
+let g:netrw_sort_sequence='[\/]$' " display directories first
+let g:netrw_sort_options='i' " ignore case on sorting
+let g:netrw_altv = 1 " vspilt netrw to the left window 
+let g:netrw_winsize = 30 " 30% of the screen for the netrw window, 70% for the file window
+let g:netrw_browse_split = 4 " open file in a previous buffer (right window)
 set ffs=dos,unix                        " default fileformats
-syntax enable                           " enable syntax highlighting
 set history=500                         " length of history, see :h history
 set undolevels=500                      " undo history lenght
+set undofile
+set undodir=$undodir
+set nobackup nowb noswapfile            " disable backupfiles
 set autoread                            " update files changed outside of vim
 set hidden                              " abandoned buffers become hidden
-set nobackup nowb noswapfile            " disable backupfiles
 set mouse=                              " disable mouseinteraction
-set backspace=indent,eol,start          " backspace scope in insert
-set whichwrap+=<,>,h,l                  " allows movement over indentation
 set ignorecase smartcase                " smartcase search
 set nohlsearch                          " disable search highlighting
 set incsearch                           " incremental search
+set complete+=kspell
 " set lazyredraw                          " avoids unnessesarily redraws
 set magic                               " regex magic
+
 set matchtime=0                         " bracket blinking
 set showmatch                           " jumps to a matching bracket
 set noerrorbells novisualbell t_vb=     " disable audible and visual notice
 set notimeout                            " no timeout on mappings
 set ttimeoutlen=500                     " mapping timeout
+
 set foldmethod=marker                   " use markers for folding
 set foldlevel=0                         " depth of autoopening folds
 try
   set switchbuf=useopen,vsplit         " rules for new buffers
 catch
 endtry
+syntax enable                           " enable syntax highlighting
 set t_Co=256                            " terminal number of colors
 set background=dark                     " use dark colorscheme
 try
@@ -209,39 +225,66 @@ set wildmenu                            " enhance commandline-completion
 set laststatus=2                        " always show statusline
 
 set cursorline                          " enable cursorline background
-" autocmd FocusGained * call g:utils#pulse()
 
 if s:is_windows                         " files to ignore
   set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store 
 else
   set wildignore+=.git\*,.hg\*,.svn\*
 endif
+set suffixesadd+=.js,.html,.css,.scss
 set cmdheight=1                         " height of commandline in lines
 
 set expandtab                           " converts <tab> to spaces
 set shiftwidth=2                        " number of spaces converted to <tab>
 set tabstop=2                           " number of spaces that count as <tab>
-augroup tabstopGroup
+augroup tabstop
   au!
   au FileType css setlocal tabstop=4 shiftwidth=4
   au FileType sass setlocal tabstop=4 shiftwidth=4
   au FileType scss setlocal tabstop=4 shiftwidth=4
 augroup end
 
+set backspace=indent,eol,start          " backspace scope in insert
+set whichwrap+=<,>,h,l                  " allows movement over indentation
 set smarttab                            " improves vims treatment of <tab>s
 set linebreak                           " soft breaks lines according to breakat
-set nowrap                              " no wrap
+set wrap                                " no wrap
 set breakat=80                          " sets softwrap, needs wrap
-set textwidth=500                       " maximum amount of text til forced EOL
-set autoindent smartindent              " Auto indention
-if executable('ag')                     " grep via silversearcher
-  set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
-  set grepformat=%f:%l:%c:%m
-endif
+set textwidth=80                       " maximum amount of text til forced EOL
+set autoindent smartindent breakindent  " Indentation rules
 
-" SYNTAX & HIGHLIGHTING
+" by /u/ghost-in-a-shell from /r/vim
+set formatoptions+=tcoqnl1j             " see help fo-table
+set formatoptions-=r
+set formatlistpat=^\\s*                    " Optional leading whitespace
+set formatlistpat+=[                       " Start class
+set formatlistpat+=\\[({]\\?               " |  Optionally match opening punctuation
+set formatlistpat+=\\(                     " |  Start group
+set formatlistpat+=[0-9]\\+                " |  |  A number
+set formatlistpat+=\\\|[iIvVxXlLcCdDmM]\\+ " |  |  Roman numerals
+set formatlistpat+=\\\|[a-zA-Z]            " |  |  A single letter
+set formatlistpat+=\\)                     " |  End group
+set formatlistpat+=[\\]:.)}                " |  Closing punctuation
+set formatlistpat+=]                       " End class
+set formatlistpat+=\\s\\+                  " One or more spaces
+set formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+  " Or ASCII style bullet points
+
+" if executable('ag')                     " grep via silversearcher
+"   set grepprg=ag\ --nogroup\ --column\ --smart-case\ --nocolor\ --follow
+"   set grepformat=%f:%l:%c:%m
+" endif
+
+" AUTOCOMMANDS
 " ##############################################################################
+
 au! FileType pov setlocal ft=php
+
+augroup FILES
+  au!
+  au BufRead,BufNewFile * setfiletype txt
+  au FileType txt call g:utils#plainText()
+augroup END
+
 " CSS3 Fixes 
 " ------------------------------------------------------------------------------
 
@@ -271,7 +314,7 @@ augroup END
 " MAPPINGS
 " ##############################################################################
 
-" --- (Leader) 
+" --- (Leader)
 " ------------------------------------------------------------------------------
 let mapleader   = "\<Space>"
 let g:mapleader = "\<Space>"
@@ -325,9 +368,10 @@ xnoremap <silent> y y`]
 xnoremap <silent> p p`]
 nnoremap <silent> p p`]
 
-" treat long lines as break lines
-noremap  j g<down>
-noremap  k g<up>
+" treat long lines as break lines, add motions to jumplist
+" useful when using relative linenumbers
+noremap <expr> j v:count > 1 ? 'm`' . v:count . 'j' : 'g<down>'
+noremap <expr> k v:count > 1 ? 'm`' . v:count . 'k' : 'g<up>'
 
 " center screen after next & prev search
 nnoremap n nzz
@@ -348,37 +392,12 @@ xnoremap > >gv
 nnoremap <leader>w  :update<CR>
 nnoremap <leader>W  :update!<CR>
 
-" quick fold toggeling
-" nnoremap <tab> za
-
-" fold with ö instead of z 
-" xnoremap öf mzzf`zzz
-" noremap öF zF
-" noremap öo zo
-" noremap öd zd
-" noremap öD zD
-" noremap öC zC
-" noremap öc zc
-" noremap öa za
-" noremap öA zA
-" noremap öA zA
-" noremap öM zM
-" noremap öm zm
-" noremap öR zR
-
-" Jump to mark {a-zA-Z}
-nnoremap ä '
-nnoremap Ä `
-
 " treat jk as <esc> in insertmode and commandmode
 map! jk <ESC>
 
 " start makro with alt-q instead of @
 nmap Q @q
 vmap Q :norm @q<cr>
-
-" searchmode with shift-space
-noremap <S-space> /
 
 " --- Motion and Movement 
 " ------------------------------------------------------------------------------
@@ -411,8 +430,12 @@ nnoremap gwu viwgu
 nnoremap gwU viwgU
 
 " in- and decrement visual (-block) selection
-vnoremap <c-a> <c-a>gv
-vnoremap <c-x> <c-x>gv
+" vnoremap <c-a> <c-a>gv
+" vnoremap <c-x> <c-x>gv
+
+" correct word under cursor
+nnoremap <leader>s z=
+nnoremap <leader>S 1z=
 
 " --- jump to ...
 " ------------------------------------------------------------------------------
@@ -421,8 +444,8 @@ vnoremap <c-x> <c-x>gv
 " nnoremap üD [c
 
 " jump to errors
-nnoremap ge :cnext<cr>
-nnoremap gE :cprev<cr>
+" nnoremap ge :cnext<cr>
+" nnoremap gE :cprev<cr>
 
 " jump to errors
 nnoremap gl :lnext<cr>
@@ -431,9 +454,8 @@ nnoremap gL :lprev<cr>
 " --- Buffer and Window Management 
 " ------------------------------------------------------------------------------
 
-" netrw specific
-autocmd FileType netrw nnoremap o <CR>
-autocmd FileType netrw nnoremap <CR> o
+" pseudo-maximize windows
+nnoremap <F12> :set lines=999 columns=999<cr>
 
 " buffers
 nnoremap <leader>bn :bnew<cr>
@@ -507,6 +529,7 @@ nnoremap <silent> <Up> :resize -5<CR>
 nnoremap <silent> <Down> :resize +5<CR>
 
 " source local stuff
+" by /u/Wiggledan from /r/vim
 xnoremap <silent> g: :<c-U>call utils#sourceVimscript("visual")<cr>
 nnoremap <silent> g: :call utils#sourceVimscript("currentline")<cr>
 
@@ -519,7 +542,8 @@ xnoremap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &f
 " --- Options
 " ------------------------------------------------------------------------------
 " toggle numbers and relative numbers
-nnoremap <silent><leader>tn  :call utils#toggleRNU()<cr>
+nnoremap <silent><leader>tn :call utils#toggleRNU()<cr>
+nnoremap <silent><leader>ts :set spell!<cr>
 
 " PLUGIN SETTINGS & MAPPINGS
 " ##############################################################################
@@ -568,6 +592,7 @@ let delimitMate_expand_space = 1
 augroup delimitMateMatchpairs
   au! 
   au FileType vim let b:delimitMate_matchpairs = "(:),[:],{:}"
+  au FileType vim let delimitMate_excluded_regions = "Comment,String"
   au FileType html let b:delimitMate_matchpairs = "(:),<:>"
 augroup END
 " au! FileType javascript let b:delimitMate_eol_marker = ';'
@@ -617,24 +642,24 @@ let g:gitgutter_eager = 0
 
 " Goyo 
 " " ------------------------------------------------------------------------------
-let g:goyo_height = "100%"
-let g:goyo_width = 90
+" let g:goyo_height = "100%"
+" let g:goyo_width = 90
 
-function! s:goyo_enter()
-    set noshowmode
-    set laststatus=0
-    set nonu nornu
-endfunction
-function! s:goyo_leave()
-    set showmode
-    set laststatus=2
-    set nu rnu
-endfunction
+" function! s:goyo_enter()
+"     set noshowmode
+"     set laststatus=0
+"     set nonu nornu
+" endfunction
+" function! s:goyo_leave()
+"     set showmode
+"     set laststatus=2
+"     set nu rnu
+" endfunction
 
-autocmd! User GoyoEnter nested call <SID>goyo_enter()
-autocmd! User Goyoleave nested call <SID>goyo_leave()
+" autocmd! User GoyoEnter nested call <SID>goyo_enter()
+" autocmd! User Goyoleave nested call <SID>goyo_leave()
 
-nnoremap <silent>           <leader>pz :Goyo<CR>
+" nnoremap <silent>           <leader>pz :Goyo<CR>
 
 " GV 
 " ------------------------------------------------------------------------------
@@ -643,7 +668,7 @@ nmap <leader>gL :GV!<cr>
 
 " HiLinkTrace 
 " ------------------------------------------------------------------------------
-nnoremap <leader>ph :HLT<CR>
+" nnoremap <leader>ph :HLT<CR>
 
 " Js-Beautify 
 " ------------------------------------------------------------------------------
@@ -744,7 +769,7 @@ let g:lightline = {
       \ 'subseparator': { 'left': '', 'right': '' },
       \ 'component': {
       \ 'lineinfo': '%l:%c (%L)',
-      \ 'zeitwerk': 'Zeitwerk gVIM'
+      \ 'zeitwerk': 'Zeitwerk VIM'
       \ },
       \ 'component_function': {
       \ 'mode': 'LLMode',
@@ -776,7 +801,9 @@ let g:lightline = {
 " ------------------------------------------------------------------------------
 let g:incsearch#auto_nohlsearch = 1
 map / <Plug>(incsearch-forward)
+map <S-space> <Plug>(incsearch-forward)
 map ? <Plug>(incsearch-backward)
+map <C-space> <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
 map n <Plug>(incsearch-nohl-n)
 map N <Plug>(incsearch-nohl-N)
@@ -797,15 +824,15 @@ map <leader>ti :IndentLinesToggle<cr>
 
 " MatchTagAlways 
 " ------------------------------------------------------------------------------
-let g:mta_use_matchparen_group = 1
-let g:mta_filetypes = {
-      \ 'html' : 1,
-      \ 'xhtml' : 1,
-      \ 'xml' : 1,
-      \ 'jade' : 1,
-      \ 'php' : 1,
-      \}
-nnoremap <silent>gt :MtaJumpToOtherTag<cr>
+" let g:mta_use_matchparen_group = 1
+" let g:mta_filetypes = {
+"       \ 'html' : 1,
+"       \ 'xhtml' : 1,
+"       \ 'xml' : 1,
+"       \ 'jade' : 1,
+"       \ 'php' : 1,
+"       \}
+" nnoremap <silent>gt :MtaJumpToOtherTag<cr>
 
 " ~~~ NERDTree 
 " ------------------------------------------------------------------------------
@@ -869,61 +896,61 @@ let g:plug_timeout = 240
 " save current session & close all buffers
 " nnoremap <leader>q :Sayonara<CR>
 
-" Startify 
+" ~~~ Startify 
 " ------------------------------------------------------------------------------
-let g:startify_session_delete_buffers = 1
-let g:startify_files_number = 9
-let g:startify_change_to_dir = 1
-let g:startify_relative_path = 1
-let g:startify_use_env = 1
-let g:startify_enable_special = 0
-let g:startify_custom_indices = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'v', 'g', 't', 'd', 'D', 'r', 'R', 'l', 'L']
-if s:is_windows
-  let g:startify_bookmarks = [
-        \ $rtp,
-        \ '~/Google Drive/',
-        \ '~/temp'
-        \ ]
-endif
-let g:startify_update_oldfiles = 1
-let g:startify_session_autoload = 0
-let g:startify_session_persistence = 0
-if s:is_windows
-  let g:startify_skiplist = [
-        \ '\.vim',
-        \ '\.log',
-        \ 'plugged\.*\doc',
-        \ 'COMMIT_EDITMSG'
-        \ ]
-endif
-let g:startify_list_order = [
-      \ ['    LRU:'],
-      \ 'files',
-      \ ['    Bookmarks:'],
-      \ 'bookmarks',
-      \ ['    Sessions:'],
-      \ 'sessions',
-      \ ]
-let g:startify_custom_header = g:utils#centerLines([
-      \ '                               ',
-      \ '   __      __ _____  __  __    ',
-      \ '   \ \    / /|_   _||  \/  |   ',
-      \ '    \ \  / /   | |  | \  / |   ',
-      \ '     \ \/ /    | |  | |\/| |   ',
-      \ '      \  /    _| |_ | |  | |   ',
-      \ '       \/    |_____||_|  |_|   ',
-      \ ])
-augroup Startify
-  au!
-  au User Startified file Startify
-  au User Startified setlocal buftype=
-  au User Startified setlocal nowrap
-  au User Startified setlocal nonu norln
-  au User Startified setlocal colorcolumn=
-augroup END
+" let g:startify_session_delete_buffers = 1
+" let g:startify_files_number = 9
+" let g:startify_change_to_dir = 1
+" let g:startify_relative_path = 1
+" let g:startify_use_env = 1
+" let g:startify_enable_special = 0
+" let g:startify_custom_indices = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'v', 'g', 't', 'd', 'D', 'r', 'R', 'l', 'L']
+" if s:is_windows
+"   let g:startify_bookmarks = [
+"         \ $rtp,
+"         \ '~/Google Drive/',
+"         \ '~/temp'
+"         \ ]
+" endif
+" let g:startify_update_oldfiles = 1
+" let g:startify_session_autoload = 0
+" let g:startify_session_persistence = 0
+" if s:is_windows
+"   let g:startify_skiplist = [
+"         \ '\.vim',
+"         \ '\.log',
+"         \ 'plugged\.*\doc',
+"         \ 'COMMIT_EDITMSG'
+"         \ ]
+" endif
+" let g:startify_list_order = [
+"       \ ['    LRU:'],
+"       \ 'files',
+"       \ ['    Bookmarks:'],
+"       \ 'bookmarks',
+"       \ ['    Sessions:'],
+"       \ 'sessions',
+"       \ ]
+" let g:startify_custom_header = g:utils#centerLines([
+"       \ '                               ',
+"       \ '   __      __ _____  __  __    ',
+"       \ '   \ \    / /|_   _||  \/  |   ',
+"       \ '    \ \  / /   | |  | \  / |   ',
+"       \ '     \ \/ /    | |  | |\/| |   ',
+"       \ '      \  /    _| |_ | |  | |   ',
+"       \ '       \/    |_____||_|  |_|   ',
+"       \ ])
+" augroup Startify
+"   au!
+"   au User Startified file Startify
+"   au User Startified setlocal buftype=
+"   au User Startified setlocal nowrap
+"   au User Startified setlocal nonu norln
+"   au User Startified setlocal colorcolumn=
+" augroup END
 
-nnoremap <leader>sd :SSave default<CR>y<CR>
-nnoremap <leader>sD :SLoad default<CR>
+" nnoremap <leader>sd :SSave default<CR>y<CR>
+" nnoremap <leader>sD :SLoad default<CR>
 
 " Surround 
 " ------------------------------------------------------------------------------
@@ -931,9 +958,9 @@ nmap ms  ys
 nmap mS  ysiW
 nmap mSS ySS
 
-" ~~~ Supertab 
+" Supertab 
 " ------------------------------------------------------------------------------
-" let g:SuperTabDefaultCompletionType = '<C-n>'
+let g:SuperTabDefaultCompletionType = '<C-n>'
 
 " Syntastic 
 " ------------------------------------------------------------------------------
@@ -980,8 +1007,8 @@ noremap <C-t>ml :Tabmerge right<CR>
 " ------------------------------------------------------------------------------
 let g:textobj_fold_no_default_key_mappings = 1
 
-xmap aö <Plug>(textobj-fold-a)
-xmap iö <Plug>(textobj-fold-i)
+xmap az <Plug>(textobj-fold-a)
+xmap iz <Plug>(textobj-fold-i)
 
 " UltiSnips 
 " ------------------------------------------------------------------------------
@@ -994,41 +1021,37 @@ nmap <silent><leader>pu :UltiSnipsEdit<cr>
 
 " YouCompleteMe 
 " ------------------------------------------------------------------------------
-set omnifunc=syntaxcomplete#Complete
-let g:ycm_auto_trigger = 1
-let g:ycm_complete_in_comments = 1
-let g:ycm_complete_in_strings = 1
-let g:ycm_seed_identifiers_with_syntax = 1
-let g:ycm_filetype_blacklist = {
-      \ 'tagbar' : 1,
-      \ 'qf' : 1,
-      \ 'notes' : 1,
-      \ 'markdown' : 1,
-      \ 'unite' : 1,
-      \ 'text' : 1,
-      \ 'vimwiki' : 1,
-      \ 'pandoc' : 1,
-      \ 'infolog' : 1,
-      \ 'mail' : 1
-      \}
-if exists('youcompleteme#Enable()')
-  augroup load_us_ycm
-    autocmd!
-    autocmd InsertEnter * call plug#load('YouCompleteMe')
-          \| call youcompleteme#Enable() | autocmd! load_us_ycm
-  augroup END
-endif
+" set omnifunc=syntaxcomplete#Complete
+" let g:ycm_auto_trigger = 1
+" let g:ycm_complete_in_comments = 1
+" let g:ycm_complete_in_strings = 1
+" let g:ycm_seed_identifiers_with_syntax = 1
+" let g:ycm_filetype_blacklist = {
+"       \ 'tagbar' : 1,
+"       \ 'qf' : 1,
+"       \ 'notes' : 1,
+"       \ 'markdown' : 1,
+"       \ 'unite' : 1,
+"       \ 'text' : 1,
+"       \ 'vimwiki' : 1,
+"       \ 'pandoc' : 1,
+"       \ 'infolog' : 1,
+"       \ 'mail' : 1
+"       \}
+" if exists('youcompleteme#Enable()')
+"   augroup load_us_ycm
+"     autocmd!
+"     autocmd InsertEnter * call plug#load('YouCompleteMe')
+"           \| call youcompleteme#Enable() | autocmd! load_us_ycm
+"   augroup END
+" endif
+
+" --- Vinegar
+" ------------------------------------------------------------------------------
+nmap _ :Vex<cr>
+nmap <C-_> :Sex<cr>
 
 " xterm colors 
 " ------------------------------------------------------------------------------
-nnoremap <silent><leader>px :VXtermColorTable<CR>
+" nnoremap <silent><leader>px :VXtermColorTable<CR>
 
-" Wimproved.vim 
-" ------------------------------------------------------------------------------
-if s:is_windows
-  autocmd GUIEnter * set columns=120
-  autocmd GUIEnter * set lines=38
-  autocmd GUIEnter * silent! WToggleClean
-endif
-
-noremap <F11> :WToggleFullscreen<CR>

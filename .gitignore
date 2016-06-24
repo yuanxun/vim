@@ -1,6 +1,5 @@
 temp/**
-!temp
-session/**
-!session
+undodir/
 plug.vim.old
 plugged/**
+.netrwhist

@@ -52,7 +52,7 @@ call plug#begin($rtp.'plugged')
 " ------------------------------------------------------------------------------
 " --- Meta
 " ------------------------------------------------------------------------------
-" Plug 'gerw/vim-HiLinkTrace'                          " reveal syntax group stacks
+Plug 'gerw/vim-HiLinkTrace'                          " reveal syntax group stacks
 " Plug 'guns/xterm-color-table.vim'                    " show xterm color list
 " ------------------------------------------------------------------------------
 " --- Colorscheme
@@ -81,7 +81,7 @@ Plug 'cakebaker/scss-syntax.vim'                     " sass
 Plug 'pangloss/vim-javascript'                       " javascript
 Plug 'othree/html5.vim'                              " html5
 Plug 'tpope/vim-markdown'                            " markdown
-" Plug 'captbaritone/better-indent-support-for-php-with-html'
+Plug 'captbaritone/better-indent-support-for-php-with-html'
 " ------------------------------------------------------------------------------
 " --- Syntax formatting
 " ------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ Plug 'tpope/vim-fugitive'                            " git wrapper
 Plug 'sirver/ultisnips'                              " snippet integration
 " Plug 'honza/vim-snippets'                            " snippets
 Plug 'tpope/vim-commentary'                          " fileType specific comment creation mappings
-"Plug 'tomtom/tcomment_vim'                         " like vim-commentary?
+" Plug 'tomtom/tcomment_vim'                           " like vim-commentary?
 Plug 'junegunn/vim-easy-align'                       " text align
 Plug 'lilydjwg/colorizer'                            " hex, rgb and named color highlighting
 " ------------------------------------------------------------------------------
@@ -179,9 +179,9 @@ let g:netrw_list_hide='.*\.swp$,\.DS_Store' " hide swp, DS_Store files
 let g:netrw_liststyle=3 " set tree style listing
 let g:netrw_sort_sequence='[\/]$' " display directories first
 let g:netrw_sort_options='i' " ignore case on sorting
-let g:netrw_altv = 1 " vspilt netrw to the left window 
-let g:netrw_winsize = 30 " 30% of the screen for the netrw window, 70% for the file window
-let g:netrw_browse_split = 4 " open file in a previous buffer (right window)
+" let g:netrw_altv = 1 " vspilt netrw to the left window 
+" let g:netrw_winsize = 30 " 30% of the screen for the netrw window, 70% for the file window
+" let g:netrw_browse_split = 4 " open file in a previous buffer (right window)
 set ffs=dos,unix                        " default fileformats
 set history=500                         " length of history, see :h history
 set undolevels=500                      " undo history lenght
@@ -194,10 +194,8 @@ set mouse=                              " disable mouseinteraction
 set ignorecase smartcase                " smartcase search
 set nohlsearch                          " disable search highlighting
 set incsearch                           " incremental search
-set complete+=kspell
 " set lazyredraw                          " avoids unnessesarily redraws
-set magic                               " regex magic
-
+set magic                              " regex magic
 set matchtime=0                         " bracket blinking
 set showmatch                           " jumps to a matching bracket
 set noerrorbells novisualbell t_vb=     " disable audible and visual notice
@@ -237,21 +235,18 @@ set cmdheight=1                         " height of commandline in lines
 set expandtab                           " converts <tab> to spaces
 set shiftwidth=2                        " number of spaces converted to <tab>
 set tabstop=2                           " number of spaces that count as <tab>
-augroup tabstop
-  au!
-  au FileType css setlocal tabstop=4 shiftwidth=4
-  au FileType sass setlocal tabstop=4 shiftwidth=4
-  au FileType scss setlocal tabstop=4 shiftwidth=4
-augroup end
+
+set omnifunc=syntaxcomplete#Complete    " enable syntax completion
 
 set backspace=indent,eol,start          " backspace scope in insert
 set whichwrap+=<,>,h,l                  " allows movement over indentation
 set smarttab                            " improves vims treatment of <tab>s
 set linebreak                           " soft breaks lines according to breakat
-set wrap                                " no wrap
+set nowrap                                " no wrap
 set breakat=80                          " sets softwrap, needs wrap
-set textwidth=80                       " maximum amount of text til forced EOL
-set autoindent smartindent breakindent  " Indentation rules
+set textwidth=500                       " maximum amount of text til forced EOL
+set autoindent smartindent             " Indentation rules
+set breakindent
 
 " by /u/ghost-in-a-shell from /r/vim
 set formatoptions+=tcoqnl1j             " see help fo-table
@@ -277,16 +272,12 @@ set formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+  " Or ASCII style bullet points
 " AUTOCOMMANDS
 " ##############################################################################
 
-au! FileType pov setlocal ft=php
-
-augroup FILES
+augroup RandomFileStuff
   au!
   au BufRead,BufNewFile * setfiletype txt
   au FileType txt call g:utils#plainText()
+  au FileType pov setlocal ft=php
 augroup END
-
-" CSS3 Fixes 
-" ------------------------------------------------------------------------------
 
 augroup CSS3Fix
     au!
@@ -317,7 +308,8 @@ augroup END
 " --- (Leader)
 " ------------------------------------------------------------------------------
 let mapleader   = "\<Space>"
-let g:mapleader = "\<Space>"
+" emmet leader
+let g:user_emmet_leader_key='<C-e>'
 
 " --- (Unmap) 
 " ------------------------------------------------------------------------------
@@ -327,8 +319,21 @@ map <M-Left>  <Nop>
 map <M-Down>  <Nop>
 map <M-Up>    <Nop>
 
-" --- Default Remap 
+" --- Default Remap / Easier mappings
 " ------------------------------------------------------------------------------
+" invoke incsearch
+map / <Plug>(incsearch-forward)
+map <S-space> <Plug>(incsearch-forward)
+map ? <Plug>(incsearch-backward)
+map <C-space> <Plug>(incsearch-backward)
+map g/ <Plug>(incsearch-stay)
+map n <Plug>(incsearch-nohl-n)
+map N <Plug>(incsearch-nohl-N)
+map * <Plug>(incsearch-nohl-*)
+map # <Plug>(incsearch-nohl-#)
+" map <leader>/ <Plug>(incsearch-fuzzy-/)
+" map <leader>? <Plug>(incsearch-fuzzy-?)
+
 " ignore EOL sign when using $ in visualmode
 xnoremap $ $h
 
@@ -368,10 +373,9 @@ xnoremap <silent> y y`]
 xnoremap <silent> p p`]
 nnoremap <silent> p p`]
 
-" treat long lines as break lines, add motions to jumplist
-" useful when using relative linenumbers
-noremap <expr> j v:count > 1 ? 'm`' . v:count . 'j' : 'g<down>'
-noremap <expr> k v:count > 1 ? 'm`' . v:count . 'k' : 'g<up>'
+" treat long lines as break lines
+noremap j g<down>
+noremap k g<up>
 
 " center screen after next & prev search
 nnoremap n nzz
@@ -386,8 +390,15 @@ nnoremap Y y$
 xnoremap < <gv
 xnoremap > >gv
 
-" --- Keyboard specific alternatives 
-" ------------------------------------------------------------------------------
+" jump over delimiters
+map! <C-l> <Plug>delimitMateS-Tab
+map! <S-Tab> <Plug>delimitMateJumpMany
+
+" auto insert delimiters when pressing <ENTER>
+imap <expr> <CR> pumvisible()
+            \ ? "\<C-Y>"
+            \ : "<Plug>delimitMateCR"
+
 " quickly write
 nnoremap <leader>w  :update<CR>
 nnoremap <leader>W  :update!<CR>
@@ -405,17 +416,56 @@ vmap Q :norm @q<cr>
 noremap gk [z
 noremap gj ]z
 
+" update folds
+nmap zu <Plug>(FastFoldUpdate)
+
+" invoke sneak
+map ö <Plug>Sneak_s
+map Ö <Plug>Sneak_S
+
+" jump to diffs
+nnoremap <leader>d ]c
+nnoremap <leader>D [c
+
+" jump to errors
+nnoremap <leader>e :cnext<cr>
+nnoremap <leader>E :cprev<cr>
+
+" jump to spell errors
+nnoremap <leader>s ]s
+nnoremap <leader>S [s
+
+" jump to hunks
+nmap <leader>h <Plug>GitGutterNextHunk
+nmap <leader>H <Plug>GitGutterPrevHunk
+
+" nmap <Leader>ha <Plug>GitGutterStageHunk
+" nmap <Leader>hr <Plug>GitGutterUndoHunk
+" nmap <Leader>hv <Plug>GitGutterPreviewHunk
+
 " --- Manipulation and Selection 
 " ------------------------------------------------------------------------------
 " range copy here
 nnoremap <C-y> :-,t.<left><left><left>
+
+" invoke surround mappings
+" [map] surround <motion>
+nmap ms  ys
+" shorthand for [map] surround entire outer line
+nmap mS ySS
 
 " newlines without insertmode
 noremap <A-o> o<ESC>
 noremap <A-S-o> <S-o><ESC>
 
 " highlight last inserted text
-nnoremap gV `[v`]
+nmap gV `[v`]
+
+" comment out current line
+nmap gC <Plug>CommentaryLine
+
+" comment out last inserted text
+nmap gci gVgc
 
 " Join upwards
 noremap K kJ
@@ -430,29 +480,32 @@ nnoremap gwu viwgu
 nnoremap gwU viwgU
 
 " in- and decrement visual (-block) selection
-" vnoremap <c-a> <c-a>gv
-" vnoremap <c-x> <c-x>gv
+vnoremap <c-a> <c-a>gv
+vnoremap <c-x> <c-x>gv
 
 " correct word under cursor
-nnoremap <leader>s z=
-nnoremap <leader>S 1z=
+" nnoremap <leader>c z=
+" nnoremap <leader>C 1z=
 
-" --- jump to ...
-" ------------------------------------------------------------------------------
-" jump to diffs
-" nnoremap üd ]c
-" nnoremap üD [c
-
-" jump to errors
-" nnoremap ge :cnext<cr>
-" nnoremap gE :cprev<cr>
-
-" jump to errors
-nnoremap gl :lnext<cr>
-nnoremap gL :lprev<cr>
+" target folds as textobject
+xmap az <Plug>(textobj-fold-a)
+xmap iz <Plug>(textobj-fold-i)
 
 " --- Buffer and Window Management 
 " ------------------------------------------------------------------------------
+" merge tabs
+noremap <C-t>mh :Tabmerge left<CR>
+noremap <C-t>ml :Tabmerge right<CR>
+
+" Ctrl-P fuzzy searches
+map <leader>cf :CtrlP<cr>
+map <leader>cb :CtrlPBuffer<cr>
+map <leader>cm :CtrlPMRU<cr>
+
+" invoke netrw in vsplit
+nmap _ :Vex<cr>
+" invoke netrw in split
+nmap <A--> :Sex<cr>
 
 " pseudo-maximize windows
 nnoremap <F12> :set lines=999 columns=999<cr>
@@ -491,6 +544,39 @@ noremap <C-t><S-k> :tabmove $<CR>
 
 " --- Custom functions and behaviour 
 " ------------------------------------------------------------------------------
+" invoke Hilighting Trace plugin
+nnoremap <leader>ph :HLT<cr>
+
+" invoke fugitive wrapper functions
+nmap <leader>gd :Gvdiff<CR>
+nmap <leader>gw :Gwrite<CR>
+nmap <leader>gb :Gbrowse<CR>
+nmap <leader>gc :Gcommit
+nmap <leader>G :Git 
+
+" invoke commit browser
+nmap <leader>gl :GV<cr>
+nmap <leader>gL :GV!<cr>
+
+" invoke syntastic check
+map <leader>ps :SyntasticCheck<cr>:call lightline#update()<cr>
+
+" invoke EasyAlign
+xmap <leader>pl <Plug>(EasyAlign)
+nmap <leader>pl <Plug>(EasyAlign)
+
+" invoke snippet editor
+nmap <silent><leader>pu :UltiSnipsEdit<cr>
+" snippet trigger
+let g:UltiSnipsExpandTrigger = '<C-j>'
+" forward in snippets
+let g:UltiSnipsJumpForwardTrigger = '<C-j>'
+" backwards in snippets
+let g:UltiSnipsJumpBackwardTrigger= '<C-k>'
+
+" page through completion
+let g:SuperTabDefaultCompletionType = '<C-n>'
+
 " quit
 nnoremap <silent><leader>q :q<cr>
 " quitall
@@ -510,17 +596,20 @@ nnoremap <silent><leader>vs :source $MYVIMRC<CR>:call lightline#update()<CR>
 nnoremap <silent><leader>vf :source %<CR>
 
 " Quickly open a buffer for scribble
-noremap <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
+" noremap <leader>e  :tabnew $vimpath/temp/tempbuffer<cr>
 
-" Switch CWD to the directory of the open buffer
-" noremap <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-"substitute current word under the cursor
-nnoremap <C-s> :%s/\M\<<C-r><C-w>\>//gc<Left><Left><Left>
-xnoremap <C-s> y:%s/\M\<<C-r>"\>//gc<Left><Left><Left>
+"substitute word-under-cursor
+nnoremap <leader>S :%s/\M\<<C-r><C-w>\>//ge<Left><Left><Left>
+xnoremap <leader>S y:%s/\M\<<C-r>"\>//ge<Left><Left><Left>
+"substitute word-under-cursor in argslist
+nnoremap <leader>A :silent! argdo %s/\M\<<C-r><C-w>\>//g\|up<Left><Left><Left><Left><Left>
+xnoremap <leader>A y:silent! argdo %s/\M\<<C-r>"\>//g\|up<Left><Left><Left><Left><Left>
 
 " substitute word in search register (/,?)
-nnoremap <A-s> :%s/\<<C-r>/\>//gc<Left><Left><Left>
+nnoremap <leader>s/ :%s/\<<C-r>/\>//gc<Left><Left><Left>
+nnoremap <leader>s<s-space> :%s/\<<C-r>/\>//gc<Left><Left><Left>
+" substitute word in search register (/,?) in arglist
+nnoremap <leader>a/ :silent! argdo %s/\<<C-r>/\>//g\|up<Left><Left><Left><Left><Left>
 
 "resize viewport
 nnoremap <silent> <Right> :call utils#intelligentVerticalResize('right')<CR>
@@ -539,11 +628,38 @@ nnoremap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>=
 xnoremap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
 xnoremap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
 
-" --- Options
+" invoke beautifier from context
+autocmd FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
+autocmd FileType json nnoremap <buffer> <leader>pb :call JsonBeautify()<cr>
+autocmd FileType jsx nnoremap <buffer> <leader>pb :call JsxBeautify()<cr>
+autocmd FileType html nnoremap <buffer> <leader>pb :call HtmlBeautify()<cr>
+autocmd FileType php nnoremap <buffer> <leader>pb :call HtmlBeautify()<cr>
+autocmd FileType css nnoremap <buffer> <leader>pb :call CSSBeautify()<cr>
+autocmd FileType scss nnoremap <buffer> <leader>pb :call CSSBeautify()<cr>
+autocmd FileType javascript xnoremap <buffer> <leader>pb :call RangeJsBeautify()<cr>
+autocmd FileType json xnoremap <buffer> <leader>pb :call RangeJsonBeautify()<cr>
+autocmd FileType jsx xnoremap <buffer><leader>pb :call RangeJsxBeautify()<cr>
+autocmd FileType html xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
+autocmd FileType php xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
+autocmd FileType css xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
+autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
+
+" fix last broken word
+" imap <C-l> <Esc>[s1z=gi
+
+" --- Toggle Options
 " ------------------------------------------------------------------------------
 " toggle numbers and relative numbers
 nnoremap <silent><leader>tn :call utils#toggleRNU()<cr>
-nnoremap <silent><leader>ts :set spell!<cr>
+
+" toggle spellcheck
+nnoremap <silent><leader>ts :setlocal spell!<cr>
+
+" toggle rendered hex-colors
+map <leader>tc <Plug>Colorizer
+
+" toggle visual indentation marks
+map <leader>ti :IndentLinesToggle<cr>
 
 " PLUGIN SETTINGS & MAPPINGS
 " ##############################################################################
@@ -551,11 +667,6 @@ nnoremap <silent><leader>ts :set spell!<cr>
 " Colorizer 
 " ------------------------------------------------------------------------------
 let g:colorizer_startup = 0
-map <leader>tc <Plug>Colorizer
-
-" Commentary 
-" ------------------------------------------------------------------------------
-nmap gC <Plug>CommentaryLine
 
 " CtrlP
 " ------------------------------------------------------------------------------
@@ -568,19 +679,11 @@ let g:ctrlp_match_window = 'bottom,order:ttb'
 let g:ctrlp_custom_ignore = '\.git$\|\.hg$\|\.svn$|\node-modules'
 let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others']
 
-map <leader>cf :CtrlP<cr>
-map <leader>cb :CtrlPBuffer<cr>
-map <leader>cm :CtrlPMRU<cr>
-
 " delimitMate 
 " ------------------------------------------------------------------------------
-map! <C-l> <Plug>delimitMateS-Tab
-map! <S-Tab> <Plug>delimitMateJumpMany
-imap <expr> <CR> pumvisible()
-            \ ? "\<C-Y>"
-            \ : "<Plug>delimitMateCR"
 let delimitMate_expand_cr = 1
 let delimitMate_expand_space = 1
+let delimitMate_smart_matchpairs = 1
 " let delimitMate_excluded_regions = ''
 " let delimitMate_matchpairs = "(:),[:],{:},<:>"
 " let delimitMate_quotes = "\" ' ` *"
@@ -592,35 +695,16 @@ let delimitMate_expand_space = 1
 augroup delimitMateMatchpairs
   au! 
   au FileType vim let b:delimitMate_matchpairs = "(:),[:],{:}"
-  au FileType vim let delimitMate_excluded_regions = "Comment,String"
+  au FileType vim let b:delimitMate_excluded_regions = "Comment,String"
   au FileType html let b:delimitMate_matchpairs = "(:),<:>"
 augroup END
 " au! FileType javascript let b:delimitMate_eol_marker = ';'
-
-" Easyalign 
-" ------------------------------------------------------------------------------
-xmap <leader>pl <Plug>(EasyAlign)
-nmap <leader>pl <Plug>(EasyAlign)
 
 " Emmet 
 " ------------------------------------------------------------------------------
 let g:user_emmet_install_global=0
 autocmd FileType jade,html,php,css,scss EmmetInstall
 let g:user_emmet_mode='a'
-let g:user_emmet_leader_key='<C-e>'
-
-" FastFold 
-" ------------------------------------------------------------------------------
-nmap zu <Plug>(FastFoldUpdate)
-
-" Fugitive 
-" ------------------------------------------------------------------------------
-" nmap <leader>gs :Gstatus<CR>
-nmap <leader>gd :Gvdiff<CR>
-nmap <leader>gw :Gwrite<CR>
-nmap <leader>gb :Gbrowse<CR>
-nmap <leader>gc :Gcommit
-nmap <leader>G :Git 
 
 " Gitgutter 
 " ------------------------------------------------------------------------------
@@ -629,16 +713,11 @@ let g:gitgutter_sign_modified = '~'
 let g:gitgutter_sign_removed = '-'
 let g:gitgutter_sign_removed_first_line = '_'
 let g:gitgutter_sign_modified_removed = '*'
-nmap <leader>hn <Plug>GitGutterNextHunk
-nmap <leader>hp <Plug>GitGutterPrevHunk
-nmap <Leader>ha <Plug>GitGutterStageHunk
-nmap <Leader>hr <Plug>GitGutterUndoHunk
-nmap <Leader>hv <Plug>GitGutterPreviewHunk
 let g:gitgutter_override_sign_column_highlight = 1
 let g:gitgutter_sign_column_always = 1
 let g:gitgutter_diff_args = '--ignore-space-at-eol --ignore-all-space --ignore-blank-lines'
 let g:gitgutter_realtime = 0
-let g:gitgutter_eager = 0
+let g:gitgutter_eager = 1
 
 " Goyo 
 " " ------------------------------------------------------------------------------
@@ -661,32 +740,8 @@ let g:gitgutter_eager = 0
 
 " nnoremap <silent>           <leader>pz :Goyo<CR>
 
-" GV 
+" HiLink
 " ------------------------------------------------------------------------------
-nmap <leader>gl :GV<cr>
-nmap <leader>gL :GV!<cr>
-
-" HiLinkTrace 
-" ------------------------------------------------------------------------------
-" nnoremap <leader>ph :HLT<CR>
-
-" Js-Beautify 
-" ------------------------------------------------------------------------------
-autocmd FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
-autocmd FileType json nnoremap <buffer> <leader>pb :call JsonBeautify()<cr>
-autocmd FileType jsx nnoremap <buffer> <leader>pb :call JsxBeautify()<cr>
-autocmd FileType html nnoremap <buffer> <leader>pb :call HtmlBeautify()<cr>
-autocmd FileType php nnoremap <buffer> <leader>pb :call HtmlBeautify()<cr>
-autocmd FileType css nnoremap <buffer> <leader>pb :call CSSBeautify()<cr>
-autocmd FileType scss nnoremap <buffer> <leader>pb :call CSSBeautify()<cr>
-autocmd FileType javascript xnoremap <buffer> <leader>pb :call RangeJsBeautify()<cr>
-autocmd FileType json xnoremap <buffer> <leader>pb :call RangeJsonBeautify()<cr>
-autocmd FileType jsx xnoremap <buffer><leader>pb :call RangeJsxBeautify()<cr>
-autocmd FileType html xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
-autocmd FileType php xnoremap <buffer> <leader>pb :call RangeHtmlBeautify()<cr>
-autocmd FileType css xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
-autocmd FileType scss xnoremap <buffer><leader>pb :call RangeCSSBeautify()<cr>
-
 " Lightline 
 " ------------------------------------------------------------------------------
 let s:LLMaxWidth = 80
@@ -800,17 +855,6 @@ let g:lightline = {
 " Incsearch 
 " ------------------------------------------------------------------------------
 let g:incsearch#auto_nohlsearch = 1
-map / <Plug>(incsearch-forward)
-map <S-space> <Plug>(incsearch-forward)
-map ? <Plug>(incsearch-backward)
-map <C-space> <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-map n <Plug>(incsearch-nohl-n)
-map N <Plug>(incsearch-nohl-N)
-map * <Plug>(incsearch-nohl-*)
-map # <Plug>(incsearch-nohl-#)
-" map <leader>/ <Plug>(incsearch-fuzzy-/)
-" map <leader>? <Plug>(incsearch-fuzzy-?)
 
 " indentLine 
 " ------------------------------------------------------------------------------
@@ -820,81 +864,9 @@ let g:indentLine_enabled = 0
 let g:indentLine_faster = 1
 let g:indentLine_concealcursor = 'ic'
 
-map <leader>ti :IndentLinesToggle<cr>
-
-" MatchTagAlways 
-" ------------------------------------------------------------------------------
-" let g:mta_use_matchparen_group = 1
-" let g:mta_filetypes = {
-"       \ 'html' : 1,
-"       \ 'xhtml' : 1,
-"       \ 'xml' : 1,
-"       \ 'jade' : 1,
-"       \ 'php' : 1,
-"       \}
-" nnoremap <silent>gt :MtaJumpToOtherTag<cr>
-
-" ~~~ NERDTree 
-" ------------------------------------------------------------------------------
-" let g:NERDTreeQuitOnOpen = 1
-" let g:NERDTreeAutoCenter = 1
-" let g:NERDTreeShowLineNumbers = 0
-" let g:NERDTreeShowBookmarks = 1
-" let g:NERDTreeBookmarksFile = $rtp.'temp/.NERDTreeBookmarks'
-" let g:NERDTreeMinimalUI = 1
-" let g:NERDTreeWinPos = "left"
-" let g:NERDTreeShowHidden = 1
-" let g:NERDTreeSortHiddenFirst = 1
-" let g:NERDTreeAutoDeleteBuffer = 1
-" let g:NERDTreeWinSize = 40
-" let g:NERDTreeIgnore = ['.git','.swp', 'NTUSER*']
-" let g:NERDTreeChDirMode = 1
-" let g:NERDTreeStatusline = ''
-" let g:NERDTreeCascadeOpenSingleChildDir = 0
-
-" noremap <leader>nn :NERDTreeToggle<cr>
-" noremap <leader>nh :NERDTreeToggle ~/<cr>
-" noremap <silent> <leader>nf :NERDTreeFind<cr>cd
-" nnoremap <leader>nb :Bookmark<space>
-
-" let NERDTreeMapOpenVSplit='v'
-" let NERDTreeMapOpenSplit='s'
-
-" ~~~ Neocomplete 
-" ------------------------------------------------------------------------------
-" let g:acp_enableAtStartup = 0
-" let g:neocomplete#enable_at_startup = 0
-" let g:neocomplete#enable_smart_case = 1
-" let g:neocomplete#sources#syntax#min_keyword_length = 2
-" inoremap <expr><C-g>     neocomplete#undo_completion()
-" inoremap <expr><C-l>     neocomplete#complete_common_string()
-" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-" autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-" autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-" autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-" autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-" autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-" if !exists('g:neocomplete#sources#omni#input_patterns')
-"   let g:neocomplete#sources#omni#input_patterns = {}
-" endif
-
 " Plug 
 " ------------------------------------------------------------------------------
 let g:plug_timeout = 240
-
-" ~~~ polyglot 
-" ------------------------------------------------------------------------------
-" let g:polyglot_disabled = ['css', 'markdown', 'javaScript', 'html']
-
-" ~~~ QuickScope 
-" ------------------------------------------------------------------------------
-" let g:qs_highlight_on_keys=['f', 'F', 't', 'T']
-" nnoremap <leader>pq :QuickScopeToggle<CR>
-
-" ~~~ Sayonara 
-" ------------------------------------------------------------------------------
-" save current session & close all buffers
-" nnoremap <leader>q :Sayonara<CR>
 
 " ~~~ Startify 
 " ------------------------------------------------------------------------------
@@ -952,16 +924,6 @@ let g:plug_timeout = 240
 " nnoremap <leader>sd :SSave default<CR>y<CR>
 " nnoremap <leader>sD :SLoad default<CR>
 
-" Surround 
-" ------------------------------------------------------------------------------
-nmap ms  ys
-nmap mS  ysiW
-nmap mSS ySS
-
-" Supertab 
-" ------------------------------------------------------------------------------
-let g:SuperTabDefaultCompletionType = '<C-n>'
-
 " Syntastic 
 " ------------------------------------------------------------------------------
 let g:syntastic_auto_loc_list = 0
@@ -982,12 +944,9 @@ let g:syntastic_mode_map = {
 
 let g:syntastic_javascript_checkers = ['eslint']
 let g:syntastic_HTML_checkers = ['jshint']
-let g:syntastic_SASS_checkers = ['sass']
-let g:syntastic_SCSS_checkers = ['sass']
-let g:syntastic_CSS_checkers = ['scss_lint']
-let g:syntastic_pug_checkers = ['pug_lint']
-
-map <leader>ps :SyntasticCheck<cr>:call lightline#update()<cr>
+" let g:syntastic_SCSS_checkers = ['scss_lint']
+" let g:syntastic_CSS_checkers = ['scss_lint']
+let g:syntastic_pug_checkers = ['pug-lint']
 
 " sneak
 " ------------------------------------------------------------------------------
@@ -995,31 +954,20 @@ let g:sneak#streak = 1
 let g:sneak#textobject_z = 0
 let g:sneak#use_ic_scs = 1
 
-map ö <Plug>Sneak_s
-map Ö <Plug>Sneak_S
-
-" Tabmerge 
-" ------------------------------------------------------------------------------
-noremap <C-t>mh :Tabmerge left<CR>
-noremap <C-t>ml :Tabmerge right<CR>
-
 " Text-Obj-Fold 
 " ------------------------------------------------------------------------------
 let g:textobj_fold_no_default_key_mappings = 1
 
-xmap az <Plug>(textobj-fold-a)
-xmap iz <Plug>(textobj-fold-i)
+" Supertab
+" ------------------------------------------------------------------------------
+let g:SuperTabDefaultCompletionType = "context"
+" let g:SuperTabDefaultCompletionType = <C-p>
 
 " UltiSnips 
 " ------------------------------------------------------------------------------
 let g:UltiSnipsEditSplit = 'context'
-let g:UltiSnipsExpandTrigger = '<C-j>'
-let g:UltiSnipsJumpForwardTrigger = '<C-j>'
-let g:UltiSnipsJumpBackwardTrigger= '<C-k>'
 
-nmap <silent><leader>pu :UltiSnipsEdit<cr>
-
-" YouCompleteMe 
+" ~~~ YouCompleteMe 
 " ------------------------------------------------------------------------------
 " set omnifunc=syntaxcomplete#Complete
 " let g:ycm_auto_trigger = 1
@@ -1042,16 +990,6 @@ nmap <silent><leader>pu :UltiSnipsEdit<cr>
 "   augroup load_us_ycm
 "     autocmd!
 "     autocmd InsertEnter * call plug#load('YouCompleteMe')
-"           \| call youcompleteme#Enable() | autocmd! load_us_ycm
-"   augroup END
-" endif
-
-" --- Vinegar
-" ------------------------------------------------------------------------------
-nmap _ :Vex<cr>
-nmap <C-_> :Sex<cr>
-
-" xterm colors 
-" ------------------------------------------------------------------------------
-" nnoremap <silent><leader>px :VXtermColorTable<CR>
-
+"           \| call you complete me#Enable() | AutoCAD! Load_us_cm
+"   au group END
+" end if

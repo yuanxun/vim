@@ -1,11 +1,14 @@
 " ABBREVIATIONS
 " ##############################################################################
 
-cnoreabbrev <expr> h getcmdtype() == ":" && getcmdline() == 'h' ? 'tab help' : 'h'
-iab <expr> ddate strftime("%b %d - %a")
+cnoreabbrev <expr> h getcmdline() == 'h' ? 'tab help' : 'h'
+" insert date
+iab <expr> ddate strftime("%Y %b %d %H:%M")
+" php function name, excluding function keyword and brackets
+cabbr xfunc \s\zs[a-zA-Z_]*\ze(
 
 " ABOLISH
-" ##############################################################################
+" =============================================================================
 
 if !exists(":Abolish")
     finish

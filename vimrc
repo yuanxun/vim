@@ -40,35 +40,29 @@ endif
 
 " PLUGINS
 " ##############################################################################
-" Pre-plugin 
-" ------------------------------------------------------------------------------
+
 set runtimepath+=$rtp
 call plug#begin($rtp.'plugged')
 
-" Plugin list 
-" ------------------------------------------------------------------------------
-" PLUGINS MARKED WITH TODO ARE NEW TO ME AND NOT YET FULLY EXPLORED
-" ------------------------------------------------------------------------------
 " --- Meta
 " ------------------------------------------------------------------------------
 Plug 'gerw/vim-HiLinkTrace'                           " reveal syntax group stacks
-" ------------------------------------------------------------------------------
+
 " --- Colorscheme
 " ------------------------------------------------------------------------------
 Plug 'tstelzer/welpe.vim'                             " welpe
-" ------------------------------------------------------------------------------
+
 " --- Interface / File management
 " ------------------------------------------------------------------------------
-Plug 'tpope/vim-vinegar'                            " split explorer
+Plug 'tpope/vim-vinegar'                              " split explorer
 Plug 'itchyny/lightline.vim'                          " simple statusline
 Plug 'ctrlpvim/ctrlp.vim'                             " fuzzy stuff
 Plug 'vim-scripts/Tabmerge'                           " merge tabs
 if s:is_windows
     Plug 'kkoenig/wimproved.vim', { 'branch': 'dev' } " Windows fullscreen mode
 endif
-" Plug 'junegunn/goyo.vim'                            " distraction free writing
-" Plug 'justinmk/vim-dirvish'                           " minimal path navigator
-" ------------------------------------------------------------------------------
+Plug 'junegunn/goyo.vim', { 'on' : 'Goyo' }           " distraction free writing
+
 " --- Filetype
 " ------------------------------------------------------------------------------
 Plug 'JulesWang/css.vim'                               " css (vim runtime)
@@ -77,41 +71,38 @@ Plug 'cakebaker/scss-syntax.vim'                       " sass
 Plug 'pangloss/vim-javascript'                         " javascript
 Plug 'othree/html5.vim'                                " html5
 Plug 'tpope/vim-markdown'                              " markdown
-" ------------------------------------------------------------------------------
+
 " --- Syntax formatting
 " ------------------------------------------------------------------------------
 " Plug 'maksimr/vim-jsbeautify'                        " js-beautify integration
-" ------------------------------------------------------------------------------
+
 " --- Syntax
 " ------------------------------------------------------------------------------
 Plug 'scrooloose/syntastic'                            " syntax integration (requires external tools)
-" ------------------------------------------------------------------------------
+
 " --- Autocompletion
 " ------------------------------------------------------------------------------
 Plug 'Raimondi/delimitMate'                          " auto close parentheses
 " Plug 'ervandew/supertab'                             " Perform insert mode compl. with tab
 Plug 'Shougo/neocomplete.vim'                        " autocompletion based on lua
-" Plug 'Valloric/YouCompleteMe'                      " completion engine, requires compilation
-" ------------------------------------------------------------------------------
+
 " --- Git
 " ------------------------------------------------------------------------------
 Plug 'airblade/vim-gitgutter'                        " adds diff status column
 Plug 'tpope/vim-fugitive'                            " git wrapper
 Plug 'junegunn/gv.vim'                              " git commit browser
-" ------------------------------------------------------------------------------
+
 " --- Language agnostic utility
 " ------------------------------------------------------------------------------
 Plug 'sirver/ultisnips'                              " snippet integration
-" Plug 'honza/vim-snippets'                            " snippets
 Plug 'tpope/vim-commentary'                          " fileType specific comment creation mappings
 Plug 'junegunn/vim-easy-align'                       " text align
 Plug 'lilydjwg/colorizer'                            " hex, rgb and named color highlighting
-" ------------------------------------------------------------------------------
+
 " --- HTML
 " ------------------------------------------------------------------------------
-" Plug 'Valloric/MatchTagAlways'                       " Highlight XML matching tags
 Plug 'mattn/emmet-vim'                               " emmet integration
-" ------------------------------------------------------------------------------
+
 " --- Vanilla improvements
 " ------------------------------------------------------------------------------
 Plug 'thinca/vim-visualstar'                         " improves * and #
@@ -124,7 +115,8 @@ Plug 'edsono/vim-matchit'                            " improves % behaviour
 Plug 'haya14busa/incsearch.vim'                      " improve incsearch
 Plug 'justinmk/vim-sneak'                            " sneaky twochar motion
 Plug 'Yggdroot/indentLine'                           " show indentation line
-" ------------------------------------------------------------------------------
+Plug 'stefandtw/quickfix-reflector.vim'              " allows modification of quickfix buffer
+
 " --- Additional text-object funtionality
 " ------------------------------------------------------------------------------
 Plug 'tpope/vim-surround'                            " surround text-objects
@@ -133,12 +125,11 @@ Plug 'chaoren/vim-wordmotion'                        " better word motions (came
 Plug 'kana/vim-textobj-user'                         " new custom textobjects
 Plug 'kana/vim-textobj-function'                     " adds functions as textobjects
 Plug 'glts/vim-textobj-comment'                      " adds comments as textobject
-" Plug 'kana/vim-textobj-fold'                         " adds folds as textobjects
 Plug 'kana/vim-textobj-indent'                       " adds indents as textobjects
 Plug 'whatyouhide/vim-textobj-xmlattr'               " adds XML attributes as txobj
 Plug 'tommcdo/vim-exchange'                          " easy word exchange
 
-" Post-plugin 
+" --- (Post-plugin)
 " ------------------------------------------------------------------------------
 call plug#end()
 filetype plugin indent on
@@ -146,7 +137,6 @@ filetype plugin indent on
 " SOURCE
 " ##############################################################################
 
-runtime rc/abbreviations.vim
 runtime rc/utils.vim
 
 " SETTINGS
@@ -183,7 +173,7 @@ set undofile
 set undodir=$undodir
 set nobackup nowb noswapfile            " disable backupfiles
 set noautoread                            " update files changed outside of vim
-" set hidden                              " abandoned buffers become hidden
+set hidden                              " abandoned buffers become hidden
 set mouse=                              " disable mouseinteraction
 set ignorecase smartcase                " smartcase search
 set nohlsearch                          " disable search highlighting
@@ -270,6 +260,15 @@ set formatlistpat+=\\\|^\\s*[-–+o*]\\s\\+  " Or ASCII style bullet points
 autocmd! FileType pov setlocal ft=php
 autocmd! FileType txt call g:utils#plainText()
 
+" ABBREVIATIONS
+" ##############################################################################
+
+cnoreabbrev <expr> h getcmdline() == 'h' ? 'tab help' : 'h'
+" insert date
+iab <expr> ddate strftime("%Y %b %d %H:%M")
+" php function name, excluding function keyword and brackets
+cabbr xfunc \s\zs[a-zA-Z_]*\ze(
+
 " MAPPINGS
 " ##############################################################################
 
@@ -297,6 +296,9 @@ map <M-Up>    <Nop>
 " xmap <silent> ib <Plug>CamelCaseMotion_ib
 " omap <silent> ie <Plug>CamelCaseMotion_ie
 " xmap <silent> ie <Plug>CamelCaseMotion_ie
+
+" alternate buffers
+nnoremap <silent> <bs> <C-^>
 
 " invoke incsearch
 map / <Plug>(incsearch-forward)
@@ -385,14 +387,6 @@ map! jk <ESC>
 nmap Q @q
 vmap Q :norm @q<cr>
 
-" remap [ and ] (vim-unimpaired) for use with non-us-keyboard
-" nmap ä [
-" omap ä [
-" xmap ä [
-" nmap Ä ]
-" omap Ä ]
-" xmap Ä ]
-
 " --- Motion, Movement and Txtobjs
 " ------------------------------------------------------------------------------
 " goto start of fold
@@ -406,25 +400,29 @@ nmap zu <Plug>(FastFoldUpdate)
 map ö <Plug>Sneak_s
 map Ö <Plug>Sneak_S
 
-" jump to diffs
-" nnoremap <leader>d ]c
-" nnoremap <leader>D [c
+" diffs
+nnoremap äd ]c
+nnoremap äD [c
 
-" jump to errors
-" nnoremap <leader>e :cnext<cr>
-" nnoremap <leader>E :cprev<cr>
+" quickfix
+nnoremap äq :cnext<cr>
+nnoremap Äq :cfirst<cr>
+nnoremap äQ :cprev<cr>
+nnoremap ÄQ :clast<cr>
 
-" jump to spell errors
-" nnoremap <leader>s ]s
-" nnoremap <leader>S [s
+" locationlist
+nnoremap äl :lnext<cr>
+nnoremap Äl :lfirst<cr>
+nnoremap äL :lprev<cr>
+nnoremap ÄL :llast<cr>
 
-" jump to hunks
-" nmap <leader>h <Plug>GitGutterNextHunk
-" nmap <leader>H <Plug>GitGutterPrevHunk
+" spelling
+nnoremap äs ]s
+nnoremap äS [s
 
-" nmap <Leader>ha <Plug>GitGutterStageHunk
-" nmap <Leader>hr <Plug>GitGutterUndoHunk
-" nmap <Leader>hv <Plug>GitGutterPreviewHunk
+" git hunks
+nmap äh <Plug>GitGutterNextHunk
+nmap äH <Plug>GitGutterPrevHunk
 
 " add prefix for vim-wordmotion
 let g:wordmotion_mappings = {
@@ -435,9 +433,6 @@ let g:wordmotion_mappings = {
 \ 'aw' : 'a<M-w>',
 \ 'iw' : 'i<M-w>'
 \ }
-
-" remap mark mappings to ä
-nnoremap ä `
 
 " --- Manipulation and Selection 
 " ------------------------------------------------------------------------------
@@ -553,6 +548,8 @@ noremap <C-t><S-k> :tabmove $<CR>
 " --- Custom functions and behaviour 
 " ------------------------------------------------------------------------------
 " Neocomplete
+nnoremap <leader>pn :NeoCompleteEnable<cr>
+
 inoremap <expr> <C-g> neocomplete#undo_completion()
 inoremap <expr> <C-l> neocomplete#complete_common_string()
 " tab completetion
@@ -566,14 +563,17 @@ inoremap <expr> <C-e> neocomplete#cancel_popup()
 " invoke Hilighting Trace plugin
 nnoremap <leader>ph :HLT<cr>
 
-" invoke fugitive wrapper functions
+" git functionality
 nmap <leader>gd :Gvdiff<CR>
 nmap <leader>gw :Gwrite<CR>
-nmap <leader>gb :Gbrowse<CR>
+" nmap <leader>gb :Gbrowse<CR>
 nmap <leader>gc :Gcommit
 nmap <leader>G :Git 
 
-" invoke commit browser
+nmap <leader>gs <Plug>GitGutterStageHunk
+nmap <leader>gr <Plug>GitGutterUndoHunk
+
+" invoke commit log browser
 nmap <leader>gl :GV<cr>
 nmap <leader>gL :GV!<cr>
 
@@ -647,6 +647,9 @@ nnoremap <A-j> :let fdm_sav=&fdm\|:set fdm=manual\|:m+<CR>:let &fdm=fdm_sav<CR>=
 xnoremap <A-k> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'<-2<CR>gv=:let &fdm=fdm_sav<CR>gv
 xnoremap <A-j> :<C-U>let fdm_sav=&fdm\|:set fdm=manual\|:'<,'>m'>+<CR>gv=:let &fdm=fdm_sav<CR>gv
 
+" invoke abolish
+nnoremap <leader>pa :Abolish! 
+
 " invoke beautifier from context
 " autocmd FileType javascript nnoremap <buffer> <leader>pb :call JsBeautify()<cr>
 " autocmd FileType json nnoremap <buffer> <leader>pb :call JsonBeautify()<cr>
@@ -679,6 +682,10 @@ map <leader>tc <Plug>Colorizer
 
 " toggle visual indentation marks
 map <leader>ti :IndentLinesToggle<cr>
+
+" toggle goyo
+nmap <leader>tg :Goyo<cr>
+nmap <leader>tl :Limelight!!<cr>
 
 " --- Filetype Specific
 " ------------------------------------------------------------------------------
@@ -726,28 +733,44 @@ let g:gitgutter_sign_column_always = 1
 let g:gitgutter_diff_args = '--ignore-space-at-eol --ignore-all-space --ignore-blank-lines'
 let g:gitgutter_realtime = 0
 let g:gitgutter_eager = 1
-let g:gitgutter_async = 0
+let g:gitgutter_async = 1
 
-" ~~~ Goyo 
+" Goyo 
 " ------------------------------------------------------------------------------
-" let g:goyo_height = "100%"
-" let g:goyo_width = 90
+let g:goyo_height = "100%"
+let g:goyo_width = 90
 
-" function! s:goyo_enter()
-"     set noshowmode
-"     set laststatus=0
-"     set nonu nornu
-" endfunction
-" function! s:goyo_leave()
-"     set showmode
-"     set laststatus=2
-"     set nu rnu
-" endfunction
+function! s:goyo_enter()
+  set noshowmode
+  set laststatus=0
+  set nonu nornu
+endfunction
+function! s:goyo_leave()
+  set showmode
+  set laststatus=2
+  set nu rnu
+endfunction
 
-" autocmd! User GoyoEnter nested call <SID>goyo_enter()
-" autocmd! User Goyoleave nested call <SID>goyo_leave()
+autocmd! User GoyoEnter nested call <SID>goyo_enter()
+autocmd! User Goyoleave nested call <SID>goyo_leave()
 
-" nnoremap <silent>           <leader>pz :Goyo<CR>
+" Limelight
+" ------------------------------------------------------------------------------
+" Default: 0.5
+let g:limelight_default_coefficient = 0.8
+
+" Number of preceding/following paragraphs to include (default: 0)
+let g:limelight_paragraph_span = 1
+
+" Beginning/end of paragraph
+"   When there's no empty line between the paragraphs
+"   and each paragraph starts with indentation
+let g:limelight_bop = '^\s'
+let g:limelight_eop = '\ze\n^\s'
+
+" Highlighting priority (default: 10)
+"   Set it to -1 not to overrule hlsearch
+let g:limelight_priority = -1
 
 " HiLink
 " ------------------------------------------------------------------------------
@@ -834,7 +857,7 @@ let g:lightline = {
       \ 'subseparator': { 'left': '', 'right': '' },
       \ 'component': {
       \ 'lineinfo': '%l:%c (%L)',
-      \ 'zeitwerk': 'free screen estate, yay'
+      \ 'zeitwerk': 'sneak,exchange,abolish,increment'
       \ },
       \ 'component_function': {
       \ 'mode': 'LLMode',
@@ -865,7 +888,7 @@ let g:lightline = {
 " Neocomplete.vim
 " ------------------------------------------------------------------------------
 let g:neocomplete#data_directory = '~\vimfiles\tmp\neocomplete' " TODO: link to rtp
-let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_at_startup = 0
 let g:neocomplete#enable_auto_select = 1
 let g:neocomplete#enable_smart_case = 1
 let g:neocomplete#auto_completion_start_length = 2
@@ -959,7 +982,7 @@ let g:plug_timeout = 240
 " Syntastic 
 " ------------------------------------------------------------------------------
 let g:syntastic_auto_loc_list = 0
-let g:syntastic_always_populate_loc_list = 0
+let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_loc_list_height = 5
 let g:syntastic_auto_jump = 0
 let g:syntastic_check_on_open = 0
@@ -981,7 +1004,7 @@ let g:syntastic_HTML_checkers = ['jshint']
 " let g:syntastic_SCSS_checkers = ['scss_lint']
 " let g:syntastic_CSS_checkers = ['scss_lint']
 let g:syntastic_pug_checkers = ['pug-lint']
-let g:syntastic_php_checkers = ['phpcs']
+let g:syntastic_php_checkers = ['php', 'phpcs']
 let g:syntastic_enable_highlighting = 0
 
 " sneak

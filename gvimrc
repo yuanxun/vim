@@ -20,6 +20,11 @@ set guioptions-=L                       " disable lefthand scrollbar
 set guicursor+=n-v-c:block-Cursor-blinkon0
 set guicursor+=i-ci:ver15-iCursor-blinkwait100-blinkon350-blinkoff350
 
+try
+  colorscheme welpe                   " set colorscheme
+catch
+endtry
+
 augroup Windows
   autocmd GUIEnter * silent! WToggleClean
   autocmd GUIEnter * set columns=999

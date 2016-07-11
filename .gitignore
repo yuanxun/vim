@@ -1,4 +1,5 @@
 temp/**
+tmp/**
 undodir/
 plug.vim.old
 plugged/**
